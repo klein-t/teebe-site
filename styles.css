@@ -143,7 +143,7 @@ img { max-width: 100%; height: auto; display: block; }
 .shot img { border-radius: 18px; }
 
 /* Features */
-.features { max-width: var(--max); margin: 0 auto; padding: 72px 24px 96px; }
+.features { max-width: var(--max); margin: 0 auto; padding: 44px 24px 96px; }
 .features h2, .cta-final h2 {
   font-size: clamp(1.7rem, 3.5vw, 2.4rem);
   letter-spacing: -0.02em;
