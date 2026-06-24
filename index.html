@@ -70,11 +70,15 @@
         changing, across every repo, in real time. It doesn't replace your editor; it's the
         navigator that launches files into the native apps you already use.
       </p>
-      <div class="cta-row">
-        <a class="btn btn-lg" href="https://github.com/klein-t/teebe/releases/latest/download/teebe-macos.dmg" rel="noopener">Download for macOS</a>
-        <a class="btn btn-ghost btn-lg" href="https://github.com/klein-t/teebe" rel="noopener">View on GitHub</a>
+      <div class="install">
+        <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+        <button class="copy" type="button" aria-label="Copy install command">Copy</button>
       </div>
-      <p class="sub">Free · macOS 14+ · self-updating via Sparkle</p>
+      <p class="sub">Paste in Terminal — installs to Applications and launches. Free · macOS 14+ · self-updating via Sparkle.</p>
+      <div class="cta-row" style="margin-top: 18px;">
+        <a class="btn btn-ghost" href="https://github.com/klein-t/teebe/releases/latest/download/teebe-macos.dmg" rel="noopener">Download .dmg</a>
+        <a class="btn btn-ghost" href="https://github.com/klein-t/teebe" rel="noopener">View on GitHub</a>
+      </div>
 
       <div class="shot">
         <img src="/assets/teebe-overview.png" alt="teebe showing a worktree's files alongside an inline diff" width="760" loading="eager" />
@@ -118,13 +122,33 @@
 
     <section class="cta-final">
       <h2>Watch your agents work, file by file.</h2>
-      <a class="btn btn-lg" href="https://github.com/klein-t/teebe/releases/latest/download/teebe-macos.dmg" rel="noopener">Download teebe</a>
-      <p class="sub">Open the <code>.dmg</code> and drag teebe to Applications. On first launch, right-click the app and choose <strong>Open</strong> to get past Gatekeeper.</p>
+      <div class="install">
+        <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+        <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+      </div>
+      <p class="sub">
+        Prefer to install by hand? <a href="https://github.com/klein-t/teebe/releases/latest/download/teebe-macos.dmg" rel="noopener">Download the <code>.dmg</code></a>
+        and drag teebe to Applications — then run
+        <code>xattr -dr com.apple.quarantine /Applications/teebe.app</code> if it won't open.
+      </p>
     </section>
   </main>
 
   <footer>
     <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · macOS only</p>
   </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
