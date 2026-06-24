@@ -176,8 +176,8 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .grid p { color: var(--muted); font-size: 0.98rem; }
 
-.hero-shot { margin-top: 44px; }
-.hero-shot img { display: block; margin: 0 auto; width: 360px; max-width: 100%; height: auto; }
+.hero-shot { margin: 32px auto; }
+.hero-shot img { display: block; margin: 0 auto; width: 300px; max-width: 100%; height: auto; }
 
 /* Final CTA */
 .cta-final {
