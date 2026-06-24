@@ -176,19 +176,11 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .grid p { color: var(--muted); font-size: 0.98rem; }
 
-.shot-row {
-  display: flex;
-  gap: 18px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 56px;
+.hero-shot {
+  margin: 48px auto 0;
+  max-width: 520px;
 }
-.shot-row img {
-  max-height: 320px;
-  width: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-}
+.hero-shot img { width: 100%; height: auto; }
 
 /* Final CTA */
 .cta-final {
