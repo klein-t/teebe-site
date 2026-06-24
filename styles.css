@@ -38,8 +38,8 @@ img { max-width: 100%; height: auto; display: block; }
   margin: 0 auto;
   padding: 20px 24px;
 }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: 1.15rem; }
-.brand img { border-radius: 7px; }
+.brand { display: flex; align-items: center; gap: 14px; font-weight: 650; font-size: 2.3rem; }
+.brand img { border-radius: 14px; }
 .nav-links { display: flex; align-items: center; gap: 24px; font-size: 0.95rem; color: var(--muted); }
 .nav-links a:not(.btn):hover { color: var(--text); }
 
@@ -174,7 +174,7 @@ img { max-width: 100%; height: auto; display: block; }
 .grid p { color: var(--muted); font-size: 0.98rem; }
 
 .hero-shot { margin: 4px auto 32px; }
-.hero-shot img { display: block; margin: 0 auto; width: 253px; max-width: 100%; height: auto; }
+.hero-shot img { display: block; margin: 0 auto; width: 285px; max-width: 100%; height: auto; }
 
 /* Final CTA */
 .cta-final {
