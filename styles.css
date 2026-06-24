@@ -139,11 +139,8 @@ img { max-width: 100%; height: auto; display: block; }
 .shot {
   margin: 56px auto 0;
   max-width: var(--max);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: 0 30px 80px -30px rgba(0,0,0,0.8);
 }
+.shot img { border-radius: 18px; }
 
 /* Features */
 .features { max-width: var(--max); margin: 0 auto; padding: 72px 24px 96px; }
