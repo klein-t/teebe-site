@@ -104,7 +104,7 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 540px;
+  max-width: 680px;
   margin: 0 auto;
   background: var(--bg-soft);
   border: 1px solid var(--border);
@@ -115,11 +115,10 @@ img { max-width: 100%; height: auto; display: block; }
 .install code {
   flex: 1;
   text-align: left;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--text);
-  overflow-x: auto;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .install .copy {
   flex-shrink: 0;

@@ -74,7 +74,6 @@
         <button class="copy" type="button" aria-label="Copy install command">Copy</button>
       </div>
       <p class="sub">Paste in Terminal — installs to Applications and launches. Free · macOS 14+ · self-updating via Sparkle.</p>
-      <p class="sub">Read it first: <a href="https://github.com/klein-t/teebe/blob/main/install.sh" rel="noopener">https://github.com/klein-t/teebe/blob/main/install.sh</a></p>
       <div class="cta-row" style="margin-top: 18px;">
         <a class="btn btn-ghost" href="https://github.com/klein-t/teebe/releases/latest/download/teebe-macos.dmg" rel="noopener">Download .dmg</a>
         <a class="btn btn-ghost" href="https://github.com/klein-t/teebe" rel="noopener">View on GitHub</a>
@@ -130,7 +129,7 @@
   </main>
 
   <footer>
-    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · macOS only</p>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · macOS only · <span id="version">v0.3.0 · beta</span></p>
   </footer>
 
   <script>
@@ -144,6 +143,15 @@
         });
       });
     });
+
+    // Keep the footer version in sync with the live appcast (same origin).
+    fetch('/appcast.xml')
+      .then(function (r) { return r.text(); })
+      .then(function (t) {
+        var m = t.match(/<sparkle:shortVersionString>([^<]+)<\/sparkle:shortVersionString>/);
+        if (m) document.getElementById('version').textContent = 'v' + m[1].trim() + ' · beta';
+      })
+      .catch(function () {});
   </script>
 </body>
 </html>
