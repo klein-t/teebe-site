@@ -88,6 +88,8 @@ img { max-width: 100%; height: auto; display: block; }
 .lede strong { color: var(--text); }
 .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 .sub { font-size: 0.9rem; color: var(--muted); margin-top: 16px; }
+.sub a { color: var(--accent); }
+.sub a:hover { color: var(--accent-hover); }
 .sub code {
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
   font-size: 0.85em;
