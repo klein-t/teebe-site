@@ -174,7 +174,7 @@ img { max-width: 100%; height: auto; display: block; }
 .grid p { color: var(--muted); font-size: 0.98rem; }
 
 .hero-shot { margin: 4px auto 32px; }
-.hero-shot img { display: block; margin: 0 auto; width: 230px; max-width: 100%; height: auto; }
+.hero-shot img { display: block; margin: 0 auto; width: 253px; max-width: 100%; height: auto; }
 
 /* Final CTA */
 .cta-final {
