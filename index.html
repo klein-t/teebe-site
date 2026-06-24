@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary SEO -->
+  <title>teebe — a native macOS file browser for the multi-agent era</title>
+  <meta name="description" content="teebe is a native macOS file browser built for running several AI coding agents across git worktrees. Watch what your agents touch, file by file, with live updates and inline diffs." />
+  <link rel="canonical" href="https://teebe.io/" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://teebe.io/" />
+  <meta property="og:title" content="teebe — a native macOS file browser for the multi-agent era" />
+  <meta property="og:description" content="The calm control room for running several AI coding agents across git worktrees. See what's changing, file by file, in real time." />
+  <meta property="og:image" content="https://teebe.io/assets/teebe-overview.png" />
+  <meta property="og:image:alt" content="teebe showing a worktree's files alongside an inline diff" />
+  <meta property="og:site_name" content="teebe" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="teebe — a native macOS file browser for the multi-agent era" />
+  <meta name="twitter:description" content="The calm control room for running several AI coding agents across git worktrees." />
+  <meta name="twitter:image" content="https://teebe.io/assets/teebe-overview.png" />
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "teebe",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "macOS 14+",
+    "url": "https://teebe.io/",
+    "downloadUrl": "https://github.com/klein-t/teebe/releases",
+    "description": "A native macOS file browser built for the multi-agent era. Watch what your AI coding agents touch across git worktrees, with live updates and inline diffs.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="32" height="32" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+      <a class="btn btn-sm" href="https://github.com/klein-t/teebe/releases" rel="noopener">Download</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">macOS · for the multi-agent era</p>
+      <h1>The calm control room for your coding agents.</h1>
+      <p class="lede">
+        When several AI agents — Claude Code, Codex, and friends — work in parallel across
+        your git worktrees, <strong>teebe</strong> shows you what files exist and what's
+        changing, across every repo, in real time. It doesn't replace your editor; it's the
+        navigator that launches files into the native apps you already use.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-lg" href="https://github.com/klein-t/teebe/releases" rel="noopener">Download for macOS</a>
+        <a class="btn btn-ghost btn-lg" href="https://github.com/klein-t/teebe" rel="noopener">View on GitHub</a>
+      </div>
+      <p class="sub">Free · macOS 14+ · self-updating via Sparkle</p>
+
+      <div class="shot">
+        <img src="/assets/teebe-overview.png" alt="teebe showing a worktree's files alongside an inline diff" width="760" loading="eager" />
+      </div>
+    </section>
+
+    <section id="features" class="features">
+      <h2>What it is</h2>
+      <div class="grid">
+        <article>
+          <h3>Worktree-aware browsing</h3>
+          <p>Pick any worktree of any repo and explore its full file tree. Switch between trees instantly.</p>
+        </article>
+        <article>
+          <h3>Live as your agents work</h3>
+          <p>Files badge and the tree updates the moment something changes on disk — watch edits land in real time.</p>
+        </article>
+        <article>
+          <h3>Sneak-peek diffs</h3>
+          <p>Select a changed file to peek its diff inline, in the window, without opening it or switching apps.</p>
+        </article>
+        <article>
+          <h3>One Changes view</h3>
+          <p>Everything modified in the current worktree in a single list, with ahead/behind counts for the branch.</p>
+        </article>
+        <article>
+          <h3>Every repo at once</h3>
+          <p>Add multiple repos and see all their worktrees together in one overview.</p>
+        </article>
+        <article>
+          <h3>Opens into your tools</h3>
+          <p>Click a file and it launches in the native app you already use. teebe is the navigator; your editor stays the editor.</p>
+        </article>
+      </div>
+
+      <div class="shot-row">
+        <img src="/assets/teebe-collapsed.png" alt="teebe collapsed to its Worktrees, Changes and Files sections" loading="lazy" />
+        <img src="/assets/teebe-worktrees.png" alt="the Worktrees list expanded across a repo's branches" loading="lazy" />
+      </div>
+    </section>
+
+    <section class="cta-final">
+      <h2>Watch your agents work, file by file.</h2>
+      <a class="btn btn-lg" href="https://github.com/klein-t/teebe/releases" rel="noopener">Download teebe</a>
+      <p class="sub">On first launch, right-click the app and choose <strong>Open</strong> to get past Gatekeeper.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · macOS only</p>
+  </footer>
+</body>
+</html>
