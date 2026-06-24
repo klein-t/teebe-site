@@ -66,7 +66,7 @@ img { max-width: 100%; height: auto; display: block; }
 .hero {
   max-width: 820px;
   margin: 0 auto;
-  padding: 72px 24px 40px;
+  padding: 72px 24px 32px;
   text-align: center;
 }
 .eyebrow {
@@ -84,7 +84,7 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 700;
   margin-bottom: 22px;
 }
-.lede { font-size: 1.18rem; color: var(--muted); max-width: 680px; margin: 0 auto 32px; }
+.lede { font-size: 1.18rem; color: var(--muted); max-width: 680px; margin: 0 auto 24px; }
 .lede strong { color: var(--text); }
 .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 .sub { font-size: 0.9rem; color: var(--muted); margin-top: 16px; }
@@ -146,7 +146,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* Features */
-.features { max-width: var(--max); margin: 0 auto; padding: 96px 24px; }
+.features { max-width: var(--max); margin: 0 auto; padding: 72px 24px 96px; }
 .features h2, .cta-final h2 {
   font-size: clamp(1.7rem, 3.5vw, 2.4rem);
   letter-spacing: -0.02em;
@@ -176,8 +176,8 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .grid p { color: var(--muted); font-size: 0.98rem; }
 
-.hero-shot { margin: 32px auto; }
-.hero-shot img { display: block; margin: 0 auto; width: 300px; max-width: 100%; height: auto; }
+.hero-shot { margin: 4px auto 32px; }
+.hero-shot img { display: block; margin: 0 auto; width: 230px; max-width: 100%; height: auto; }
 
 /* Final CTA */
 .cta-final {
