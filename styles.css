@@ -104,7 +104,7 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 680px;
+  max-width: 740px;
   margin: 0 auto;
   background: var(--bg-soft);
   border: 1px solid var(--border);
@@ -115,7 +115,7 @@ img { max-width: 100%; height: auto; display: block; }
 .install code {
   flex: 1;
   text-align: left;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -176,11 +176,8 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .grid p { color: var(--muted); font-size: 0.98rem; }
 
-.hero-shot {
-  margin: 48px auto 0;
-  max-width: 520px;
-}
-.hero-shot img { width: 100%; height: auto; }
+.hero-shot { margin-top: 44px; }
+.hero-shot img { display: block; margin: 0 auto; width: 360px; max-width: 100%; height: auto; }
 
 /* Final CTA */
 .cta-final {
