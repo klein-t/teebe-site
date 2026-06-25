@@ -21,7 +21,7 @@ trap 'rm -rf "${TMP}"' EXIT
 echo "Downloading teebe…"
 # Primary: through the download endpoint (counts the install). Falls back to a
 # direct GitHub fetch if the endpoint is unreachable.
-if ! curl -fsSL "https://dl.teebe.io" -o "${TMP}/teebe.zip"; then
+if ! curl -fsSL -A "teebe-install" "https://dl.teebe.io" -o "${TMP}/teebe.zip"; then
   echo "Download endpoint unavailable, fetching from GitHub…"
   ZIP_URL=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" \
     | grep -o '"browser_download_url": *"[^"]*\.zip"' \

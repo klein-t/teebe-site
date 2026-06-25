@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# Query Teebe download stats from Cloudflare Analytics Engine, split by
-# "user" vs "dev" (your own ?dev=1 test fetches) so you can tell them apart.
+# Query Teebe download stats from Cloudflare Analytics Engine, split by `who`:
+#   install - real installs via teebe.io/install.sh (UA "teebe-install")  <- trust this
+#   dev     - your own ?dev=1 test fetches
+#   web     - browsers, bots, scanners, link-preview fetchers (noise)
+#   user    - legacy rows from before the install/web/dev split (also noise)
 #
 # Needs two env vars (get them in step 7 of the setup):
 #   CF_ACCOUNT_ID  - Cloudflare account id
@@ -23,5 +26,5 @@ curl -s "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/analytic
   -d "${SQL}" | jq -r '
     (.data // []) as $d
     | if ($d|length)==0 then "no data yet"
-      else (["WHO","VERSION","DOWNLOADS"], ($d[]|[.who,.version,(.downloads|floor|tostring)])) | @tsv
+      else (["WHO","VERSION","DOWNLOADS"], ($d[]|[.who,.version,(.downloads|tonumber|floor|tostring)])) | @tsv
       end' | column -t
