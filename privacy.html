@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy · teebe</title>
+  <meta name="description" content="What teebe collects, and what it doesn't. Short version: anonymous, aggregate download counts — no personal data, no in-app tracking." />
+  <link rel="canonical" href="https://teebe.io/privacy.html" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .legal { max-width: 720px; margin: 0 auto; padding: 32px 24px 80px; }
+    .legal h1 { font-size: 2.1rem; margin-bottom: 6px; }
+    .legal .updated { color: var(--muted); font-size: 0.9rem; margin-bottom: 32px; }
+    .legal h2 { font-size: 1.25rem; margin: 32px 0 10px; }
+    .legal p, .legal li { color: #c7c7cc; }
+    .legal ul { margin: 8px 0 8px 22px; }
+    .legal li { margin: 4px 0; }
+    .legal strong { color: var(--text); }
+    .legal a { color: var(--accent); }
+    .legal a:hover { color: var(--accent-hover); }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="legal">
+    <h1>Privacy</h1>
+    <p class="updated">Last updated 25 June 2026</p>
+
+    <p>
+      teebe is a local macOS app. The short version: we count downloads in
+      aggregate so we know roughly how many people use teebe, and that's it.
+      No accounts, no personal data, no tracking of what you do inside the app.
+    </p>
+
+    <h2>What we collect</h2>
+    <p>
+      When you install teebe, the download is served through
+      <code>dl.teebe.io</code>, which records one anonymous, aggregate event:
+    </p>
+    <ul>
+      <li>the app <strong>version</strong> you downloaded,</li>
+      <li>your <strong>country</strong> (derived at the edge, not stored as a precise location), and</li>
+      <li>the <strong>user-agent</strong> string your downloader sends.</li>
+    </ul>
+    <p>
+      We use this only to gauge interest and adoption. It is not tied to your
+      identity and is not sold or shared.
+    </p>
+
+    <h2>What we don't collect</h2>
+    <ul>
+      <li>We do <strong>not</strong> store your IP address.</li>
+      <li>We do <strong>not</strong> track anything you do inside the app — teebe contains no in-app analytics or telemetry.</li>
+      <li>We do <strong>not</strong> use cookies or ad trackers on this site.</li>
+      <li>We have no accounts, so there is no personal profile to collect.</li>
+    </ul>
+
+    <h2>Updates</h2>
+    <p>
+      teebe checks for new versions via <a href="https://sparkle-project.org/" rel="noopener">Sparkle</a>,
+      which fetches an update feed from teebe.io. These are ordinary web
+      requests and are subject to standard server logs; they are not used to
+      profile you.
+    </p>
+
+    <h2>If this ever changes</h2>
+    <p>
+      If we ever add in-app analytics, it will be <strong>opt-in</strong> and
+      this page will be updated first.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions? Open an issue on
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>.
+    </p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · macOS only</p>
+  </footer>
+</body>
+</html>
