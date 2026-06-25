@@ -3,13 +3,13 @@
     <channel>
         <title>teebe</title>
         <item>
-            <title>0.3.0</title>
-            <pubDate>Wed, 24 Jun 2026 18:10:54 +0000</pubDate>
-            <sparkle:version>0.3.0</sparkle:version>
-            <sparkle:shortVersionString>0.3.0</sparkle:shortVersionString>
+            <title>0.3.1</title>
+            <pubDate>Thu, 25 Jun 2026 16:55:02 +0000</pubDate>
+            <sparkle:version>0.3.1</sparkle:version>
+            <sparkle:shortVersionString>0.3.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <enclosure url="https://github.com/klein-t/teebe/releases/download/v0.3.0/teebe-v0.3.0.zip" length="2585337" type="application/octet-stream" sparkle:edSignature="g/QUEkDcQV6mieu+QnQ0bqE66CjjPfElWHYqi8yLXolh178YaBTzIYQlQvP86J62PQmsusCIq9QKs+YkALsDDw=="/>
+            <enclosure url="https://github.com/klein-t/teebe/releases/download/v0.3.1/teebe-v0.3.1.zip" length="2599603" type="application/octet-stream" sparkle:edSignature="AJvxPMeZZrU8Hwxxvq/m6rliedM97AX0MwFxVsGpX/glS6GJ5yCnkF3sNzj4g658VFnoU7k7GfG9k3NJY24XAw=="/>
         </item>
     </channel>
 </rss>
