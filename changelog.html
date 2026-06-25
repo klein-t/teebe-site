@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Changelog · teebe</title>
+  <meta name="description" content="Release notes for teebe — what changed in each version of the native macOS Finder for your git worktrees." />
+  <link rel="canonical" href="https://teebe.io/changelog.html" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+  <link rel="stylesheet" href="/styles.css" />
+
+  <style>
+    .changelog { max-width: 760px; margin: 0 auto; padding: 24px; }
+    .changelog h1 { font-size: 2rem; margin-bottom: 8px; }
+    .changelog .intro { color: var(--muted); margin-bottom: 40px; }
+    .release { padding: 24px 0; border-top: 1px solid var(--border); }
+    .release:first-of-type { border-top: none; }
+    .release-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .release-head h2 { font-size: 1.3rem; }
+    .release-head .date { color: var(--muted); font-size: 0.9rem; }
+    .release-head .badge {
+      font-size: 0.72rem; font-weight: 650; text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--green); border: 1px solid var(--green); border-radius: 999px; padding: 2px 9px;
+    }
+    .release h3 {
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+      color: var(--muted); margin: 16px 0 6px;
+    }
+    .release ul { margin: 0 0 4px; padding-left: 20px; }
+    .release li { margin: 5px 0; }
+    .release code {
+      background: var(--card); border: 1px solid var(--border); border-radius: 5px;
+      padding: 1px 5px; font-size: 0.86em;
+    }
+    .release a { color: var(--accent); }
+    .release a:hover { color: var(--accent-hover); }
+    .loading, .error { color: var(--muted); padding: 24px 0; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="changelog">
+    <h1>Changelog</h1>
+    <p class="intro">What changed in each release of teebe.</p>
+    <div id="content"><p class="loading">Loading release notes…</p></div>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · macOS only · <a href="/changelog.html">Changelog</a></p>
+  </footer>
+
+  <script>
+    // Single source of truth: CHANGELOG.md from the app repo. It's mirrored onto
+    // this site on each release (publish-appcast workflow), so prefer the
+    // same-origin copy and fall back to the repo's raw file.
+    var SOURCES = [
+      '/CHANGELOG.md',
+      'https://raw.githubusercontent.com/klein-t/teebe/main/CHANGELOG.md'
+    ];
+
+    function esc(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    // Minimal inline markdown: code, bold, links — on already-escaped text.
+    function inline(s) {
+      return esc(s)
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" rel="noopener">$1</a>');
+    }
+
+    // Render our Keep-a-Changelog markdown into release blocks. Only content from
+    // the first "## " heading onward is shown (the file's preamble is skipped).
+    function render(md) {
+      var lines = md.split('\n');
+      var html = '';
+      var inList = false, started = false;
+      function closeList() { if (inList) { html += '</ul>'; inList = false; } }
+
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].replace(/\s+$/, '');
+        var h2 = line.match(/^##\s+(.*)$/);
+        var h3 = line.match(/^###\s+(.*)$/);
+        var li = line.match(/^[-*]\s+(.*)$/);
+
+        if (h2 && !line.match(/^###/)) {
+          closeList();
+          if (started) html += '</div>';
+          started = true;
+          var head = h2[1];
+          var date = '';
+          var dash = head.indexOf(' - ');
+          if (dash !== -1) { date = head.slice(dash + 3).trim(); head = head.slice(0, dash); }
+          var ver = head.replace(/[\[\] ]/g, '');
+          var isUnreleased = ver.toLowerCase() === 'unreleased';
+          html += '<section class="release"><div class="release-head">';
+          html += '<h2>' + (isUnreleased ? 'Unreleased' : esc(ver)) + '</h2>';
+          if (date) html += '<span class="date">' + esc(date) + '</span>';
+          if (isUnreleased) html += '<span class="badge">In progress</span>';
+          html += '</div>';
+        } else if (h3 && started) {
+          closeList();
+          html += '<h3>' + esc(h3[1]) + '</h3>';
+        } else if (li && started) {
+          if (!inList) { html += '<ul>'; inList = true; }
+          html += '<li>' + inline(li[1]) + '</li>';
+        } else if (line === '') {
+          closeList();
+        } else if (started && inList) {
+          // Continuation of a wrapped bullet.
+          html = html.replace(/<\/li>$/, ' ' + inline(line) + '</li>');
+        }
+      }
+      closeList();
+      if (started) html += '</section>';
+      return html || '<p class="error">No release notes found.</p>';
+    }
+
+    (function load(i) {
+      if (i >= SOURCES.length) {
+        document.getElementById('content').innerHTML =
+          '<p class="error">Couldn\'t load the changelog. See it on ' +
+          '<a href="https://github.com/klein-t/teebe/blob/main/CHANGELOG.md">GitHub</a>.</p>';
+        return;
+      }
+      fetch(SOURCES[i])
+        .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
+        .then(function (md) { document.getElementById('content').innerHTML = render(md); })
+        .catch(function () { load(i + 1); });
+    })(0);
+  </script>
+</body>
+</html>
