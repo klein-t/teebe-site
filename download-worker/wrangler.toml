@@ -1,0 +1,15 @@
+name = "teebe-download"
+main = "src/index.js"
+compatibility_date = "2026-05-01"
+
+# Auto-provisions dl.teebe.io (+ DNS) on deploy. Requires the teebe.io zone to
+# live in this same Cloudflare account.
+routes = [
+  { pattern = "dl.teebe.io", custom_domain = true },
+]
+
+# Analytics Engine: free, no database. Each download writes one datapoint we
+# can later query with SQL (and filter your own test fetches out).
+[[analytics_engine_datasets]]
+binding = "DL"
+dataset = "teebe_downloads"
