@@ -15,12 +15,23 @@
 //   https://dl.teebe.io/            -> latest .zip
 //   https://dl.teebe.io/?kind=dmg   -> latest .dmg
 //   https://dl.teebe.io/?dev=1      -> latest .zip   (logged as "dev" = you)
+//
+// Stats dashboard (private): https://dl.teebe.io/stats?key=<STATS_KEY>
+//   Renders install/web/dev counts, installs by country, and recent installs.
+//   Reads Analytics Engine via the SQL API using the CF_API_TOKEN secret.
 
 const REPO = "klein-t/teebe";
+const ACCOUNT_ID = "c98c457a0ae116da83eb79e64cb21e52";
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    // Private stats page.
+    if (url.pathname === "/stats") {
+      return handleStats(url, env);
+    }
+
     const kind = url.searchParams.get("kind") === "dmg" ? "dmg" : "zip";
 
     const ua = request.headers.get("User-Agent") || "";
@@ -60,3 +71,104 @@ export default {
     return Response.redirect(asset.browser_download_url, 302);
   },
 };
+
+// --- Private stats dashboard ----------------------------------------------
+
+async function handleStats(url, env) {
+  // Gate on the secret key. Wrong/missing key looks like an ordinary 404 so the
+  // route's existence isn't advertised.
+  if (!env.STATS_KEY || url.searchParams.get("key") !== env.STATS_KEY) {
+    return new Response("Not found", { status: 404 });
+  }
+  if (!env.CF_API_TOKEN) {
+    return new Response("stats not configured (missing CF_API_TOKEN secret)", { status: 500 });
+  }
+
+  const sql = (q) =>
+    fetch(`https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/analytics_engine/sql`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${env.CF_API_TOKEN}` },
+      body: q,
+    })
+      .then((r) => r.json())
+      .then((j) => j.data || [])
+      .catch(() => []);
+
+  const num = (v) => Math.floor(Number(v) || 0);
+
+  const [overview, byCountry, recent, daily] = await Promise.all([
+    sql("SELECT blob5 AS who, SUM(_sample_interval) AS n FROM teebe_downloads GROUP BY who ORDER BY n DESC"),
+    sql("SELECT blob3 AS country, SUM(_sample_interval) AS n FROM teebe_downloads WHERE blob5='install' GROUP BY country ORDER BY n DESC"),
+    sql("SELECT timestamp, blob3 AS country, blob1 AS version FROM teebe_downloads WHERE blob5='install' ORDER BY timestamp DESC LIMIT 25"),
+    sql("SELECT toDate(timestamp) AS day, SUM(_sample_interval) AS n FROM teebe_downloads WHERE blob5='install' GROUP BY day ORDER BY day DESC LIMIT 14"),
+  ]);
+
+  const counts = Object.fromEntries(overview.map((r) => [r.who, num(r.n)]));
+  const installs = counts.install || 0;
+
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  const countryRows = byCountry.length
+    ? byCountry.map((r) => `<tr><td>${esc(r.country)}</td><td class="r">${num(r.n)}</td></tr>`).join("")
+    : `<tr><td colspan="2" class="muted">nessuna</td></tr>`;
+
+  const recentRows = recent.length
+    ? recent.map((r) => `<tr><td>${esc(r.timestamp)} UTC</td><td>${esc(r.country)}</td><td>${esc(r.version)}</td></tr>`).join("")
+    : `<tr><td colspan="3" class="muted">nessuna</td></tr>`;
+
+  const dailyRows = daily.length
+    ? daily.map((r) => `<tr><td>${esc(r.day)}</td><td class="r">${num(r.n)}</td></tr>`).join("")
+    : `<tr><td colspan="2" class="muted">nessuna</td></tr>`;
+
+  const html = `<!DOCTYPE html>
+<html lang="it"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>teebe · stats</title>
+<style>
+  :root { --bg:#0a0a0b; --card:#161618; --border:#26262a; --text:#ededef; --muted:#86868b; --green:#30d158; --accent:#0a84ff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif; background:var(--bg); color:var(--text); line-height:1.5; padding:24px; max-width:680px; margin:0 auto; -webkit-font-smoothing:antialiased; }
+  h1 { font-size:1.4rem; margin-bottom:4px; }
+  .sub { color:var(--muted); font-size:.85rem; margin-bottom:24px; }
+  .big { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:28px; }
+  .stat { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 20px; flex:1; min-width:120px; }
+  .stat .label { color:var(--muted); font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; }
+  .stat .value { font-size:2.2rem; font-weight:650; margin-top:4px; }
+  .stat.hl .value { color:var(--green); }
+  h2 { font-size:1rem; margin:24px 0 10px; color:var(--text); }
+  table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; font-size:.9rem; }
+  th,td { text-align:left; padding:9px 14px; border-bottom:1px solid var(--border); }
+  th { color:var(--muted); font-weight:500; font-size:.78rem; text-transform:uppercase; letter-spacing:.03em; }
+  tr:last-child td { border-bottom:none; }
+  td.r,th.r { text-align:right; }
+  .muted { color:var(--muted); }
+  .note { color:var(--muted); font-size:.8rem; margin-top:8px; }
+  footer { color:var(--muted); font-size:.78rem; margin-top:32px; }
+</style></head><body>
+  <h1>teebe · download stats</h1>
+  <p class="sub">Installazioni reali = riga <b>install</b> (UA <code>teebe-install</code>). <b>web</b> = browser/bot (rumore).</p>
+
+  <div class="big">
+    <div class="stat hl"><div class="label">Install</div><div class="value">${installs}</div></div>
+    <div class="stat"><div class="label">Web / bot</div><div class="value">${counts.web || 0}</div></div>
+    <div class="stat"><div class="label">Dev (test)</div><div class="value">${counts.dev || 0}</div></div>
+  </div>
+
+  <h2>Installazioni per paese</h2>
+  <table><thead><tr><th>Paese</th><th class="r">Install</th></tr></thead><tbody>${countryRows}</tbody></table>
+  <p class="note">AL = i tuoi test. Gli altri paesi sono utenti veri.</p>
+
+  <h2>Installazioni per giorno (UTC)</h2>
+  <table><thead><tr><th>Giorno</th><th class="r">Install</th></tr></thead><tbody>${dailyRows}</tbody></table>
+
+  <h2>Ultime installazioni</h2>
+  <table><thead><tr><th>Quando (UTC)</th><th>Paese</th><th>Versione</th></tr></thead><tbody>${recentRows}</tbody></table>
+
+  <footer>Aggiornato in tempo reale da Cloudflare Analytics Engine · +2h per ora locale (AL).</footer>
+</body></html>`;
+
+  return new Response(html, {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+  });
+}
