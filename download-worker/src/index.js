@@ -22,6 +22,9 @@
 
 const REPO = "klein-t/teebe";
 const ACCOUNT_ID = "c98c457a0ae116da83eb79e64cb21e52";
+// Your own test installs come from here — excluded from the "real install"
+// counts on /stats. (Test downloads should use ?dev=1 anyway, which tags `dev`.)
+const OWN_COUNTRY = "AL";
 
 export default {
   async fetch(request, env) {
@@ -96,15 +99,18 @@ async function handleStats(url, env) {
 
   const num = (v) => Math.floor(Number(v) || 0);
 
+  // Real installs exclude OWN_COUNTRY (your own tests).
+  const notMine = `blob5='install' AND blob3 != '${OWN_COUNTRY}'`;
   const [overview, byCountry, recent, daily] = await Promise.all([
     sql("SELECT blob5 AS who, SUM(_sample_interval) AS n FROM teebe_downloads GROUP BY who ORDER BY n DESC"),
-    sql("SELECT blob3 AS country, SUM(_sample_interval) AS n FROM teebe_downloads WHERE blob5='install' GROUP BY country ORDER BY n DESC"),
-    sql("SELECT timestamp, blob3 AS country, blob1 AS version FROM teebe_downloads WHERE blob5='install' ORDER BY timestamp DESC LIMIT 25"),
-    sql("SELECT toDate(timestamp) AS day, SUM(_sample_interval) AS n FROM teebe_downloads WHERE blob5='install' GROUP BY day ORDER BY day DESC LIMIT 14"),
+    sql(`SELECT blob3 AS country, SUM(_sample_interval) AS n FROM teebe_downloads WHERE ${notMine} GROUP BY country ORDER BY n DESC`),
+    sql(`SELECT timestamp, blob3 AS country, blob1 AS version FROM teebe_downloads WHERE ${notMine} ORDER BY timestamp DESC LIMIT 25`),
+    sql(`SELECT toDate(timestamp) AS day, SUM(_sample_interval) AS n FROM teebe_downloads WHERE ${notMine} GROUP BY day ORDER BY day DESC LIMIT 14`),
   ]);
 
   const counts = Object.fromEntries(overview.map((r) => [r.who, num(r.n)]));
-  const installs = counts.install || 0;
+  // Install headline = real installs only (your OWN_COUNTRY tests excluded).
+  const installs = byCountry.reduce((s, r) => s + num(r.n), 0);
 
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
@@ -157,7 +163,7 @@ async function handleStats(url, env) {
 
   <h2>Installazioni per paese</h2>
   <table><thead><tr><th>Paese</th><th class="r">Install</th></tr></thead><tbody>${countryRows}</tbody></table>
-  <p class="note">AL = i tuoi test. Gli altri paesi sono utenti veri.</p>
+  <p class="note">I tuoi test (paese ${esc(OWN_COUNTRY)}) sono esclusi ovunque qui. Per testare usa <code>?dev=1</code>, così finiscono in “dev”.</p>
 
   <h2>Installazioni per giorno (UTC)</h2>
   <table><thead><tr><th>Giorno</th><th class="r">Install</th></tr></thead><tbody>${dailyRows}</tbody></table>
