@@ -21,10 +21,32 @@ SQL="SELECT blob5 AS who, blob1 AS version, SUM(_sample_interval) AS downloads
      GROUP BY who, version
      ORDER BY who, version"
 
-curl -s "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/analytics_engine/sql" \
-  -H "Authorization: Bearer ${CF_API_TOKEN}" \
-  -d "${SQL}" | jq -r '
+ae() {
+  curl -s "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/analytics_engine/sql" \
+    -H "Authorization: Bearer ${CF_API_TOKEN}" -d "$1"
+}
+
+echo "== Downloads (last 90d) =="
+ae "${SQL}" | jq -r '
     (.data // []) as $d
     | if ($d|length)==0 then "no data yet"
       else (["WHO","VERSION","DOWNLOADS"], ($d[]|[.who,.version,(.downloads|tonumber|floor|tostring)])) | @tsv
+      end' | column -t
+
+# Site page views (teebe_pageviews): humans only, your own browsing excluded.
+WEB_SQL="SELECT blob1 AS path,
+                SUM(_sample_interval) AS views,
+                SUM(IF(blob4='visit', _sample_interval, 0)) AS visits
+         FROM teebe_pageviews
+         WHERE timestamp > now() - INTERVAL '90' DAY
+           AND blob5 = 'human' AND blob3 != 'AL'
+         GROUP BY path
+         ORDER BY views DESC"
+
+echo
+echo "== Site page views (last 90d, humans, your AL traffic excluded) =="
+ae "${WEB_SQL}" | jq -r '
+    (.data // []) as $d
+    | if ($d|length)==0 then "no data yet"
+      else (["PATH","VIEWS","VISITS"], ($d[]|[.path,(.views|tonumber|floor|tostring),(.visits|tonumber|floor|tostring)])) | @tsv
       end' | column -t

@@ -141,5 +141,23 @@
       })
       .catch(function () {});
   </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). No cookies,
+       no fingerprint: a per-tab sessionStorage flag only tells a "visit" (first
+       load) from a "view". Bots that don't run JS never fire it. See /privacy.html. -->
+  <script>
+    (function () {
+      try {
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = /[?&]dev=1/.test(location.search) || localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
 </body>
 </html>

@@ -41,9 +41,10 @@
     <p class="updated">Last updated 25 June 2026</p>
 
     <p>
-      teebe is a local macOS app. The short version: we count downloads in
-      aggregate so we know roughly how many people use teebe, and that's it.
-      No accounts, no personal data, no tracking of what you do inside the app.
+      teebe is a local macOS app. The short version: we count downloads and
+      website page views in aggregate so we know roughly how many people are
+      interested in teebe, and that's it. No accounts, no personal data, no
+      tracking of what you do inside the app.
     </p>
 
     <h2>What we collect</h2>
@@ -57,8 +58,16 @@
       <li>the <strong>user-agent</strong> string your downloader sends.</li>
     </ul>
     <p>
-      We use this only to gauge interest and adoption. It is not tied to your
-      identity and is not sold or shared.
+      When you open a page on <code>teebe.io</code>, a small script records one
+      anonymous, aggregate page-view event: the <strong>page</strong> you
+      viewed, the <strong>referring site</strong> (if any), and your
+      <strong>country</strong>. To tell a fresh visit from a page-to-page click
+      we keep a single per-tab flag in your browser's <code>sessionStorage</code>
+      — it holds no identifier and is gone when you close the tab.
+    </p>
+    <p>
+      We use all of this only to gauge interest and adoption. It is not tied to
+      your identity and is not sold or shared.
     </p>
 
     <h2>What we don't collect</h2>
@@ -93,5 +102,23 @@
   <footer>
     <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <a href="mailto:hello@teebe.io">Contact</a> · macOS only</p>
   </footer>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). No cookies,
+       no fingerprint: a per-tab sessionStorage flag only tells a "visit" (first
+       load) from a "view". Bots that don't run JS never fire it. -->
+  <script>
+    (function () {
+      try {
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = /[?&]dev=1/.test(location.search) || localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
 </body>
 </html>

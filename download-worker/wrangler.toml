@@ -13,3 +13,8 @@ routes = [
 [[analytics_engine_datasets]]
 binding = "DL"
 dataset = "teebe_downloads"
+
+# Page views from the site beacon (GET /px). One datapoint per page load.
+[[analytics_engine_datasets]]
+binding = "WEB"
+dataset = "teebe_pageviews"
