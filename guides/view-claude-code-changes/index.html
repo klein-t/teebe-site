@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>See what Claude Code changed, without opening your editor</title>
+  <meta name="description" content="How to view what Claude Code changed across your git worktrees, with live file badges and inline diffs on macOS, without opening an editor." />
+  <link rel="canonical" href="https://teebe.io/guides/view-claude-code-changes/" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/guides/view-claude-code-changes/" />
+  <meta property="og:title" content="See what Claude Code changed, without opening your editor" />
+  <meta property="og:description" content="View what your AI coding agents changed across git worktrees: live file badges and inline diffs on macOS." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v2.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="See what Claude Code changed, without opening your editor" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v2.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://teebe.io/#faq" },
+      { "@type": "ListItem", "position": 3, "name": "See what Claude Code changed", "item": "https://teebe.io/guides/view-claude-code-changes/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "See what Claude Code changed, without opening your editor",
+    "description": "How to view what Claude Code and other terminal agents changed across git worktrees, live, on macOS.",
+    "image": "https://teebe.io/assets/teebe-diff.png",
+    "author": { "@type": "Organization", "name": "teebe", "url": "https://teebe.io/" },
+    "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
+    "mainEntityOfPage": "https://teebe.io/guides/view-claude-code-changes/"
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Guides › See what Claude Code changed</p>
+    <h1>See what Claude Code changed, without opening your editor</h1>
+    <p class="updated">A short guide for reviewing AI agent changes across git worktrees on macOS.</p>
+
+    <p>
+      When Claude Code (or Codex, or any terminal agent) runs, it can touch dozens of files in
+      seconds. The usual way to see what changed is to stop, <code>git status</code>, open an
+      editor, and read diffs one by one, which pulls you out of the terminal and slows the loop.
+      This guide shows a faster way: <strong>watch the changes live in a git worktree GUI</strong>,
+      beside your terminal, and peek each diff inline without opening an editor.
+    </p>
+
+    <h2>Why reviewing agent changes is awkward</h2>
+    <ul>
+      <li>Agents edit many files at once, so a flat <code>git diff</code> is a wall of text.</li>
+      <li>Opening each file in your editor breaks focus and buries the shape of the change.</li>
+      <li>With several agents in <a href="/#faq">parallel worktrees</a>, it's hard to keep track of which tree changed what.</li>
+    </ul>
+
+    <h2>The fast path: watch the worktree live</h2>
+    <p>
+      <a href="/">teebe</a> is a native macOS git worktree GUI that sits beside your terminal and
+      shows what your agents are doing on disk, as it happens:
+    </p>
+    <ol>
+      <li><strong>Point it at a worktree.</strong> Pick any git worktree of any repo and browse its full file tree.</li>
+      <li><strong>Watch files badge live.</strong> Every file an agent touches lights up the moment it changes on disk, with no refresh and no re-running <code>git status</code>.</li>
+      <li><strong>Peek the diff inline.</strong> Click a changed file to see its git diff right in the window, without opening an editor or a git client.</li>
+      <li><strong>Open it for real when you want.</strong> Click through and the file launches in whatever native editor you already use.</li>
+    </ol>
+
+    <p style="margin-top:16px">
+      <img src="/assets/teebe-diff.png" alt="teebe showing the files a Claude Code agent changed in a git worktree, with a file open in an inline diff" width="1080" loading="lazy" style="border-radius:14px" />
+    </p>
+
+    <h2>Watching several agents at once</h2>
+    <p>
+      Because teebe watches the filesystem and git directly, it doesn't care which agent made the
+      change. Add multiple repos and worktrees side by side and you get one calm view of several
+      Claude Code sessions running in parallel, each with live badges and ahead/behind counts,
+      so you can review what every agent changed at a glance instead of tailing logs.
+    </p>
+
+    <h2>What teebe doesn't do</h2>
+    <p>
+      teebe is the navigator, not the editor or the orchestrator. It never writes to your files and
+      never runs your agents. You keep doing that in the terminal. It also isn't a full git client:
+      for staging, committing, or resolving conflicts you'll still reach for your usual tools. Its one
+      job is to show you, live, what changed.
+    </p>
+
+    <div class="install" style="margin-top:28px">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub" style="text-align:center">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <a href="mailto:hello@teebe.io">Contact</a> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy.html. -->
+  <script>
+    (function () {
+      try {
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = /[?&]dev=1/.test(location.search) || localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

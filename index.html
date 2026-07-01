@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Primary SEO -->
-  <title>teebe · a native macOS Finder for your git worktrees</title>
-  <meta name="description" content="teebe is a native macOS file browser built for running several AI coding agents across git worktrees. Watch what your agents touch, file by file, with live updates and inline diffs." />
+  <title>teebe · macOS git worktree GUI for AI coding agents</title>
+  <meta name="description" content="A native macOS git worktree GUI: watch what your AI coding agents change, with live file badges and inline diffs, beside your terminal. Free, open source." />
   <link rel="canonical" href="https://teebe.io/" />
   <meta name="theme-color" content="#0a0a0b" />
   <meta name="robots" content="index, follow" />
@@ -14,38 +14,94 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://teebe.io/" />
-  <meta property="og:title" content="teebe · a native macOS Finder for your git worktrees" />
-  <meta property="og:description" content="Pick any worktree and browse the files inside it, live, as your agents edit them. No IDE to open, no repo to dig through." />
+  <meta property="og:title" content="teebe · macOS git worktree GUI for AI coding agents" />
+  <meta property="og:description" content="Watch what your AI coding agents change across git worktrees: live file badges and inline diffs, beside your terminal. Native macOS, free and open source." />
   <meta property="og:image" content="https://teebe.io/assets/og-card-v2.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="teebe — a native macOS Finder for your git worktrees" />
+  <meta property="og:image:alt" content="teebe: a native macOS git worktree GUI for AI coding agents" />
   <meta property="og:site_name" content="teebe" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="teebe · a native macOS Finder for your git worktrees" />
-  <meta name="twitter:description" content="Pick any worktree and browse the files inside it, live, as your agents edit them. No IDE to open, no repo to dig through." />
+  <meta name="twitter:title" content="teebe · macOS git worktree GUI for AI coding agents" />
+  <meta name="twitter:description" content="Watch what your AI coding agents change across git worktrees: live file badges and inline diffs, beside your terminal." />
   <meta name="twitter:image" content="https://teebe.io/assets/og-card-v2.png" />
-  <meta name="twitter:image:alt" content="teebe — a native macOS Finder for your git worktrees" />
+  <meta name="twitter:image:alt" content="teebe: a native macOS git worktree GUI for AI coding agents" />
 
   <!-- Icons -->
   <link rel="icon" type="image/png" href="/assets/logo.png" />
   <link rel="apple-touch-icon" href="/assets/logo.png" />
 
-  <!-- Structured data -->
+  <!-- Structured data: brand + site -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://teebe.io/#org",
+        "name": "teebe",
+        "url": "https://teebe.io/",
+        "logo": "https://teebe.io/assets/logo.png",
+        "sameAs": ["https://github.com/klein-t/teebe"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://teebe.io/#site",
+        "name": "teebe",
+        "url": "https://teebe.io/",
+        "publisher": { "@id": "https://teebe.io/#org" }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: the app -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "teebe",
     "applicationCategory": "DeveloperApplication",
-    "operatingSystem": "macOS 14+",
+    "operatingSystem": "macOS 14.0",
     "url": "https://teebe.io/",
     "downloadUrl": "https://github.com/klein-t/teebe/releases/latest/download/teebe-macos.dmg",
-    "description": "A native macOS file browser built for the multi-agent era. Watch what your AI coding agents touch across git worktrees, with live updates and inline diffs.",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    "installUrl": "https://teebe.io/install.sh",
+    "softwareVersion": "0.4.0",
+    "screenshot": [
+      "https://teebe.io/assets/teebe-hero.png",
+      "https://teebe.io/assets/teebe-diff.png"
+    ],
+    "featureList": [
+      "Live file badges as your AI agents edit",
+      "Inline git diff peek without opening an editor",
+      "Browse multiple git worktrees and repos at once",
+      "Changes view with ahead/behind counts",
+      "Opens files in your native editor"
+    ],
+    "description": "A native macOS git worktree GUI that shows what your AI coding agents change, with live file badges and inline diffs.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@id": "https://teebe.io/#org" }
+  }
+  </script>
+
+  <!-- Structured data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "I already vibecode from the terminal (tmux, Ghostty, cmux). Why teebe?", "acceptedAnswer": { "@type": "Answer", "text": "Because the terminal is great for running agents but poor at showing you files. When you have a window per project spread across your monitors, it gets messy to see which files an agent actually changed, and sometimes you need to look. teebe gives you that visual file tree and inline diffs beside your terminal, so you stay in the terminal-first flow you like and still see what changed." } },
+      { "@type": "Question", "name": "How do I watch what my AI agents change in real time?", "acceptedAnswer": { "@type": "Answer", "text": "Point teebe at a git worktree and it shows the full file tree with live badges. Every file an agent touches lights up the moment it changes on disk, and you can add multiple repos and worktrees side by side to keep an eye on several agents running in parallel at once. Click any file for an inline diff to see exactly what changed, without opening your editor." } },
+      { "@type": "Question", "name": "Does teebe edit my code, run my agents, or replace my terminal?", "acceptedAnswer": { "@type": "Answer", "text": "No to all three. teebe is the navigator, not the editor, the orchestrator, or the terminal. It browses, watches, and shows diffs, but never writes to your files and never runs your agents. You keep running agents in your terminal and writing code in your editor; teebe sits beside them and opens any file in the native editor you already use." } },
+      { "@type": "Question", "name": "Which AI coding agents does teebe work with, and can I use it without any?", "acceptedAnswer": { "@type": "Answer", "text": "All of them, and yes. teebe works with Claude Code, Codex/CMAX, Cursor's CLI, and any terminal agent, because it just watches the filesystem and git rather than hooking into a specific tool. With no agents running it's still a fast, native git worktree browser: full tree, live updates, inline diffs, and a changes view with ahead/behind counts." } },
+      { "@type": "Question", "name": "How is teebe different from an orchestrator (Conductor, Vibe Kanban) or a git client (Tower, Fork)?", "acceptedAnswer": { "@type": "Answer", "text": "Orchestrators run and manage agents for you; git clients handle staging, commits, rebasing, and conflicts. teebe does neither. It's the passive watch layer beside them: a live file browser that shows what changed, with inline diffs and ahead/behind counts, so you can see what your agents did at a glance. Use it alongside an orchestrator or on its own." } },
+      { "@type": "Question", "name": "Does teebe send my code anywhere?", "acceptedAnswer": { "@type": "Answer", "text": "No. teebe reads your files and git locally on your Mac. It doesn't upload your code, and there's no backend it talks to, so it works fully offline. The only thing that touches the network is the optional Sparkle auto-update check." } },
+      { "@type": "Question", "name": "Is teebe free and open source?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, both. teebe is free and open source, with no trial, no paid tier, and no account. The code lives on GitHub and installs come straight from GitHub Releases as a signed .app with auto-updates." } },
+      { "@type": "Question", "name": "What do I need to run teebe, and how do I install it?", "acceptedAnswer": { "@type": "Answer", "text": "macOS 14 or newer, on Apple Silicon or Intel; teebe is a native Mac app, so it's Mac-only. To install, run 'curl -fsSL https://teebe.io/install.sh | bash' in your terminal, or download the .dmg from GitHub Releases. It's a signed .app, so it opens without Gatekeeper warnings." } }
+    ]
   }
   </script>
 
@@ -59,6 +115,7 @@
     </a>
     <nav class="nav-links">
       <a href="#features">Features</a>
+      <a href="#faq">FAQ</a>
       <a href="/changelog.html">Changelog</a>
       <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
     </nav>
@@ -67,15 +124,15 @@
   <main>
     <section class="hero">
       <p class="eyebrow">Native macOS · for the multi-agent era</p>
-      <h1>A Finder for your git worktrees.</h1>
+      <h1>A git worktree GUI that shows what your AI agents change.</h1>
       <p class="lede">
-        Pick any worktree and browse the files inside it, live, as your agents edit them.
-        <strong>teebe</strong> sits beside your terminal and shows what's changing, file by
-        file. No IDE to open, no repo to dig through.
+        <strong>teebe</strong> is a native macOS git worktree browser: pick any worktree and
+        watch the files inside it, live, as your agents edit them, with inline diffs right
+        beside your terminal. No IDE to open, no repo to dig through.
       </p>
 
       <div class="hero-shot">
-        <img src="/assets/teebe-hero.png" alt="teebe's collapsed window showing its Worktrees, Changes and Files sections" width="230" loading="eager" />
+        <img src="/assets/teebe-hero.png" alt="teebe's git worktree GUI showing its Worktrees, Changes and Files sections on macOS" width="230" loading="eager" />
       </div>
 
       <div class="install">
@@ -86,25 +143,82 @@
     </section>
 
     <section id="features" class="features">
-      <h2>What it is</h2>
+      <h2>A native macOS git worktree GUI, beside your terminal</h2>
       <div class="grid">
         <article>
-          <h3>Browse by worktree</h3>
-          <p>Pick any worktree of any repo and explore its full file tree. Switch between trees instantly.</p>
+          <h3>Browse every git worktree</h3>
+          <p>Pick any worktree of any repo and explore its full file tree. Add multiple repos and switch between worktrees instantly.</p>
         </article>
         <article>
-          <h3>Live as your agents work</h3>
-          <p>Files badge and the tree updates the moment something changes on disk. Watch edits land in real time.</p>
+          <h3>Watch changes live</h3>
+          <p>Files badge and the tree updates the moment something changes on disk, so you watch what your AI agents touch, file by file, in real time.</p>
         </article>
         <article>
-          <h3>Peek diffs inline</h3>
-          <p>Select a changed file to see its diff right in the window, without opening it or switching apps.</p>
+          <h3>Peek inline diffs</h3>
+          <p>Select a changed file to see its git diff right in the window. Review what an agent did without opening an editor or switching apps.</p>
         </article>
       </div>
 
       <div class="shot">
-        <img src="/assets/teebe-diff.png" alt="teebe beside a Quick Look diff: selecting the feat/fable5.1 worktree shows its changed files, with FABLE5.md open in a side-by-side diff" width="1080" loading="lazy" />
+        <img src="/assets/teebe-diff.png" alt="teebe inline git diff peek: selecting a worktree shows its changed files, with a file open in a side-by-side diff without opening an editor" width="1080" loading="lazy" />
       </div>
+    </section>
+
+    <section class="pitch">
+      <h2>Built for terminal-first vibecoding</h2>
+      <p>
+        You run your agents where they feel best: the terminal. Native macOS Terminal, Ghostty,
+        tmux, cmux; one window per project, spread across your monitors. It's clean and fast,
+        but there's a catch. Vibecoding and researching from the terminal makes it messy to
+        actually see which files changed, and sometimes you really need to look. teebe is the
+        calm window beside them that shows exactly that, live, without pulling you out of your flow.
+      </p>
+    </section>
+
+    <section id="faq" class="faq">
+      <h2>Frequently asked questions</h2>
+      <p class="faq-sub">What teebe is, what it isn't, and how it fits beside your agents.</p>
+
+      <details>
+        <summary>I already vibecode from the terminal (tmux, Ghostty, cmux). Why teebe?</summary>
+        <div class="answer"><p>Because the terminal is great for running agents but poor at showing you files. When you have a window per project spread across your monitors, it gets messy to see which files an agent actually changed, and sometimes you need to look. teebe gives you that visual file tree and inline diffs beside your terminal, so you stay in the terminal-first flow you like and still see what changed.</p></div>
+      </details>
+      <details>
+        <summary>How do I watch what my AI agents change in real time?</summary>
+        <div class="answer"><p>Point teebe at a git worktree and it shows the full file tree with live badges. Every file an agent touches lights up the moment it changes on disk, and you can add multiple repos and worktrees side by side to keep an eye on several agents running in parallel at once. Click any file for an inline diff to see exactly what changed, without opening your editor. There's a walkthrough in <a href="/guides/view-claude-code-changes/">see what Claude Code changed, live</a>.</p></div>
+      </details>
+      <details>
+        <summary>Does teebe edit my code, run my agents, or replace my terminal?</summary>
+        <div class="answer"><p>No to all three. teebe is the navigator, not the editor, the orchestrator, or the terminal. It browses, watches, and shows diffs, but never writes to your files and never runs your agents. You keep running agents in your terminal and writing code in your editor; teebe sits beside them and opens any file in the native editor you already use.</p></div>
+      </details>
+      <details>
+        <summary>Which AI coding agents does teebe work with, and can I use it without any?</summary>
+        <div class="answer"><p>All of them, and yes. teebe works with Claude Code, Codex/CMAX, Cursor's CLI, and any terminal agent, because it just watches the filesystem and git rather than hooking into a specific tool. With no agents running it's still a fast, native git worktree browser: full tree, live updates, inline diffs, and a changes view with ahead/behind counts.</p></div>
+      </details>
+      <details>
+        <summary>How is teebe different from an orchestrator (Conductor, Vibe Kanban) or a git client (Tower, Fork)?</summary>
+        <div class="answer"><p>Orchestrators run and manage agents for you; git clients handle staging, commits, rebasing, and conflicts. teebe does neither. It's the passive watch layer beside them: a live file browser that shows what changed, with inline diffs and ahead/behind counts, so you can see what your agents did at a glance. Use it alongside an orchestrator or on its own.</p></div>
+      </details>
+      <details>
+        <summary>Does teebe send my code anywhere?</summary>
+        <div class="answer"><p>No. teebe reads your files and git locally on your Mac. It doesn't upload your code, and there's no backend it talks to, so it works fully offline. The only thing that touches the network is the optional Sparkle auto-update check. See the <a href="/privacy.html">privacy page</a>.</p></div>
+      </details>
+      <details>
+        <summary>Is teebe free and open source?</summary>
+        <div class="answer"><p>Yes, both. teebe is free and open source, with no trial, no paid tier, and no account. The code lives on <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> and installs come straight from GitHub Releases as a signed .app with auto-updates.</p></div>
+      </details>
+      <details>
+        <summary>What do I need to run teebe, and how do I install it?</summary>
+        <div class="answer"><p>macOS 14 or newer, on Apple Silicon or Intel; teebe is a native Mac app, so it's Mac-only. To install, run <code>curl -fsSL https://teebe.io/install.sh | bash</code> in your terminal, or download the .dmg from GitHub Releases. It's a signed .app, so it opens without Gatekeeper warnings.</p></div>
+      </details>
+    </section>
+
+    <section class="guides">
+      <h2>Guides</h2>
+      <ul>
+        <li><a href="/guides/view-claude-code-changes/">See what Claude Code changed, live →</a></li>
+        <li><a href="https://github.com/klein-t/teebe" rel="noopener">Source on GitHub →</a></li>
+      </ul>
     </section>
 
     <section class="cta-final">
@@ -113,6 +227,7 @@
         <code>curl -fsSL https://teebe.io/install.sh | bash</code>
         <button class="copy" type="button" aria-label="Copy install command">Copy</button>
       </div>
+      <p class="sub">Native macOS git worktree GUI · free &amp; open source · macOS 14+.</p>
     </section>
   </main>
 
