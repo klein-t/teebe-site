@@ -38,7 +38,7 @@
 
   <main class="legal">
     <h1>Privacy</h1>
-    <p class="updated">Last updated 25 June 2026</p>
+    <p class="updated">Last updated 17 July 2026</p>
 
     <p>
       teebe is a local macOS app. The short version: we count downloads and
@@ -76,6 +76,31 @@
       <li>We do <strong>not</strong> track anything you do inside the app — teebe contains no in-app analytics or telemetry.</li>
       <li>We do <strong>not</strong> use cookies or ad trackers on this site.</li>
       <li>We have no accounts, so there is no personal profile to collect.</li>
+    </ul>
+
+    <h2>What the app reads on your Mac (and why)</h2>
+    <p>
+      Everything below stays on your Mac. None of it is collected, stored by
+      us, or transmitted anywhere.
+    </p>
+    <ul>
+      <li>
+        <strong>Your repository folders.</strong> teebe reads the folder you
+        add (and its git worktrees) to show worktrees, changes, and files.
+        macOS may ask you to allow access if a repository lives in Documents,
+        Desktop, or Downloads; if you decline, teebe simply can't display
+        repositories in that folder. Nothing else breaks, and you can change
+        your mind any time in System Settings &rarr; Privacy &amp; Security
+        &rarr; Files &amp; Folders.
+      </li>
+      <li>
+        <strong>Claude Code session logs</strong> (<code>~/.claude/projects</code>).
+        To show the per-worktree agent badge ("working" / "needs you"), teebe
+        reads the tail of the newest session log for each worktree and reduces
+        it to that single status. The content of your agent conversations is
+        never stored, indexed, displayed, or sent anywhere: it is parsed in
+        memory, only to tell whether the agent is mid-turn or waiting for you.
+      </li>
     </ul>
 
     <h2>Updates</h2>
