@@ -374,9 +374,9 @@
     /* ---------------- Diff window (faithful Quick Look recreation) ---------------- */
     .ql {
       border-radius: 16px; overflow: hidden;
-      background: #ffffff; color: #24292f;
-      border: 1px solid rgba(255,255,255,.16);
-      box-shadow: 0 40px 100px rgba(0,0,0,.5);
+      background: #1e1f22; color: #cdd4d0;
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 40px 100px rgba(0,0,0,.55);
       font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
       font-size: 12.5px; line-height: 1.5;
       opacity: 0; transform: scale(.92) translateY(12px); pointer-events: none;
@@ -389,36 +389,36 @@
     }
     .ql-titlebar {
       display: flex; align-items: center; gap: 10px; padding: 11px 14px;
-      border-bottom: 1px solid #e5e7ea;
+      border-bottom: 1px solid rgba(255,255,255,.08);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
       color: #9aa0a6; font-weight: 600; font-size: 13px;
     }
     .ql-lights { display: flex; gap: 7px; }
-    .ql-lights i { width: 11px; height: 11px; border-radius: 50%; background: #d9dbde; display: block; }
+    .ql-lights i { width: 11px; height: 11px; border-radius: 50%; background: #47484c; display: block; }
     .ql-head {
       display: flex; align-items: center; gap: 10px; padding: 12px 16px;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
     }
-    .ql-file { font-weight: 700; font-size: 15px; color: #111; }
-    .ql-plus  { color: #1a7f37; font-weight: 650; }
-    .ql-minus { color: #cf222e; font-weight: 650; }
-    .ql-toggle { margin-left: auto; display: flex; gap: 4px; background: #eceef0; border-radius: 8px; padding: 3px; }
-    .ql-toggle span { display: grid; place-items: center; width: 30px; height: 24px; border-radius: 6px; color: #57606a; }
-    .ql-toggle span.on { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.18); color: #111; }
+    .ql-file { font-weight: 700; font-size: 15px; color: #eef1ef; }
+    .ql-plus  { color: #3fb950; font-weight: 650; }
+    .ql-minus { color: #f85149; font-weight: 650; }
+    .ql-toggle { margin-left: auto; display: flex; gap: 4px; background: rgba(255,255,255,.07); border-radius: 8px; padding: 3px; }
+    .ql-toggle span { display: grid; place-items: center; width: 30px; height: 24px; border-radius: 6px; color: #9aa0a6; }
+    .ql-toggle span.on { background: #3a3b3f; box-shadow: 0 1px 3px rgba(0,0,0,.4); color: #eef1ef; }
     .ql-hunk {
-      background: #f6f8fa; color: #57606a; padding: 5px 16px;
-      border-top: 1px solid #e5e7ea; border-bottom: 1px solid #e5e7ea;
+      background: rgba(255,255,255,.05); color: #8b949e; padding: 5px 16px;
+      border-top: 1px solid rgba(255,255,255,.08); border-bottom: 1px solid rgba(255,255,255,.08);
     }
     .ql-cols { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
     .ql-col { padding: 6px 0; min-width: 0; }
-    .ql-col.old { border-right: 1px solid #e5e7ea; }
+    .ql-col.old { border-right: 1px solid rgba(255,255,255,.08); }
     .ql-row { display: flex; gap: 10px; padding: 1px 14px 1px 8px; }
-    .ql-row .n { flex: 0 0 22px; text-align: right; color: #9aa0a6; user-select: none; }
+    .ql-row .n { flex: 0 0 22px; text-align: right; color: #6e7681; user-select: none; }
     .ql-row code { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 0; }
-    .ql-row.del { background: #fdeef0; }
-    .ql-row.del code { color: #b3231f; }
-    .ql-row.add { background: #e9f9ee; }
-    .ql-row.add code { color: #116329; }
+    .ql-row.del { background: rgba(248,81,73,.14); }
+    .ql-row.del code { color: #ff9d95; }
+    .ql-row.add { background: rgba(63,185,80,.15); }
+    .ql-row.add code { color: #7ee2a8; }
     .ql-doc[hidden] { display: none; }
     @media (max-width: 1020px) {
       .demo-grid { grid-template-columns: 1fr; }
@@ -427,7 +427,7 @@
     }
     @media (max-width: 760px) {
       .ql-cols { grid-template-columns: 1fr; }
-      .ql-col.old { border-right: 0; border-bottom: 1px dashed #e5e7ea; }
+      .ql-col.old { border-right: 0; border-bottom: 1px dashed rgba(255,255,255,.12); }
     }
 
     /* ---------------- Features (bento) ---------------- */
