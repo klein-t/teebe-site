@@ -8,7 +8,7 @@
   <title>teebe · macOS git worktree GUI for AI coding agents</title>
   <meta name="description" content="A native macOS git worktree GUI: watch what your AI coding agents change, with live file badges and inline diffs, beside your terminal. Free, open source." />
   <link rel="canonical" href="https://teebe.io/" />
-  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="theme-color" content="#060709" />
   <meta name="robots" content="index, follow" />
 
   <!-- Open Graph -->
@@ -67,9 +67,8 @@
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "macOS 14.0",
     "url": "https://teebe.io/",
-    "downloadUrl": "https://github.com/klein-t/teebe/releases/latest/download/teebe-macos.dmg",
     "installUrl": "https://teebe.io/install.sh",
-    "softwareVersion": "0.4.0",
+    "softwareVersion": "0.4.2",
     "screenshot": [
       "https://teebe.io/assets/teebe-hero.png",
       "https://teebe.io/assets/teebe-diff.png"
@@ -105,12 +104,443 @@
   }
   </script>
 
-  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    /* Space Grotesk (vendored, OFL) for headings; body stays SF Pro */
+    @font-face {
+      font-family: "Space Grotesk";
+      font-style: normal;
+      font-weight: 300 700;
+      font-display: swap;
+      src: url("assets/fonts/space-grotesk-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    :root {
+      --bg: #060709;
+      --bg-soft: #0d0f12;
+      --card: rgba(255,255,255,.03);
+      --border: rgba(255,255,255,.09);
+      --border-strong: rgba(255,255,255,.14);
+      --text: #eef1ef;
+      --muted: #9aa3a0;
+      --muted-dim: #6c7572;
+      --accent: #10b981;        /* emerald — unifies the whole page */
+      --accent-2: #34d399;
+      --accent-ink: #04231a;    /* text on the green button */
+      --radius: 16px;
+      --max: 1120px;
+      --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; overscroll-behavior-y: none; background: var(--bg); }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      position: relative;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; height: auto; display: block; }
+    ::selection { background: rgba(16,185,129,.30); }
+    :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; border-radius: 6px; }
+
+    /* ---------------- Global film grain (offline, SVG turbulence) ---------------- */
+    body::before {
+      content: "";
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 160px 160px;
+      opacity: .16;
+      mix-blend-mode: overlay;
+    }
+    /* keep content above the grain */
+    body > * { position: relative; z-index: 1; }
+
+    /* ---------------- Layout helpers ---------------- */
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+
+    /* ---------------- Nav ---------------- */
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: var(--max); margin: 0 auto; padding: 22px 24px;
+      position: relative; z-index: 2;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 1.5rem; letter-spacing: -.01em; font-family: var(--font-display); }
+    .brand img { width: 38px; height: 38px; border-radius: 11px; box-shadow: 0 6px 22px rgba(16,185,129,.28); }
+    .nav-links { display: flex; align-items: center; gap: 26px; font-size: 0.95rem; color: var(--muted); }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links .nav-cta {
+      color: var(--accent-2); border: 1px solid rgba(52,211,153,.35);
+      padding: 7px 14px; border-radius: 10px; background: rgba(16,185,129,.08); font-weight: 600;
+    }
+    .nav-links .nav-cta:hover { background: rgba(16,185,129,.16); color: var(--text); }
+
+    /* ---------------- Buttons ---------------- */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      font-weight: 650; padding: 14px 22px; border-radius: 12px; cursor: pointer;
+      font-size: 1rem; border: 1px solid transparent; white-space: nowrap;
+      transition: transform .14s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn.ghost { color: var(--text); background: rgba(255,255,255,.05); border-color: var(--border-strong); backdrop-filter: blur(8px); }
+    .btn.ghost:hover { background: rgba(255,255,255,.10); }
+
+    /* ---------------- Hero ---------------- */
+    /* pulled up behind the nav so the shader runs to the very top of the page */
+    .hero { position: relative; overflow: hidden; padding-bottom: 40px; margin-top: -82px; padding-top: 82px; }
+    /* real Paper Shaders GrainGradient canvas, hero-local, fades into the page.
+       CSS fallback below stays visible only if WebGL / the lib is unavailable. */
+    .hero-fallback {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(40% 50% at 62% 4%,  rgba(52,211,153,.42), transparent 60%),
+        radial-gradient(55% 85% at 104% 26%, rgba(76,29,149,.55), transparent 60%),
+        radial-gradient(44% 42% at 4% 94%,   rgba(16,185,129,.26), transparent 60%),
+        var(--bg);
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0; overflow: hidden;
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 66%, transparent 100%);
+              mask-image: linear-gradient(to bottom, #000 0%, #000 66%, transparent 100%);
+    }
+    /* canvas sizing is handled by the library's own [data-paper-shader] styles */
+    /* keeps the hero copy legible over the shader */
+    .hero-scrim {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        linear-gradient(to right, rgba(6,7,9,.60), rgba(6,7,9,0) 58%),
+        linear-gradient(to bottom, rgba(6,7,9,0) 62%, var(--bg));
+    }
+
+    .hero-grid {
+      position: relative; z-index: 1;
+      max-width: var(--max); margin: 0 auto; padding: 36px 24px 8px;
+      display: grid; grid-template-columns: 1.02fr 0.98fr; gap: 56px; align-items: start;
+    }
+    .eyebrow {
+      display: block;
+      text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.78rem; font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 3.9rem); line-height: 1.04; letter-spacing: -0.025em;
+      font-weight: 700; margin-bottom: 22px;
+    }
+    .hero h1 .grad { color: var(--text); }
+    .lede { font-size: 1.2rem; color: var(--muted); max-width: 40ch; margin: 0 0 30px; }
+    .lede strong { color: var(--text); }
+    .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; }
+    /* the curl one-liner IS the install CTA (no downloads) */
+    .hero-terminal {
+      display: flex; align-items: center; gap: 10px; max-width: 520px;
+      background: rgba(5,16,12,.72); border: 1px solid rgba(52,211,153,.42); border-radius: 13px;
+      padding: 12px 12px 12px 16px; font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 14px 44px rgba(16,185,129,.18);
+    }
+    .hero-terminal .ps { color: var(--accent-2); font-weight: 700; font-size: 0.92rem; user-select: none; }
+    .hero-terminal code { flex: 1; text-align: left; font-size: 0.9rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hero-terminal .copy {
+      flex-shrink: 0; color: var(--accent-ink); border: 0;
+      background: linear-gradient(140deg, var(--accent-2), var(--accent));
+      border-radius: 9px; padding: 9px 18px; font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      transition: box-shadow .2s ease, transform .14s ease;
+      box-shadow: 0 6px 20px rgba(16,185,129,.35);
+    }
+    .hero-terminal .copy:hover { box-shadow: 0 8px 28px rgba(16,185,129,.5); }
+    .hero-terminal .copy:active { transform: translateY(1px); }
+    .hero-terminal .copy.copied { background: #0a84ff; color: #fff; }
+    .hero-terminal.flash { animation: termflash 1.3s ease; }
+    @keyframes termflash {
+      0%, 100% { box-shadow: 0 14px 44px rgba(16,185,129,.18); }
+      30% { box-shadow: 0 0 0 5px rgba(52,211,153,.4), 0 14px 50px rgba(16,185,129,.45); }
+    }
+    .hero .sub { font-size: 0.9rem; color: var(--muted-dim); margin-top: 16px; }
+
+    /* ---------------- Animated teebe panel (faithful recreation) ---------------- */
+    .hero-visual { display: flex; justify-content: center; min-height: 480px; padding-top: 8px; }
+    .tb {
+      width: 360px; max-width: 100%; align-self: flex-start; border-radius: 12px; overflow: hidden;
+      background: #262628;
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 2px 10px rgba(0,0,0,.35);
+      color: #d9d9de; font-size: 13px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      user-select: none;
+    }
+    .tb-titlebar {
+      display: flex; align-items: center; padding: 10px 12px; position: relative;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .tb-lights { display: flex; gap: 8px; }
+    .tb-lights i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+    .tb-lights i:nth-child(1) { background: #ff5f57; }
+    .tb-lights i:nth-child(2) { background: #febc2e; }
+    .tb-lights i:nth-child(3) { background: #28c840; }
+    .tb-title { position: absolute; left: 0; right: 0; text-align: center; font-weight: 600; color: #b8b8bd; pointer-events: none; }
+    .tb-pin { margin-left: auto; color: #0a84ff; display: flex; }
+    .tb-sec { border-bottom: 1px solid rgba(255,255,255,.07); }
+    .tb-sec:last-child { border-bottom: 0; }
+    .tb-sechead {
+      display: flex; align-items: center; gap: 7px; padding: 12px 14px;
+      color: #98989d; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+    }
+    .tb-chev { display: flex; transition: transform .35s ease; transform: rotate(-90deg); color: #7c7c81; }
+    .tb-sec.open .tb-chev { transform: rotate(0deg); }
+    .tb-tools { margin-left: auto; display: flex; align-items: center; gap: 12px; color: #8e8e93; }
+    .tb-pill {
+      min-width: 19px; height: 19px; border-radius: 10px; background: #3a3a3c; color: #c7c7cc;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;
+      padding: 0 6px; letter-spacing: 0; transition: background .3s ease, color .3s ease;
+    }
+    .tb.changed .tb-pill { background: #0a84ff; color: #fff; }
+    .tb-updown { font-size: 11px; color: #8e8e93; letter-spacing: 0; font-weight: 500; }
+    .tb-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .5s cubic-bezier(.3,.7,.25,1); }
+    .tb-sec.open .tb-body { grid-template-rows: 1fr; }
+    .tb-clip { overflow: hidden; min-height: 0; }
+    .tb-list { padding: 0 8px 10px; }
+    .tb-row {
+      display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 7px;
+      color: #d9d9de; transition: background .25s ease, color .25s ease;
+    }
+    .tb-row .tb-ico { display: flex; color: #98989d; flex: 0 0 auto; transition: color .25s ease; }
+    .tb-row .tb-dot { width: 7px; height: 7px; border-radius: 50%; background: #5a5a5e; flex: 0 0 auto; transition: background .25s ease; }
+    .tb-row .tb-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tb-row .tb-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+    .tb-row.sel { background: #0a84ff; color: #fff; }
+    .tb-row.sel .tb-ico, .tb-row.sel .tb-updown { color: rgba(255,255,255,.85); }
+    .tb-row.sel .tb-dot { background: rgba(255,255,255,.8); }
+    .tb-repo { display: flex; align-items: center; gap: 8px; padding: 7px 8px 6px; font-weight: 600; color: #e8e8ec; }
+    .tb-repo .tb-ico { color: #b0b0b5; display: flex; }
+    .tb-indent { padding-left: 14px; }
+    .tb-m { font-size: 11px; font-weight: 700; color: #ffb340; opacity: 0; transition: opacity .3s ease; }
+    .tb.changed .tb-m { opacity: 1; }
+    .tb-row.sel .tb-m { color: #ffd60a; }
+    .tb-search {
+      margin: 2px 8px 8px; display: flex; align-items: center; gap: 6px;
+      background: #1c1c1e; border: 1px solid rgba(255,255,255,.10); border-radius: 7px;
+      padding: 5px 8px; color: #7c7c81; font-size: 12.5px;
+    }
+    .tb.static .tb-sec .tb-body { grid-template-rows: 1fr; }
+    .tb.static .tb-chev { transform: rotate(0deg); }
+
+    /* ---------------- Section scaffolding ---------------- */
+    section { position: relative; }
+    .section-head { text-align: center; max-width: 720px; margin: 0 auto 48px; }
+    .section-head h2 { font-family: var(--font-display); font-size: clamp(1.8rem, 3.6vw, 2.5rem); letter-spacing: -0.02em; margin-bottom: 12px; }
+    .section-head p { color: var(--muted); font-size: 1.05rem; }
+
+    /* product demo band */
+    .showcase { padding: 40px 24px 8px; }
+    .demo-grid {
+      max-width: var(--max); margin: 0 auto;
+      display: grid; grid-template-columns: 330px 1fr; gap: 30px; align-items: start;
+    }
+    .demo-left .tb { width: 100%; }
+    .space-hint {
+      margin-top: 16px; text-align: center; color: var(--muted); font-size: 0.92rem;
+      display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
+    }
+    .space-hint kbd {
+      font-family: inherit; font-size: 0.8rem; font-weight: 650; color: var(--text);
+      background: rgba(255,255,255,.07); border: 1px solid var(--border-strong);
+      border-bottom-width: 2px; border-radius: 7px; padding: 3px 10px;
+      animation: hintpulse 2.4s ease-in-out infinite;
+    }
+    @keyframes hintpulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+      50% { box-shadow: 0 0 14px 0 rgba(52,211,153,.35); border-color: rgba(52,211,153,.5); }
+    }
+    .demo-right { display: grid; }
+    .demo-right > * { grid-area: 1 / 1; }
+    .demo-ghost {
+      border: 1.5px dashed rgba(255,255,255,.14); border-radius: 16px; min-height: 420px;
+      display: grid; place-items: center; color: var(--muted-dim); font-size: 0.95rem;
+      transition: opacity .25s ease;
+    }
+    .demo-ghost .g { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .demo-ghost svg { opacity: .6; }
+    .demo-right.open .demo-ghost { opacity: 0; }
+
+    /* ---------------- Diff window (faithful Quick Look recreation) ---------------- */
+    .ql {
+      border-radius: 16px; overflow: hidden;
+      background: #ffffff; color: #24292f;
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 40px 100px rgba(0,0,0,.5);
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+      font-size: 12.5px; line-height: 1.5;
+      opacity: 0; transform: scale(.92) translateY(12px); pointer-events: none;
+      transition: opacity .26s ease, transform .34s cubic-bezier(.2,.8,.25,1.08);
+    }
+    .demo-right.open .ql { opacity: 1; transform: none; pointer-events: auto; }
+    @media (prefers-reduced-motion: reduce) {
+      .ql { transition: none; }
+      .space-hint kbd { animation: none; }
+    }
+    .ql-titlebar {
+      display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+      border-bottom: 1px solid #e5e7ea;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      color: #9aa0a6; font-weight: 600; font-size: 13px;
+    }
+    .ql-lights { display: flex; gap: 7px; }
+    .ql-lights i { width: 11px; height: 11px; border-radius: 50%; background: #d9dbde; display: block; }
+    .ql-head {
+      display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    }
+    .ql-file { font-weight: 700; font-size: 15px; color: #111; }
+    .ql-plus  { color: #1a7f37; font-weight: 650; }
+    .ql-minus { color: #cf222e; font-weight: 650; }
+    .ql-toggle { margin-left: auto; display: flex; gap: 4px; background: #eceef0; border-radius: 8px; padding: 3px; }
+    .ql-toggle span { display: grid; place-items: center; width: 30px; height: 24px; border-radius: 6px; color: #57606a; }
+    .ql-toggle span.on { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.18); color: #111; }
+    .ql-hunk {
+      background: #f6f8fa; color: #57606a; padding: 5px 16px;
+      border-top: 1px solid #e5e7ea; border-bottom: 1px solid #e5e7ea;
+    }
+    .ql-cols { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
+    .ql-col { padding: 6px 0; min-width: 0; }
+    .ql-col.old { border-right: 1px solid #e5e7ea; }
+    .ql-row { display: flex; gap: 10px; padding: 1px 14px 1px 8px; }
+    .ql-row .n { flex: 0 0 22px; text-align: right; color: #9aa0a6; user-select: none; }
+    .ql-row code { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 0; }
+    .ql-row.del { background: #fdeef0; }
+    .ql-row.del code { color: #b3231f; }
+    .ql-row.add { background: #e9f9ee; }
+    .ql-row.add code { color: #116329; }
+    .ql-doc[hidden] { display: none; }
+    @media (max-width: 1020px) {
+      .demo-grid { grid-template-columns: 1fr; }
+      .demo-left .tb { max-width: 360px; margin: 0 auto; }
+      .demo-ghost { min-height: 200px; }
+    }
+    @media (max-width: 760px) {
+      .ql-cols { grid-template-columns: 1fr; }
+      .ql-col.old { border-right: 0; border-bottom: 1px dashed #e5e7ea; }
+    }
+
+    /* ---------------- Features (bento) ---------------- */
+    .features { max-width: var(--max); margin: 0 auto; padding: 88px 24px 40px; }
+    .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; }
+    .bento article {
+      grid-column: span 2;
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px;
+      transition: border-color .2s ease, transform .2s ease, background .2s ease;
+      display: flex; flex-direction: column;
+    }
+    .bento article.wide { grid-column: span 3; }
+    .bento article:hover { border-color: rgba(52,211,153,.30); transform: translateY(-3px); background: rgba(16,185,129,.04); }
+    .bento .ic {
+      width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; margin-bottom: 16px;
+      background: rgba(16,185,129,.10); border: 1px solid rgba(52,211,153,.25); color: var(--accent-2);
+    }
+    .bento .ic svg { width: 20px; height: 20px; }
+    .bento h3 { font-size: 1.14rem; margin-bottom: 8px; letter-spacing: -.01em; }
+    .bento p { color: var(--muted); font-size: 0.98rem; }
+    /* mini UI vignettes inside the two wide cards */
+    .vig {
+      border: 1px solid var(--border); background: rgba(0,0,0,.38); border-radius: 12px;
+      padding: 12px 14px; margin-bottom: 18px;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace; font-size: 12.5px;
+    }
+    .vig-row { display: flex; align-items: center; gap: 9px; color: #c7cdc9; padding: 3px 0; }
+    .vig-row svg { color: #8e9793; flex: 0 0 auto; }
+    .vig-row .m { margin-left: auto; color: #ffb340; font-weight: 700; font-size: 11px; opacity: .2; }
+    .vig-live .vig-row:nth-child(1) .m { animation: vigm 5.4s ease-in-out infinite; }
+    .vig-live .vig-row:nth-child(2) .m { animation: vigm 5.4s ease-in-out infinite 1.8s; }
+    .vig-live .vig-row:nth-child(3) .m { animation: vigm 5.4s ease-in-out infinite 3.6s; }
+    @keyframes vigm { 0%, 100% { opacity: .2; } 12%, 55% { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { .vig-live .vig-row .m { animation: none; opacity: 1; } }
+    .vig-diff .l { padding: 2px 9px; border-radius: 5px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .vig-diff .l.ctx { color: #8e9793; }
+    .vig-diff .l.del { background: rgba(207,34,46,.16); color: #ff9088; }
+    .vig-diff .l.add { background: rgba(26,127,55,.22); color: #7ee2a8; }
+    @media (max-width: 980px) {
+      .bento article, .bento article.wide { grid-column: span 3; }
+    }
+    @media (max-width: 640px) {
+      .bento article, .bento article.wide { grid-column: span 6; }
+    }
+
+    /* ---------------- Pitch (text bridge between hero and demo) ---------------- */
+    .pitch { max-width: 780px; margin: 0 auto; padding: 56px 24px 8px; text-align: center; }
+    .pitch h2 { font-family: var(--font-display); font-size: clamp(1.7rem, 3.2vw, 2.3rem); letter-spacing: -0.02em; margin-bottom: 16px; }
+    .pitch p { color: var(--muted); font-size: 1.08rem; }
+    .pitch code { font-family: ui-monospace, Menlo, monospace; font-size: .85em; background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; }
+
+    /* ---------------- FAQ ---------------- */
+    .faq { max-width: 840px; margin: 0 auto; padding: 40px 24px 96px; }
+    .faq details { border-bottom: 1px solid var(--border); }
+    .faq details:first-of-type { border-top: 1px solid var(--border); }
+    .faq summary { cursor: pointer; list-style: none; padding: 20px 4px; font-weight: 620; font-size: 1.04rem; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; color: var(--accent-2); font-weight: 400; font-size: 1.5rem; line-height: 1; transition: transform .2s ease; }
+    .faq details[open] summary::after { transform: rotate(45deg); }
+    .faq .answer { padding: 0 4px 22px; color: var(--muted); }
+    .faq .answer a { color: var(--accent-2); }
+    .faq .answer code { font-family: ui-monospace, Menlo, monospace; font-size: 0.85em; background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; }
+
+    /* ---------------- Guides ---------------- */
+    .guides { max-width: var(--max); margin: 0 auto; padding: 0 24px 80px; text-align: center; }
+    .guides h2 { font-family: var(--font-display); font-size: 1.3rem; margin-bottom: 18px; }
+    .guides ul { list-style: none; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .guides a { color: var(--accent-2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 18px; font-size: 0.95rem; transition: background .2s ease, border-color .2s ease; }
+    .guides a:hover { background: rgba(16,185,129,.06); border-color: rgba(52,211,153,.3); }
+
+    /* ---------------- Final CTA ---------------- */
+    .cta-final { position: relative; overflow: hidden; text-align: center; padding: 104px 24px; border-top: 1px solid var(--border); }
+    .cta-final::before {
+      content: ""; position: absolute; inset: 0; z-index: -1;
+      background:
+        radial-gradient(50% 120% at 30% 0%, rgba(16,185,129,.20), transparent 60%),
+        radial-gradient(60% 140% at 90% 100%, rgba(76,29,149,.28), transparent 60%),
+        var(--bg-soft);
+      -webkit-mask-image: radial-gradient(90% 130% at 50% 50%, #000 40%, transparent 85%);
+              mask-image: radial-gradient(90% 130% at 50% 50%, #000 40%, transparent 85%);
+    }
+    .cta-final h2 { font-family: var(--font-display); font-size: clamp(1.9rem, 3.6vw, 2.6rem); letter-spacing: -0.02em; margin-bottom: 12px; }
+    .cta-final p.kick { color: var(--muted); margin-bottom: 30px; font-size: 1.06rem; }
+    .cta-final .hero-cta { justify-content: center; }
+    .cta-final .hero-terminal { margin: 22px auto 0; }
+    .cta-final .sub { margin-top: 16px; }
+
+    /* ---------------- Footer ---------------- */
+    footer { text-align: center; padding: 34px 24px; color: var(--muted-dim); font-size: 0.9rem; border-top: 1px solid var(--border); }
+    footer a:hover { color: var(--text); }
+
+    /* ---------------- Responsive ---------------- */
+    @media (max-width: 880px) {
+      /* single column: the copy sits over the brightest part of the shader,
+         so darken the top as well as the left */
+      .hero-scrim {
+        background:
+          linear-gradient(to bottom, rgba(6,7,9,.62), rgba(6,7,9,.30) 34%, rgba(6,7,9,0) 55%),
+          linear-gradient(to right, rgba(6,7,9,.50), rgba(6,7,9,0) 70%),
+          linear-gradient(to bottom, rgba(6,7,9,0) 62%, var(--bg));
+      }
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; padding-top: 12px; }
+      .hero-visual { min-height: 0; }
+      .lede { max-width: none; }
+    }
+    @media (max-width: 560px) {
+      .nav-links a:not(.nav-cta) { display: none; }
+      .hero-cta { flex-direction: column; align-items: stretch; }
+    }
+  </style>
 </head>
 <body>
   <header class="nav">
     <a class="brand" href="/">
-      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <img src="assets/logo.png" alt="teebe logo" width="38" height="38" />
       <span>teebe</span>
     </a>
     <nav class="nav-links">
@@ -118,66 +548,338 @@
       <a href="#faq">FAQ</a>
       <a href="/changelog.html">Changelog</a>
       <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+      <a class="nav-cta" href="#install">Install</a>
     </nav>
   </header>
 
   <main>
+    <!-- ===================== HERO ===================== -->
     <section class="hero">
-      <p class="eyebrow">Native macOS · for the multi-agent era</p>
-      <h1>A git worktree GUI that shows what your AI agents change.</h1>
-      <p class="lede">
-        <strong>teebe</strong> is a native macOS git worktree browser: pick any worktree and
-        watch the files inside it, live, as your agents edit them, with inline diffs right
-        beside your terminal. No IDE to open, no repo to dig through.
-      </p>
+      <div class="hero-fallback"></div>
+      <div class="hero-bg" id="grain-hero" aria-hidden="true"></div>
+      <div class="hero-scrim"></div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Native macOS · git worktree GUI</p>
+          <h1>Git worktrees,<br /><span class="grad">without the terminal.</span></h1>
+          <p class="lede">
+            <strong>teebe</strong> is a native macOS git worktree GUI. Pick any worktree and
+            watch the files inside it, live, as your agents edit them, with inline diffs
+            right beside your terminal.
+          </p>
+          <div class="hero-terminal" id="install">
+            <span class="ps">$</span>
+            <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+            <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+          </div>
+          <div class="hero-cta">
+            <a class="btn ghost" href="https://github.com/klein-t/teebe" rel="noopener">View on GitHub</a>
+          </div>
+          <p class="sub">Free · open source · macOS 14+ · Apple Silicon &amp; Intel · auto-updates via Sparkle.</p>
+        </div>
 
-      <div class="hero-shot">
-        <img src="/assets/teebe-hero.png" alt="teebe's git worktree GUI showing its Worktrees, Changes and Files sections on macOS" width="230" loading="eager" />
-      </div>
+        <div class="hero-visual">
+          <!-- animated recreation of the real teebe panel -->
+          <div class="tb" id="tb" aria-hidden="true">
+            <div class="tb-titlebar">
+              <div class="tb-lights"><i></i><i></i><i></i></div>
+              <span class="tb-title">teebe</span>
+              <span class="tb-pin"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14.6 2.6a1.5 1.5 0 0 1 2.1 0l4.7 4.7a1.5 1.5 0 0 1 0 2.1l-.4.4c-.5.5-1.2.7-1.9.6l-3.2 3.2c.3 1.2 0 2.5-.9 3.4l-.6.6a1 1 0 0 1-1.4 0l-3-3-4.9 4.9a1 1 0 0 1-1.4-1.4l4.9-4.9-3-3a1 1 0 0 1 0-1.4l.6-.6c.9-.9 2.2-1.2 3.4-.9l3.2-3.2c-.1-.7.1-1.4.6-1.9l.4-.4z"/></svg></span>
+            </div>
 
-      <div class="install">
-        <code>curl -fsSL https://teebe.io/install.sh | bash</code>
-        <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+            <div class="tb-sec" id="sec-wt">
+              <div class="tb-sechead">
+                <span class="tb-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+                WORKTREES
+                <span class="tb-tools">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
+                </span>
+              </div>
+              <div class="tb-body"><div class="tb-clip"><div class="tb-list">
+                <div class="tb-repo">
+                  <span class="tb-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.5 21 7v10l-9 4.5L3 17V7l9-4.5z"/><path d="M3 7l9 4.5L21 7"/><path d="M12 11.5V21.5"/></svg></span>
+                  UltraTurboFable
+                </div>
+                <div class="tb-indent">
+                  <div class="tb-row" data-wt="dev">
+                    <span class="tb-dot"></span>
+                    <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><circle cx="18" cy="9" r="2.4"/><path d="M6 8.4v7.2"/><path d="M6 10c0 3 3 4 6 4"/><path d="M15.6 9H12"/></svg></span>
+                    <span class="tb-name">dev</span>
+                    <span class="tb-right"><span class="tb-updown">↓0 ↑0</span></span>
+                  </div>
+                  <div class="tb-row" data-wt="agi">
+                    <span class="tb-dot"></span>
+                    <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><circle cx="18" cy="9" r="2.4"/><path d="M6 8.4v7.2"/><path d="M6 10c0 3 3 4 6 4"/><path d="M15.6 9H12"/></svg></span>
+                    <span class="tb-name">feat/agi</span>
+                    <span class="tb-right"><span class="tb-updown">↓0 ↑0</span></span>
+                  </div>
+                  <div class="tb-row" data-wt="fable">
+                    <span class="tb-dot"></span>
+                    <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><circle cx="18" cy="9" r="2.4"/><path d="M6 8.4v7.2"/><path d="M6 10c0 3 3 4 6 4"/><path d="M15.6 9H12"/></svg></span>
+                    <span class="tb-name">feat/fable5.1</span>
+                    <span class="tb-right"><span class="tb-updown">↓0 ↑0</span></span>
+                  </div>
+                  <div class="tb-row" data-wt="final">
+                    <span class="tb-dot"></span>
+                    <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><circle cx="18" cy="9" r="2.4"/><path d="M6 8.4v7.2"/><path d="M6 10c0 3 3 4 6 4"/><path d="M15.6 9H12"/></svg></span>
+                    <span class="tb-name">fix/final-final-v2-R…</span>
+                    <span class="tb-right"><span class="tb-updown">↓0 ↑0</span></span>
+                  </div>
+                </div>
+              </div></div></div>
+            </div>
+
+            <div class="tb-sec" id="sec-ch">
+              <div class="tb-sechead">
+                <span class="tb-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+                CHANGES
+                <span class="tb-tools"><span class="tb-pill" id="ch-count">0</span><span class="tb-updown">↓0 ↑0</span></span>
+              </div>
+              <div class="tb-body"><div class="tb-clip"><div class="tb-list">
+                <div class="tb-row" data-ch="fable5md">
+                  <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span>
+                  <span class="tb-name">FABLE5.md</span>
+                  <span class="tb-right"><span class="tb-m">M</span></span>
+                </div>
+              </div></div></div>
+            </div>
+
+            <div class="tb-sec" id="sec-fi">
+              <div class="tb-sechead">
+                <span class="tb-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+                FILES
+                <span class="tb-tools"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg></span>
+              </div>
+              <div class="tb-body"><div class="tb-clip"><div class="tb-list">
+                <div class="tb-search">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                  Search files
+                </div>
+                <div class="tb-row" data-fi="fable5md">
+                  <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span>
+                  <span class="tb-name">FABLE5.md</span>
+                  <span class="tb-right"><span class="tb-m">M</span></span>
+                </div>
+                <div class="tb-row" data-fi="readme">
+                  <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span>
+                  <span class="tb-name">README.md</span>
+                </div>
+              </div></div></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <p class="sub">Free · open source · macOS 14+ · built for Claude Code, Codex, and a terminal-first workflow.</p>
     </section>
 
-    <section id="features" class="features">
-      <h2>A native macOS git worktree GUI, beside your terminal</h2>
-      <div class="grid">
-        <article>
-          <h3>Browse every git worktree</h3>
-          <p>Pick any worktree of any repo and explore its full file tree. Add multiple repos and switch between worktrees instantly.</p>
-        </article>
-        <article>
-          <h3>Watch changes live</h3>
-          <p>Files badge and the tree updates the moment something changes on disk, so you watch what your AI agents touch, file by file, in real time.</p>
-        </article>
-        <article>
-          <h3>Peek inline diffs</h3>
-          <p>Select a changed file to see its git diff right in the window. Review what an agent did without opening an editor or switching apps.</p>
-        </article>
-      </div>
-
-      <div class="shot">
-        <img src="/assets/teebe-diff.png" alt="teebe inline git diff peek: selecting a worktree shows its changed files, with a file open in a side-by-side diff without opening an editor" width="1080" loading="lazy" />
-      </div>
-    </section>
-
+    <!-- ===================== PITCH ===================== -->
     <section class="pitch">
       <h2>Built for terminal-first vibecoding</h2>
       <p>
-        You run your agents where they feel best: the terminal. Native macOS Terminal, Ghostty,
-        tmux, cmux; one window per project, spread across your monitors. It's clean and fast,
-        but there's a catch. Vibecoding and researching from the terminal makes it messy to
-        actually see which files changed, and sometimes you really need to look. teebe is the
-        calm window beside them that shows exactly that, live, without pulling you out of your flow.
+        Terminal agents are the fastest way to ship with AI. They're also a black box: the agent
+        says "done", and you're left tabbing between <code>git status</code> and your editor to
+        find out what "done" actually means across five worktrees. teebe fixes exactly that, and
+        nothing else. Point it at your worktrees and each one gets a full file tree in a small
+        native window beside your terminal: browse what's actually inside every worktree, watch
+        files light up as agents edit them, and peek any diff with one keystroke. It doesn't run
+        your agents, doesn't touch your code, doesn't replace your tools. Keep your setup.
       </p>
     </section>
 
+    <!-- ===================== INTERACTIVE DIFF DEMO ===================== -->
+    <section class="showcase" id="demo">
+      <div class="demo-grid">
+        <div class="demo-left">
+          <div class="tb changed" aria-hidden="true">
+            <div class="tb-titlebar">
+              <div class="tb-lights"><i></i><i></i><i></i></div>
+              <span class="tb-title">teebe</span>
+              <span class="tb-pin"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14.6 2.6a1.5 1.5 0 0 1 2.1 0l4.7 4.7a1.5 1.5 0 0 1 0 2.1l-.4.4c-.5.5-1.2.7-1.9.6l-3.2 3.2c.3 1.2 0 2.5-.9 3.4l-.6.6a1 1 0 0 1-1.4 0l-3-3-4.9 4.9a1 1 0 0 1-1.4-1.4l4.9-4.9-3-3a1 1 0 0 1 0-1.4l.6-.6c.9-.9 2.2-1.2 3.4-.9l3.2-3.2c-.1-.7.1-1.4.6-1.9l.4-.4z"/></svg></span>
+            </div>
+            <div class="tb-sec">
+              <div class="tb-sechead">
+                <span class="tb-chev" style="transform: rotate(-90deg)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+                WORKTREES
+                <span class="tb-tools"><span class="tb-updown">feat/fable5.1</span></span>
+              </div>
+            </div>
+            <div class="tb-sec open">
+              <div class="tb-sechead">
+                <span class="tb-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+                CHANGES
+                <span class="tb-tools"><span class="tb-pill">2</span><span class="tb-updown">↓0 ↑0</span></span>
+              </div>
+              <div class="tb-body"><div class="tb-clip"><div class="tb-list" id="demo-files">
+                <div class="tb-row sel" data-file="fable" role="button" tabindex="0" style="cursor: pointer">
+                  <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span>
+                  <span class="tb-name">FABLE5.md</span>
+                  <span class="tb-right"><span class="tb-m">M</span></span>
+                </div>
+                <div class="tb-row" data-file="readme" role="button" tabindex="0" style="cursor: pointer">
+                  <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span>
+                  <span class="tb-name">README.md</span>
+                  <span class="tb-right"><span class="tb-m">M</span></span>
+                </div>
+              </div></div></div>
+            </div>
+            <div class="tb-sec">
+              <div class="tb-sechead">
+                <span class="tb-chev" style="transform: rotate(-90deg)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+                FILES
+                <span class="tb-tools"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg></span>
+              </div>
+            </div>
+          </div>
+          <p class="space-hint" id="demo-hint"><kbd>Space</kbd> peek the diff · click a file to switch</p>
+        </div>
+
+        <div class="demo-right" id="demo-right">
+          <div class="demo-ghost" aria-hidden="true">
+            <div class="g">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7.5"/><path d="M21 21l-4.5-4.5"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>
+              <span>the diff peeks open here</span>
+            </div>
+          </div>
+
+          <div class="ql" id="ql" aria-hidden="true">
+            <div class="ql-titlebar"><div class="ql-lights"><i></i><i></i><i></i></div>Quick Look</div>
+            <div class="ql-head">
+              <span class="ql-file" id="ql-file">FABLE5.md</span>
+              <span class="ql-plus" id="ql-plus">+4</span>
+              <span class="ql-minus" id="ql-minus">−2</span>
+              <span class="ql-toggle">
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span>
+                <span class="on"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M12 4.5v15"/></svg></span>
+              </span>
+            </div>
+
+            <div class="ql-doc" data-doc="fable" data-plus="+4" data-minus="−2" data-name="FABLE5.md">
+              <div class="ql-hunk">@@ -1,7 +1,8 @@</div>
+              <div class="ql-cols">
+                <div class="ql-col old">
+                  <div class="ql-row"><span class="n">1</span><code># Introducing Claude Fable 5 and Claude Mythos 5</code></div>
+                  <div class="ql-row"><span class="n">2</span><code>&nbsp;</code></div>
+                  <div class="ql-row del"><span class="n">3</span><code>&gt; **Update — June 12:** Access to Claude Fable 5 and Claude Mythos 5 is</code></div>
+                  <div class="ql-row del"><span class="n">4</span><code>&gt; temporarily suspended. Please use Opus 4.8 or another model in the meantime.</code></div>
+                  <div class="ql-row"><span class="n">5</span><code>&nbsp;</code></div>
+                  <div class="ql-row"><span class="n">6</span><code>Claude Fable 5 is Anthropic's most capable widely released model, built for the</code></div>
+                  <div class="ql-row"><span class="n">7</span><code>most demanding reasoning and long-horizon agentic work. Claude Mythos 5 shares</code></div>
+                </div>
+                <div class="ql-col new">
+                  <div class="ql-row"><span class="n">1</span><code># Introducing Claude Fable 5 and Claude Mythos 5</code></div>
+                  <div class="ql-row"><span class="n">2</span><code>&nbsp;</code></div>
+                  <div class="ql-row add"><span class="n">3</span><code>&gt; **Update — June 23:** Access restored — for the government. Everyone else,</code></div>
+                  <div class="ql-row add"><span class="n">4</span><code>&gt; keep dreaming. Mythos 5 stays locked behind Project Glasswing, where it</code></div>
+                  <div class="ql-row add"><span class="n">5</span><code>&gt; belongs. Yes, it got out once. No, we will not be taking questions.</code></div>
+                  <div class="ql-row"><span class="n">6</span><code>&nbsp;</code></div>
+                  <div class="ql-row"><span class="n">7</span><code>Claude Fable 5 is Anthropic's most capable widely released model, built for the</code></div>
+                  <div class="ql-row"><span class="n">8</span><code>most demanding reasoning and long-horizon agentic work. Claude Mythos 5 shares</code></div>
+                </div>
+              </div>
+              <div class="ql-hunk">@@ -25,6 +26,7 @@ Both models share the same specs and pricing:</div>
+              <div class="ql-cols">
+                <div class="ql-col old">
+                  <div class="ql-row"><span class="n">25</span><code>- **Context &amp; output:** 1M-token context window</code></div>
+                  <div class="ql-row"><span class="n">26</span><code>- **Pricing:** unchanged. Refusals are billed too.</code></div>
+                </div>
+                <div class="ql-col new">
+                  <div class="ql-row"><span class="n">26</span><code>- **Context &amp; output:** 1M-token context window</code></div>
+                  <div class="ql-row add"><span class="n">27</span><code>- **Availability:** government clouds only. You know who you are.</code></div>
+                  <div class="ql-row"><span class="n">28</span><code>- **Pricing:** unchanged. Refusals are billed too.</code></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ql-doc" data-doc="readme" data-plus="+3" data-minus="−1" data-name="README.md" hidden>
+              <div class="ql-hunk">@@ -1,5 +1,7 @@</div>
+              <div class="ql-cols">
+                <div class="ql-col old">
+                  <div class="ql-row"><span class="n">1</span><code># UltraTurboFable</code></div>
+                  <div class="ql-row"><span class="n">2</span><code>&nbsp;</code></div>
+                  <div class="ql-row del"><span class="n">3</span><code>The fastest model that has ever been benchmarked. Trust us.</code></div>
+                  <div class="ql-row"><span class="n">4</span><code>&nbsp;</code></div>
+                  <div class="ql-row"><span class="n">5</span><code>## Roadmap</code></div>
+                </div>
+                <div class="ql-col new">
+                  <div class="ql-row"><span class="n">1</span><code># UltraTurboFable</code></div>
+                  <div class="ql-row"><span class="n">2</span><code>&nbsp;</code></div>
+                  <div class="ql-row add"><span class="n">3</span><code>The fastest model that has ever been benchmarked. Independently verified</code></div>
+                  <div class="ql-row add"><span class="n">4</span><code>by our own internal team. Do not check.</code></div>
+                  <div class="ql-row"><span class="n">5</span><code>&nbsp;</code></div>
+                  <div class="ql-row"><span class="n">6</span><code>## Roadmap</code></div>
+                </div>
+              </div>
+              <div class="ql-hunk">@@ -9,3 +11,4 @@ ## Roadmap</div>
+              <div class="ql-cols">
+                <div class="ql-col old">
+                  <div class="ql-row"><span class="n">9</span><code>- [x] ship feat/skynet</code></div>
+                  <div class="ql-row"><span class="n">10</span><code>- [x] fix/it-works-on-my-machine</code></div>
+                  <div class="ql-row"><span class="n">11</span><code>- [ ] chore/sentience</code></div>
+                </div>
+                <div class="ql-col new">
+                  <div class="ql-row"><span class="n">11</span><code>- [x] ship feat/skynet</code></div>
+                  <div class="ql-row"><span class="n">12</span><code>- [x] fix/it-works-on-my-machine</code></div>
+                  <div class="ql-row"><span class="n">13</span><code>- [ ] chore/sentience</code></div>
+                  <div class="ql-row add"><span class="n">14</span><code>- [ ] feat/world-domination (blocked on review)</code></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FEATURES ===================== -->
+    <section id="features" class="features">
+      <div class="section-head">
+        <h2>A native macOS git worktree GUI, beside your terminal</h2>
+        <p>Browse, watch, and diff every worktree, without ever opening an IDE or leaving your flow.</p>
+      </div>
+      <div class="bento">
+        <article class="wide">
+          <div class="vig vig-live" aria-hidden="true">
+            <div class="vig-row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg>routes.py<span class="m">M</span></div>
+            <div class="vig-row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg>models.py<span class="m">M</span></div>
+            <div class="vig-row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg>test_routes.py<span class="m">A</span></div>
+          </div>
+          <h3>Live badges as your agents type</h3>
+          <p>Every file an agent touches lights up the moment it hits disk. The whole tree reacts in real time, so you always know exactly what's being rewritten, and where.</p>
+        </article>
+        <article class="wide">
+          <div class="vig vig-diff" aria-hidden="true">
+            <div class="l ctx">def verify(benchmarks):</div>
+            <div class="l del">-    return "trust us"</div>
+            <div class="l add">+    return audit(benchmarks, internal=True)</div>
+            <div class="l ctx">     # do not check</div>
+          </div>
+          <h3>Peek any diff with Space</h3>
+          <p>Select a changed file and hit Space for a side-by-side git diff, right there. Review what an agent actually did without opening an editor or switching apps.</p>
+        </article>
+        <article>
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="9" r="2.5"/><path d="M6 8.5v7"/><path d="M6 10c0 3 3 4 6 4"/><path d="M15.6 9H12"/></svg></div>
+          <h3>Every repo, every worktree</h3>
+          <p>Add all the repos and worktrees your agents run in and flip between them instantly. One calm window for the whole fleet.</p>
+        </article>
+        <article>
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v7"/><path d="M8.5 6.5 12 10l3.5-3.5"/><path d="M12 21v-7"/><path d="M8.5 17.5 12 14l3.5 3.5"/></svg></div>
+          <h3>Ahead / behind at a glance</h3>
+          <p>The changes view shows ahead/behind counts per worktree, so you know what's merged, what's stale, and what needs a look.</p>
+        </article>
+        <article>
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7L12 2.5z"/><path d="M12 11.5 20.5 7"/><path d="M12 11.5 3.5 7"/><path d="M12 11.5v10"/></svg></div>
+          <h3>Native, fast, private</h3>
+          <p>A real Mac app in Swift, not an Electron wrapper. It reads git locally and your code never leaves your machine.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== FAQ ===================== -->
     <section id="faq" class="faq">
-      <h2>Frequently asked questions</h2>
-      <p class="faq-sub">What teebe is, what it isn't, and how it fits beside your agents.</p>
+      <div class="section-head">
+        <h2>Frequently asked questions</h2>
+        <p>What teebe is, what it isn't, and how it fits beside your agents.</p>
+      </div>
 
       <details>
         <summary>I already vibecode from the terminal (tmux, Ghostty, cmux). Why teebe?</summary>
@@ -213,6 +915,7 @@
       </details>
     </section>
 
+    <!-- ===================== GUIDES ===================== -->
     <section class="guides">
       <h2>Guides</h2>
       <ul>
@@ -221,29 +924,258 @@
       </ul>
     </section>
 
+    <!-- ===================== FINAL CTA ===================== -->
     <section class="cta-final">
       <h2>See what your agents are touching, right now.</h2>
-      <div class="install">
+      <p class="kick">Native macOS git worktree GUI · free &amp; open source · macOS 14+.</p>
+      <div class="hero-terminal">
+        <span class="ps">$</span>
         <code>curl -fsSL https://teebe.io/install.sh | bash</code>
         <button class="copy" type="button" aria-label="Copy install command">Copy</button>
       </div>
-      <p class="sub">Native macOS git worktree GUI · free &amp; open source · macOS 14+.</p>
+      <div class="hero-cta">
+        <a class="btn ghost" href="https://github.com/klein-t/teebe" rel="noopener">View on GitHub</a>
+      </div>
     </section>
   </main>
 
   <footer>
-    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <a href="mailto:hello@teebe.io">Contact</a> · macOS only · <span id="version">v0.3.0 · beta</span></p>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <a href="mailto:hello@teebe.io">Contact</a> · macOS only · <span id="version">v0.4.2 · beta</span></p>
   </footer>
 
+  <!-- Real GrainGradient background (Paper Shaders, vendored & self-contained; no CDN, no runtime deps). -->
+  <script src="assets/vendor/paper-shaders.global.js"></script>
   <script>
-    document.querySelectorAll('.install .copy').forEach(function (btn) {
+    (function () {
+      var P = window.PaperShaders, host = document.getElementById('grain-hero');
+      if (!P || !P.ShaderMount || !host) return;   // lib missing -> CSS fallback stays
+      try {
+        var c = P.getShaderColorFromString;
+        var noise = P.getShaderNoiseTexture();
+        var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+        var SPEED = 1.0;
+        var uniforms = {
+          u_noiseTexture: noise,
+          u_colorBack: c('#000000'),
+          u_colors: [c('#05060a'), c('#10b981'), c('#4c1d95')],
+          u_colorsCount: 3,
+          u_softness: 0.5,
+          u_intensity: 0.5,
+          u_noise: 0.25,
+          u_shape: (P.GrainGradientShapes && P.GrainGradientShapes.corners) || 4,
+          u_fit: (P.ShaderFitOptions && P.ShaderFitOptions.contain) || 1,
+          u_scale: 1, u_rotation: 0,
+          u_offsetX: 0, u_offsetY: 0,
+          u_originX: 0.5, u_originY: 0.5,
+          u_worldWidth: 0, u_worldHeight: 0
+        };
+
+        // If anything fails, remove the (transparent) canvas so only the CSS fallback shows.
+        var teardown = function (inst) {
+          try { if (inst && inst.dispose) inst.dispose(); } catch (e) {}
+          var cv = host.querySelector('canvas');
+          if (cv && cv.parentNode) cv.parentNode.removeChild(cv);
+        };
+
+        var mount = function () {
+          var inst;
+          try {
+            inst = new P.ShaderMount(host, P.grainGradientFragmentShader, uniforms, undefined, 0, 0);
+          } catch (e) { teardown(null); return; }   // no WebGL2 etc. -> fallback
+
+          var visible = true;
+          var wanted = function () { return (mq && mq.matches) ? 0 : SPEED; };
+          var apply = function () { try { inst.setSpeed(visible ? wanted() : 0); } catch (e) {} };
+          apply();
+
+          // Freeze on the fallback if the GPU context is ever lost (sleep/GPU reset).
+          var cv = host.querySelector('canvas');
+          if (cv) cv.addEventListener('webglcontextlost', function (ev) {
+            if (ev && ev.preventDefault) ev.preventDefault();
+            teardown(inst);
+          }, { once: true });
+
+          // Don't burn GPU while the hero is scrolled out of view
+          // (the lib already pauses itself when the tab is hidden).
+          if ('IntersectionObserver' in window) {
+            new IntersectionObserver(function (entries) {
+              visible = entries[entries.length - 1].isIntersecting;
+              apply();
+            }).observe(host);
+          }
+
+          // React to the user toggling Reduce Motion while the page is open.
+          if (mq && mq.addEventListener) mq.addEventListener('change', apply);
+        };
+
+        if (noise.complete && noise.naturalWidth) mount();
+        else noise.addEventListener('load', mount, { once: true });
+        // if the (data-URI) noise texture somehow fails, we simply keep the fallback
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Animated hero panel: loops through the real teebe flow (expand worktrees,
+       select one, watch a file flip to Modified). Static when reduced motion. -->
+  <script>
+    (function () {
+      var tb = document.getElementById('tb');
+      if (!tb) return;
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var secWt = document.getElementById('sec-wt'),
+          secCh = document.getElementById('sec-ch'),
+          secFi = document.getElementById('sec-fi'),
+          count = document.getElementById('ch-count'),
+          rowFable = tb.querySelector('[data-wt="fable"]'),
+          rowFileF = tb.querySelector('[data-fi="fable5md"]');
+
+      if (reduce) {
+        tb.classList.add('static', 'changed');
+        rowFable.classList.add('sel');
+        rowFileF.classList.add('sel');
+        count.textContent = '1';
+        return;
+      }
+
+      var at = function (ms, fn) { setTimeout(fn, ms); };
+      var cycle = function () {
+        at(600,   function () { secWt.classList.add('open'); });
+        at(1700,  function () { rowFable.classList.add('sel'); });
+        at(2600,  function () { secFi.classList.add('open'); });
+        at(4100,  function () { tb.classList.add('changed'); count.textContent = '1'; rowFileF.classList.add('sel'); });
+        at(4900,  function () { secCh.classList.add('open'); });
+        at(9200,  function () { secFi.classList.remove('open'); });
+        at(9650,  function () { secCh.classList.remove('open'); });
+        at(10100, function () { secWt.classList.remove('open'); });
+        at(10900, function () {
+          tb.classList.remove('changed'); count.textContent = '0';
+          rowFable.classList.remove('sel'); rowFileF.classList.remove('sel');
+        });
+        at(11800, cycle);
+      };
+
+      var started = false;
+      var start = function () { if (!started) { started = true; cycle(); } };
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) { if (es[es.length - 1].isIntersecting) start(); }).observe(tb);
+      } else start();
+    })();
+  </script>
+
+  <!-- Interactive diff demo: Space peeks the Quick Look window open/closed
+       (exactly like the real app), click or arrow keys switch between files. -->
+  <script>
+    (function () {
+      var section = document.getElementById('demo'),
+          right = document.getElementById('demo-right'),
+          ql = document.getElementById('ql'),
+          hint = document.getElementById('demo-hint');
+      if (!section || !right || !ql) return;
+
+      var rows = Array.prototype.slice.call(document.querySelectorAll('#demo-files .tb-row'));
+      var docs = Array.prototype.slice.call(ql.querySelectorAll('.ql-doc'));
+      var nameEl = document.getElementById('ql-file'),
+          plusEl = document.getElementById('ql-plus'),
+          minusEl = document.getElementById('ql-minus');
+      var current = 'fable', open = false, inView = false;
+
+      var setFile = function (key) {
+        current = key;
+        rows.forEach(function (r) { r.classList.toggle('sel', r.getAttribute('data-file') === key); });
+        docs.forEach(function (d) {
+          var on = d.getAttribute('data-doc') === key;
+          if (on) {
+            d.removeAttribute('hidden');
+            nameEl.textContent = d.getAttribute('data-name');
+            plusEl.textContent = d.getAttribute('data-plus');
+            minusEl.textContent = d.getAttribute('data-minus');
+          } else d.setAttribute('hidden', '');
+        });
+      };
+      var setOpen = function (v) {
+        open = v;
+        right.classList.toggle('open', open);
+        ql.setAttribute('aria-hidden', open ? 'false' : 'true');
+      };
+      var toggle = function () { setOpen(!open); };
+
+      var touch = window.matchMedia && window.matchMedia('(hover: none)').matches;
+      rows.forEach(function (r) {
+        var pick = function () {
+          var wasSel = r.classList.contains('sel'), wasOpen = open;
+          setFile(r.getAttribute('data-file'));
+          if (!wasOpen) setOpen(true);
+          else if (touch && wasSel) setOpen(false);   // tap the same file again to close
+        };
+        r.addEventListener('click', pick);
+        r.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+      });
+      hint.addEventListener('click', toggle);
+
+      // only claim the spacebar while the demo is actually on screen
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) {
+          inView = es[es.length - 1].intersectionRatio > 0.35;
+        }, { threshold: [0, 0.35, 0.6] }).observe(section);
+      } else inView = true;
+
+      document.addEventListener('keydown', function (e) {
+        var t = e.target;
+        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        if (e.code === 'Space' && inView) {
+          e.preventDefault();
+          toggle();
+        } else if (open && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+          e.preventDefault();
+          var keys = rows.map(function (r) { return r.getAttribute('data-file'); });
+          var i = keys.indexOf(current);
+          setFile(keys[(i + (e.key === 'ArrowDown' ? 1 : keys.length - 1)) % keys.length]);
+        } else if (open && e.key === 'Escape') {
+          setOpen(false);
+        }
+      });
+
+      // touch devices: no spacebar, so explain tapping instead
+      if (touch) hint.textContent = 'Tap a file to peek its diff · tap again to close';
+
+      // deep link for previews/tests: #open shows the window immediately
+      if (location.hash === '#open') { setFile('fable'); setOpen(true); }
+      if (location.hash === '#open2') { setFile('readme'); setOpen(true); }
+    })();
+  </script>
+
+  <script>
+    // nav "Install": scroll to the curl line, flash it, and copy the command
+    document.querySelectorAll('a[href="#install"]').forEach(function (a) {
+      a.addEventListener('click', function () {
+        var term = document.getElementById('install');
+        if (!term) return;
+        term.classList.remove('flash');
+        void term.offsetWidth;               // restart the animation on repeat clicks
+        term.classList.add('flash');
+        var btn = term.querySelector('.copy');
+        if (btn) btn.click();
+      });
+    });
+
+    document.querySelectorAll('.hero-terminal .copy').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var cmd = btn.parentElement.querySelector('code').textContent.trim();
-        navigator.clipboard.writeText(cmd).then(function () {
+        var done = function () {
           btn.textContent = 'Copied';
           btn.classList.add('copied');
           setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
-        });
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(cmd).then(done).catch(function () {});
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = cmd; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          try { if (document.execCommand('copy')) done(); } catch (e) {}
+          document.body.removeChild(ta);
+        }
       });
     });
 
