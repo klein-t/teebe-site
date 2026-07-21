@@ -54,29 +54,56 @@ export default {
       : "web";
 
     // Latest release metadata, cached 5 min so we don't hit GitHub's rate limit.
+    // Only successful responses are cached; a rate-limited 403 must not poison
+    // the cache for 5 minutes.
     const rel = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
       headers: {
         "User-Agent": "teebe-download-worker",
         Accept: "application/vnd.github+json",
       },
-      cf: { cacheTtl: 300, cacheEverything: true },
+      cf: {
+        cacheEverything: true,
+        cacheTtlByStatus: { "200-299": 300, "300-599": 0 },
+      },
     }).then((r) => r.json());
 
-    const asset = (rel.assets || []).find((a) => a.name.endsWith("." + kind));
-    if (!asset) return new Response("no matching asset on latest release", { status: 404 });
+    let asset = (rel.assets || []).find((a) => a.name.endsWith("." + kind));
+    let version = rel.tag_name || "?";
+
+    // Fallback when the API is rate-limited: GitHub's public releases/latest
+    // page 302s to .../releases/tag/vX.Y.Z with no API quota involved. The tag
+    // gives us the version, and asset names follow a fixed pattern
+    // (teebe-vX.Y.Z.zip / teebe-macos.dmg).
+    if (!asset) {
+      const probe = await fetch(`https://github.com/${REPO}/releases/latest`, {
+        redirect: "manual",
+        headers: { "User-Agent": "teebe-download-worker" },
+        cf: {
+          cacheEverything: true,
+          cacheTtlByStatus: { "300-399": 300, "200-299": 0, "400-599": 0 },
+        },
+      });
+      const tag = (probe.headers.get("Location") || "").split("/tag/")[1];
+      if (!tag) return new Response("no matching asset on latest release", { status: 404 });
+      version = tag;
+      const name = kind === "dmg" ? "teebe-macos.dmg" : `teebe-${tag}.zip`;
+      asset = {
+        browser_download_url: `https://github.com/${REPO}/releases/download/${tag}/${name}`,
+      };
+    }
 
     // One datapoint per download. blob1=version, blob2=kind, blob3=country,
     // blob4=user-agent, blob5=who. doubles[0]=1 so SUM() = download count.
     if (env.DL) {
       env.DL.writeDataPoint({
         blobs: [
-          rel.tag_name || "?",
+          version,
           kind,
           request.cf?.country || "??",
           request.headers.get("User-Agent") || "",
           who,
         ],
-        indexes: [rel.tag_name || "?"],
+        indexes: [version],
         doubles: [1],
       });
     }
