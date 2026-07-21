@@ -1,11 +1,11 @@
-# teebe-download — Cloudflare Worker
+# teebe-download: Cloudflare Worker
 
 Counts Teebe downloads *with attribution*. GitHub Releases only gives a bare
 aggregate counter (no IP / UA / who). This Worker sits in front of the download:
 it logs one Analytics Engine datapoint per fetch (version, kind, country,
 user-agent, and a `user`/`dev` tag) then 302-redirects to the real GitHub asset.
 
-`?dev=1` is how you tell *yourself* apart — use it when you test; everyone else
+`?dev=1` is how you tell *yourself* apart: use it when you test; everyone else
 is tagged `user`.
 
 ## Status
@@ -13,7 +13,7 @@ is tagged `user`.
 - [x] Worker code + `wrangler.toml` written, builds clean (`wrangler deploy --dry-run`)
 - [x] wrangler installed locally (`npm install` already run here)
 - [x] query script (`query.sh`) ready
-- [ ] **YOU:** `wrangler login` (browser auth — can't be automated)
+- [ ] **YOU:** `wrangler login` (browser auth; can't be automated)
 - [ ] **YOU:** `npm run deploy`
 - [ ] **YOU:** add `dl.teebe.io` custom domain in the dashboard
 - [ ] **YOU:** create an API token, then `./query.sh`
@@ -52,7 +52,7 @@ Only after `dl.teebe.io` is confirmed live, or installs break.
 
 **Web button** on teebe.io → point the download link at `https://dl.teebe.io/`.
 
-**install.sh** — replace the GitHub-API lookup + download (lines ~14-29) with a
+**install.sh**: replace the GitHub-API lookup + download (lines ~14-29) with a
 single fetch through the Worker, keeping a GitHub fallback if the Worker is down:
 
 ```sh

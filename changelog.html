@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Changelog · teebe</title>
-  <meta name="description" content="Release notes for teebe — what changed in each version of the native macOS Finder for your git worktrees." />
+  <meta name="description" content="Release notes for teebe: what changed in each version of the native macOS Finder for your git worktrees." />
   <link rel="canonical" href="https://teebe.io/changelog.html" />
   <meta name="theme-color" content="#0a0a0b" />
   <meta name="robots" content="index, follow" />
@@ -77,7 +77,7 @@
     function esc(s) {
       return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
-    // Minimal inline markdown: code, bold, links — on already-escaped text.
+    // Minimal inline markdown: code, bold, links, on already-escaped text.
     function inline(s) {
       return esc(s)
         .replace(/`([^`]+)`/g, '<code>$1</code>')

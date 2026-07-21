@@ -1,5 +1,5 @@
 #!/bin/bash
-# Teebe installer — https://teebe.io
+# Teebe installer: https://teebe.io
 # Usage: curl -fsSL https://teebe.io/install.sh | bash
 #
 # Installs teebe.app into /Applications without the Gatekeeper "unverified
@@ -7,7 +7,7 @@
 # so the app opens on first launch with no dialog. Sparkle handles updates after.
 #
 # The download is fetched via https://dl.teebe.io, which records anonymous,
-# aggregate install stats (app version, country, user-agent — never your IP)
+# aggregate install stats (app version, country, user-agent, never your IP)
 # then redirects to the GitHub release asset. See https://teebe.io/privacy.html.
 set -euo pipefail
 

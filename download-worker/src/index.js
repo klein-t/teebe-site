@@ -4,12 +4,12 @@
 // log one Analytics Engine datapoint (version, kind, country, UA, who), then
 // 302-redirect to the real GitHub download URL.
 //
-// "Tell me apart" — every request is classified into one `who` bucket:
+// "Tell me apart": every request is classified into one `who` bucket:
 //   dev     - your own test fetches (?dev=1)
 //   install - a real install via teebe.io/install.sh (sends UA "teebe-install")
 //   web     - everything else: browsers, bots, scanners, link-preview fetchers.
 //             A brand-new public subdomain attracts a LOT of this, and a bot's
-//             curl is indistinguishable from a real one — so it's bucketed
+//             curl is indistinguishable from a real one, so it's bucketed
 //             separately and is NOT a reliable install number. Trust "install".
 //
 //   https://dl.teebe.io/            -> latest .zip
@@ -27,7 +27,7 @@
 
 const REPO = "klein-t/teebe";
 const ACCOUNT_ID = "c98c457a0ae116da83eb79e64cb21e52";
-// Your own test installs come from here — excluded from the "real install"
+// Your own test installs come from here, excluded from the "real install"
 // counts on /stats. (Test downloads should use ?dev=1 anyway, which tags `dev`.)
 const OWN_COUNTRY = "AL";
 
@@ -97,7 +97,7 @@ const PIXEL = Uint8Array.from([
 
 // Log one page view, then return the pixel. Only fires from real browsers that
 // run JS, so bots/scanners (which the download "web" bucket is full of) mostly
-// never reach here — this is close to real human traffic.
+// never reach here; this is close to real human traffic.
 //   blob1=path  blob2=referrer host  blob3=country  blob4=view|visit  blob5=who
 //   doubles[0]=1 so SUM(_sample_interval) = page views.
 // A "visit" is the first page load of a browser session (the beacon sets v=1
@@ -253,7 +253,7 @@ async function handleStats(url, env) {
   <table><thead><tr><th>Quando (UTC)</th><th>Paese</th><th>Versione</th></tr></thead><tbody>${recentRows}</tbody></table>
 
   <h1 style="margin-top:40px">teebe · sito web</h1>
-  <p class="sub">Visite reali al sito (beacon JS su teebe.io). Solo browser veri — i bot non eseguono JS, quindi quasi non compaiono.</p>
+  <p class="sub">Visite reali al sito (beacon JS su teebe.io). Solo browser veri: i bot non eseguono JS, quindi quasi non compaiono.</p>
 
   <div class="big">
     <div class="stat hl"><div class="label">Visualizzazioni</div><div class="value">${views}</div></div>
