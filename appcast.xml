@@ -3,26 +3,30 @@
     <channel>
         <title>teebe</title>
         <item>
-            <title>0.4.2</title>
-            <pubDate>Thu, 16 Jul 2026 19:50:33 +0000</pubDate>
-            <sparkle:version>0.4.2</sparkle:version>
-            <sparkle:shortVersionString>0.4.2</sparkle:shortVersionString>
+            <title>0.5.0</title>
+            <pubDate>Tue, 28 Jul 2026 13:46:24 +0000</pubDate>
+            <sparkle:version>0.5.0</sparkle:version>
+            <sparkle:shortVersionString>0.5.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description sparkle:format="markdown"><![CDATA[### Fixed
-- The FILES section no longer leaves an empty strip at the bottom of the window,
-  and the file tree no longer snaps upward when a window resize ends.
-- Git failures now show a short human-readable message instead of a raw
-  technical error dump.
+            <description sparkle:format="markdown"><![CDATA[### Added
+- **Agent status per worktree.** Each worktree now shows what its AI agent is
+  doing, "working" while a session is mid-turn and "needs you" once the turn
+  ends or stalls, with a notification when an agent finishes and is waiting on
+  you.
+
+### Fixed
+- The green live-activity dot no longer stays lit forever after a single file
+  change. It now goes out a few seconds after the last write, which also stops
+  a pulse animation that kept running in the background and used CPU while the
+  app was idle.
 
 ### Changed
-- CHANGES rows now use the same per-type file icons as the FILES tree.
-- The "↓0 ↑0" sync indicator is hidden when there is nothing to pull or push,
-  and no longer appears in the CHANGES header.
-- Tidier section headers: unified icon sizes, typography and alignment across
-  sections.
+- The macOS folder-access prompt now explains why teebe needs access to your
+  repositories, and the privacy notice spells out that everything stays on
+  your Mac.
 ]]></description>
-            <enclosure url="https://github.com/klein-t/teebe/releases/download/v0.4.2/teebe-v0.4.2.zip" length="2736671" type="application/octet-stream" sparkle:edSignature="Zbz+/Mg4MPPRVhgV6eRE/hgoNWyEao8GePpfp6OX11mff4GC5JQWyBUC//5CDHqaQJXCesET3TNRL337NN1oCw=="/>
+            <enclosure url="https://github.com/klein-t/teebe/releases/download/v0.5.0/teebe-v0.5.0.zip" length="2769361" type="application/octet-stream" sparkle:edSignature="vafmWCJpWqVqLkJpHzQE1Ey8aU2ELwDp7fthk//0AVN+zUS1hi1qANPcCvISi1ttOClyj58DrI8uDBl8Q1pgAQ=="/>
         </item>
     </channel>
 </rss>
