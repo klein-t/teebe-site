@@ -3,30 +3,28 @@
     <channel>
         <title>teebe</title>
         <item>
-            <title>0.5.0</title>
-            <pubDate>Tue, 28 Jul 2026 13:46:24 +0000</pubDate>
-            <sparkle:version>0.5.0</sparkle:version>
-            <sparkle:shortVersionString>0.5.0</sparkle:shortVersionString>
+            <title>0.5.1</title>
+            <pubDate>Tue, 04 Aug 2026 08:23:26 +0000</pubDate>
+            <sparkle:version>0.5.1</sparkle:version>
+            <sparkle:shortVersionString>0.5.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description sparkle:format="markdown"><![CDATA[### Added
-- **Agent status per worktree.** Each worktree now shows what its AI agent is
-  doing, "working" while a session is mid-turn and "needs you" once the turn
-  ends or stalls, with a notification when an agent finishes and is waiting on
-  you.
-
-### Fixed
-- The green live-activity dot no longer stays lit forever after a single file
-  change. It now goes out a few seconds after the last write, which also stops
-  a pulse animation that kept running in the background and used CPU while the
-  app was idle.
+            <description sparkle:format="markdown"><![CDATA[### Fixed
+- Picking an already-tracked folder from the add (+) panel now switches to that
+  repository instead of silently doing nothing.
+- The CHANGES count no longer rolls its digits when you switch worktrees — it
+  snaps to the new worktree's total, and still animates when changes happen in
+  the current worktree.
+- Agent status now follows the worktree the agent is actually working in. A
+  session that starts in the main checkout and moves into a linked worktree
+  used to show as activity on the main checkout.
 
 ### Changed
-- The macOS folder-access prompt now explains why teebe needs access to your
-  repositories, and the privacy notice spells out that everything stays on
-  your Mac.
+- The "working" / "needs you" chip is gone; the worktree dot now tells the
+  whole story — pulsing green while an agent is working, steady amber when it
+  needs you, gray when nothing is happening there.
 ]]></description>
-            <enclosure url="https://github.com/klein-t/teebe/releases/download/v0.5.0/teebe-v0.5.0.zip" length="2769361" type="application/octet-stream" sparkle:edSignature="vafmWCJpWqVqLkJpHzQE1Ey8aU2ELwDp7fthk//0AVN+zUS1hi1qANPcCvISi1ttOClyj58DrI8uDBl8Q1pgAQ=="/>
+            <enclosure url="https://github.com/klein-t/teebe/releases/download/v0.5.1/teebe-v0.5.1.zip" length="2777839" type="application/octet-stream" sparkle:edSignature="VHx9c2w/s5SG4DXa5OW4V2XkCYPJppcjQ2CLzS7bIiVAh5Zn624TayZIsl2PW1PYH/C7/cycos5Gxn0ZUYyoAw=="/>
         </item>
     </channel>
 </rss>
