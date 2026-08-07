@@ -3,28 +3,32 @@
     <channel>
         <title>teebe</title>
         <item>
-            <title>0.5.1</title>
-            <pubDate>Tue, 04 Aug 2026 08:23:26 +0000</pubDate>
-            <sparkle:version>0.5.1</sparkle:version>
-            <sparkle:shortVersionString>0.5.1</sparkle:shortVersionString>
+            <title>0.6.0</title>
+            <pubDate>Fri, 07 Aug 2026 15:59:18 +0000</pubDate>
+            <sparkle:version>0.6.0</sparkle:version>
+            <sparkle:shortVersionString>0.6.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <description sparkle:format="markdown"><![CDATA[### Fixed
-- Picking an already-tracked folder from the add (+) panel now switches to that
-  repository instead of silently doing nothing.
-- The CHANGES count no longer rolls its digits when you switch worktrees — it
-  snaps to the new worktree's total, and still animates when changes happen in
-  the current worktree.
-- Agent status now follows the worktree the agent is actually working in. A
-  session that starts in the main checkout and moves into a linked worktree
-  used to show as activity on the main checkout.
+            <description sparkle:format="markdown"><![CDATA[### Added
+- **Low-power mode.** When teebe's window is covered, every file watcher stops
+  and the app idles at near-zero CPU — while "agent needs you" notifications
+  keep arriving, now instantly, via a tiny Claude Code hook (`notifyutil` ping
+  on turn end). teebe offers to add the hook once at launch; declining keeps
+  everything working the old way.
+
+### Fixed
+- Under a continuous stream of agent writes the tree could stop updating until
+  the burst ended (the debounce never fired). Updates now land at least every
+  couple of seconds no matter how busy the agents are.
+- A session log whose scanned tail started mid-emoji (or mid-character) was
+  silently read as "no agent" — the worktree dot went gray while the agent was
+  actually working.
 
 ### Changed
-- The "working" / "needs you" chip is gone; the worktree dot now tells the
-  whole story — pulsing green while an agent is working, steady amber when it
-  needs you, gray when nothing is happening there.
+- Session-log scanning is lighter: timestamp parsers are built once instead of
+  per line, and only the last relevant lines of each log are decoded.
 ]]></description>
-            <enclosure url="https://github.com/klein-t/teebe/releases/download/v0.5.1/teebe-v0.5.1.zip" length="2777839" type="application/octet-stream" sparkle:edSignature="VHx9c2w/s5SG4DXa5OW4V2XkCYPJppcjQ2CLzS7bIiVAh5Zn624TayZIsl2PW1PYH/C7/cycos5Gxn0ZUYyoAw=="/>
+            <enclosure url="https://github.com/klein-t/teebe/releases/download/v0.6.0/teebe-v0.6.0.zip" length="2798345" type="application/octet-stream" sparkle:edSignature="LMGxFRqnJS8/baGx0n/+THHkvKyuFxzkdheuf0m3IN+j5/tbLGGxJH9epiV+Tvs1ZzLL2fk5stXtJbZhDGJXCQ=="/>
         </item>
     </channel>
 </rss>
