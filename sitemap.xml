@@ -13,6 +13,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://teebe.io/compare/git-worktree-gui-mac/</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://teebe.io/changelog.html</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>

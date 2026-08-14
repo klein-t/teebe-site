@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Every git worktree GUI for Mac, compared (2026)</title>
+  <meta name="description" content="Fork, Tower, GitKraken, Conductor, Nimbalyst, Worktrunk, teebe and more: every macOS git worktree GUI and manager compared, with prices, worktree features, and AI-agent support." />
+  <link rel="canonical" href="https://teebe.io/compare/git-worktree-gui-mac/" />
+  <meta name="theme-color" content="#060709" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/compare/git-worktree-gui-mac/" />
+  <meta property="og:title" content="Every git worktree GUI for Mac, compared (2026)" />
+  <meta property="og:description" content="Ten tools for managing git worktrees on macOS, compared: git clients, agent orchestrators, and pure worktree managers. Prices, features, sources." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Every git worktree GUI for Mac, compared (2026)" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
+      { "@type": "ListItem", "position": 2, "name": "Compare", "item": "https://teebe.io/compare/git-worktree-gui-mac/" },
+      { "@type": "ListItem", "position": 3, "name": "Git worktree GUIs for Mac", "item": "https://teebe.io/compare/git-worktree-gui-mac/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Every git worktree GUI for Mac, compared (2026)",
+    "description": "Ten macOS tools for managing git worktrees compared: Fork, Tower, GitKraken, Sourcetree, Conductor, Nimbalyst, Worktrunk, Grovr, WorktreeWise, and teebe.",
+    "datePublished": "2026-08-14",
+    "dateModified": "2026-08-14",
+    "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
+    "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
+    "mainEntityOfPage": "https://teebe.io/compare/git-worktree-gui-mac/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Git worktree GUIs and managers for macOS",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Fork", "url": "https://git-fork.com" },
+      { "@type": "ListItem", "position": 2, "name": "Tower", "url": "https://www.git-tower.com" },
+      { "@type": "ListItem", "position": 3, "name": "GitKraken", "url": "https://www.gitkraken.com" },
+      { "@type": "ListItem", "position": 4, "name": "Sourcetree", "url": "https://sourcetreeapp.com" },
+      { "@type": "ListItem", "position": 5, "name": "Conductor", "url": "https://conductor.build" },
+      { "@type": "ListItem", "position": 6, "name": "Nimbalyst", "url": "https://nimbalyst.com" },
+      { "@type": "ListItem", "position": 7, "name": "Worktrunk", "url": "https://worktrunk.dev" },
+      { "@type": "ListItem", "position": 8, "name": "Grovr", "url": "https://github.com/j1king/grovr" },
+      { "@type": "ListItem", "position": 9, "name": "WorktreeWise", "url": "https://docs.worktreewise.com" },
+      { "@type": "ListItem", "position": 10, "name": "teebe", "url": "https://teebe.io" }
+    ]
+  }
+  </script>
+
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      font-style: normal;
+      font-weight: 300 700;
+      font-display: swap;
+      src: url("/assets/fonts/space-grotesk-latin.woff2") format("woff2");
+    }
+    :root {
+      --bg: #060709;
+      --bg-soft: #0d0f12;
+      --card: rgba(255,255,255,.03);
+      --border: rgba(255,255,255,.09);
+      --border-strong: rgba(255,255,255,.14);
+      --text: #eef1ef;
+      --body: #c3cac6;
+      --muted: #9aa3a0;
+      --muted-dim: #6c7572;
+      --accent: #10b981;
+      --accent-2: #34d399;
+      --accent-ink: #04231a;
+      --radius: 16px;
+      --max: 1120px;
+      --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; height: auto; display: block; }
+
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: var(--max); margin: 0 auto; padding: 20px 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 650; font-size: 1.6rem; }
+    .brand img { border-radius: 12px; width: 44px; height: 44px; }
+    .nav-links { display: flex; align-items: center; gap: 24px; font-size: 0.95rem; color: var(--muted); }
+    .nav-links a:hover { color: var(--text); }
+
+    .article { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem;
+      font-weight: 650; color: var(--accent-2); margin-bottom: 14px;
+    }
+    .article h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.6vw, 2.9rem);
+      line-height: 1.1; letter-spacing: -0.02em;
+      text-wrap: balance;
+      margin-bottom: 16px;
+    }
+    .byline { color: var(--muted); font-size: 0.92rem; margin-bottom: 8px; }
+    .byline a { color: var(--accent-2); }
+    .disclosure {
+      border-left: 2px solid var(--accent); background: var(--card);
+      border-radius: 0 10px 10px 0; padding: 12px 16px;
+      color: var(--muted); font-size: 0.95rem; margin: 20px 0 32px;
+    }
+    .disclosure a { color: var(--accent-2); }
+    .article h2 {
+      font-family: var(--font-display);
+      font-size: 1.5rem; letter-spacing: -0.01em;
+      margin: 44px 0 12px;
+    }
+    .article h3 { font-size: 1.08rem; margin: 28px 0 8px; }
+    .article p, .article li { color: var(--body); }
+    .article p { margin: 12px 0; }
+    .article ul, .article ol { margin: 10px 0 10px 22px; }
+    .article li { margin: 6px 0; }
+    .article a { color: var(--accent-2); }
+    .article a:hover { color: var(--accent); }
+    .article strong { color: var(--text); }
+    .article code {
+      font-family: var(--font-mono); font-size: 0.85em;
+      background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      border-radius: 6px; padding: 1px 6px;
+    }
+    .breadcrumb { font-size: 0.85rem; color: var(--muted-dim); margin-bottom: 22px; }
+    .breadcrumb a { color: var(--muted-dim); }
+    .breadcrumb a:hover { color: var(--text); }
+
+    /* Comparison table */
+    .table-wrap {
+      overflow-x: auto; margin: 24px 0 8px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--card);
+      -webkit-overflow-scrolling: touch;
+    }
+    table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.92rem; }
+    thead th {
+      font-family: var(--font-display); font-weight: 600; font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+      text-align: left; padding: 12px 14px;
+      border-bottom: 1px solid var(--border-strong);
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 11px 14px; border-bottom: 1px solid var(--border);
+      color: var(--body); vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,.02); }
+    td.tool { font-weight: 600; color: var(--text); white-space: nowrap; }
+    td.tool a { color: var(--text); border-bottom: 1px dotted var(--muted-dim); }
+    td.tool a:hover { color: var(--accent-2); }
+    tr.self td { background: rgba(16,185,129,.05); }
+    tr.self:hover td { background: rgba(16,185,129,.07); }
+    .price { font-family: var(--font-mono); font-size: 0.84em; white-space: nowrap; }
+
+    .chip {
+      display: inline-block; font-size: 0.74rem; font-weight: 650;
+      letter-spacing: 0.03em; padding: 2px 9px; border-radius: 999px;
+      border: 1px solid var(--border-strong); color: var(--muted);
+      white-space: nowrap;
+    }
+    .chip.native { border-color: rgba(52,211,153,.35); color: var(--accent-2); }
+    .chip.warn { border-color: rgba(255,255,255,.14); color: var(--muted-dim); }
+
+    /* Category intro cards */
+    .cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 22px 0 6px; }
+    .cats article {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px;
+    }
+    .cats h3 { font-family: var(--font-display); font-size: 0.98rem; margin: 0 0 6px; }
+    .cats p { color: var(--muted); font-size: 0.88rem; margin: 0; }
+
+    .pick {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px 24px; margin: 26px 0;
+    }
+    .pick p { margin: 8px 0; }
+    .pick .lead { color: var(--text); font-weight: 600; }
+
+    .install {
+      display: flex; align-items: center; gap: 12px;
+      max-width: 640px; margin: 34px auto 0;
+      background: var(--bg-soft); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 12px 12px 18px;
+      font-family: var(--font-mono);
+    }
+    .install code { flex: 1; text-align: left; font-size: 0.85rem; color: var(--text); background: none; border: none; padding: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .install .copy {
+      flex-shrink: 0; background: var(--accent); color: var(--accent-ink);
+      border: none; border-radius: 8px; padding: 8px 16px;
+      font: inherit; font-size: 0.85rem; font-weight: 650; cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .install .copy:hover { background: var(--accent-2); }
+    .install .copy.copied { background: var(--accent-2); }
+    .install .copy:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+    .sub { font-size: 0.9rem; color: var(--muted); margin-top: 14px; text-align: center; }
+    .sub a { color: var(--accent-2); }
+
+    footer {
+      text-align: center; padding: 32px 24px; color: var(--muted);
+      font-size: 0.9rem; border-top: 1px solid var(--border);
+    }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 560px) {
+      .nav-links a:not(:last-child) { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="44" height="44" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Compare › Git worktree GUIs for Mac</p>
+    <p class="eyebrow">Comparison · updated August 2026</p>
+    <h1>Every git worktree GUI for Mac, compared</h1>
+    <p class="byline">By <a href="https://github.com/klein-t" rel="noopener">Klein Tahiraj</a></p>
+
+    <p class="disclosure">
+      Disclosure up front: I build <a href="/">teebe</a>, one of the tools in this list. I've tried
+      to be blunt about where the others beat it, and I link primary sources for every claim so you
+      can check my work.
+    </p>
+
+    <p>
+      Worktrees went from git trivia to daily driver the moment people started running three or four
+      coding agents in parallel. One worktree per agent session is now the standard setup; Claude
+      Code even ships a <code>--worktree</code> flag. So the tooling question got real: what do you
+      actually use to create, watch, and clean up all these checkouts?
+    </p>
+    <p>
+      I went through everything I could find that manages worktrees on a Mac. Ten tools. Here's the
+      short version, then the detail.
+    </p>
+
+    <h2 id="table">The short version</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Tool</th>
+            <th scope="col">What it is</th>
+            <th scope="col">Worktree ops</th>
+            <th scope="col">Price</th>
+            <th scope="col">Runtime</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tool"><a href="https://git-fork.com" rel="noopener">Fork</a></td>
+            <td>Git client</td>
+            <td>create, delete, switch</td>
+            <td class="price">$59.99 once</td>
+            <td><span class="chip native">native</span></td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://www.git-tower.com" rel="noopener">Tower</a></td>
+            <td>Git client</td>
+            <td>create, switch, remove</td>
+            <td class="price">from $69/yr</td>
+            <td><span class="chip native">native</span></td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://www.gitkraken.com" rel="noopener">GitKraken</a></td>
+            <td>Git suite + agent sessions</td>
+            <td>create, lock, remove</td>
+            <td class="price">free tier · Pro ~$5/mo</td>
+            <td><span class="chip warn">Electron</span></td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://sourcetreeapp.com" rel="noopener">Sourcetree</a></td>
+            <td>Git client</td>
+            <td>none</td>
+            <td class="price">free</td>
+            <td><span class="chip native">native</span></td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://conductor.build" rel="noopener">Conductor</a></td>
+            <td>Agent orchestrator</td>
+            <td>auto, per session</td>
+            <td class="price">free · cloud $50/mo</td>
+            <td><span class="chip native">native</span></td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://nimbalyst.com" rel="noopener">Nimbalyst</a></td>
+            <td>Agent workspace</td>
+            <td>per session, opt-in</td>
+            <td class="price">free</td>
+            <td><span class="chip warn">Electron</span></td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://worktrunk.dev" rel="noopener">Worktrunk</a></td>
+            <td>CLI</td>
+            <td>full</td>
+            <td class="price">free, MIT</td>
+            <td><span class="chip">CLI</span></td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/j1king/grovr" rel="noopener">Grovr</a></td>
+            <td>Worktree manager</td>
+            <td>create, delete, open</td>
+            <td class="price">free, MIT</td>
+            <td><span class="chip warn">Tauri</span></td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://docs.worktreewise.com" rel="noopener">WorktreeWise</a></td>
+            <td>Worktree manager</td>
+            <td>full, incl. prune/lock</td>
+            <td class="price">paid</td>
+            <td><span class="chip warn">unsigned</span></td>
+          </tr>
+          <tr class="self">
+            <td class="tool"><a href="/">teebe</a></td>
+            <td>Worktree file browser</td>
+            <td>browse, watch, diff</td>
+            <td class="price">free, GPL</td>
+            <td><span class="chip native">native</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Three different product categories are hiding in that table, and most comparison articles mash
+      them together.
+    </p>
+
+    <div class="cats">
+      <article>
+        <h3>Git clients</h3>
+        <p>Fork, Tower, GitKraken, Sourcetree. Full git apps that added worktrees as a feature.</p>
+      </article>
+      <article>
+        <h3>Agent orchestrators</h3>
+        <p>Conductor, Nimbalyst. They run your agents and use worktrees as plumbing.</p>
+      </article>
+      <article>
+        <h3>Pure worktree tools</h3>
+        <p>Worktrunk, Grovr, WorktreeWise, teebe. The worktrees are the product.</p>
+      </article>
+    </div>
+
+    <p>
+      Which one you want depends on a question nobody asks you: do you want the tool to run your
+      agents, or do you already run them in a terminal and just need to see what they're doing?
+    </p>
+
+    <h2 id="git-clients">The git clients</h2>
+
+    <p>
+      <strong>Fork</strong> is the best classic Mac git client, and its worktree support is newer
+      than you'd think. The feature request sat open
+      <a href="https://github.com/fork-dev/Tracker/issues/527" rel="noopener">from February 2019</a>;
+      a real Create Worktree dialog only landed in
+      <a href="https://git-fork.com/releasenotes" rel="noopener">2.63, February 2026</a>, and
+      checkout-remote-branch-as-worktree in June. It works, worktrees show in the sidebar, and
+      $59.99 once is fair. The edges are still rough: deleting a worktree with uncommitted changes
+      just errors out, with
+      <a href="https://github.com/fork-dev/Tracker/issues/2469" rel="noopener">no force option</a>.
+      No prune, no lock. And nothing in Fork knows or cares that agents exist.
+    </p>
+    <p>
+      <strong>Tower</strong> got worktrees earlier
+      (<a href="https://www.git-tower.com/help/guides/worktrees/overview/mac" rel="noopener">12.5, February 2025</a>)
+      and the implementation is tidy. A Worktrees section in the sidebar, right-click a branch to
+      check it out in a new worktree, badges on branches that live elsewhere. Same ceiling as Fork
+      though: create, switch, remove, done. Tower's AI story so far is AI-generated commit messages.
+      It's also subscription-only, $69 to $129 a year, which is a lot to pay for a feature you'll
+      use through two menu items.
+    </p>
+    <p>
+      <strong>GitKraken</strong> is the one that took the agent era seriously. Desktop 12.0 (April
+      2026) shipped <a href="https://help.gitkraken.com/gitkraken-desktop/agents/" rel="noopener">Agent Sessions</a>:
+      each Claude Code, Codex, Copilot, Gemini, or OpenCode session gets its own auto-created
+      worktree, shown as a card with live status. 12.4 added per-worktree nodes on the commit graph
+      and inline approval of Claude Code permission prompts. On features, nobody else in this list
+      comes close. The catches: it's Electron, with a
+      <a href="https://news.ycombinator.com/item?id=18030725" rel="noopener">long history</a> of
+      performance complaints; it's an account-plus-subscription suite with metered AI credits; and
+      the free tier
+      <a href="https://www.gitkraken.com/pricing" rel="noopener">won't run agent sessions on private repos</a>.
+      You're not buying a worktree tool, you're moving into a platform.
+    </p>
+    <p>
+      <strong>Sourcetree</strong> gets a paragraph out of respect for the installed base. It has no
+      worktree support. The ticket is
+      <a href="https://jira.atlassian.com/browse/SRCTREE-3204" rel="noopener">SRCTREE-3204</a>,
+      opened October 2015, closed unresolved. If you're on Sourcetree and you've started using
+      worktrees, you're already living in the terminal for half your git work. Free, though.
+    </p>
+
+    <h2 id="orchestrators">The agent orchestrators</h2>
+
+    <p>
+      <strong>Conductor</strong> is a Mac-native app that runs parallel Claude Code, Codex, and
+      Cursor agents, each in its own worktree workspace with a branch, a terminal, a diff view, and
+      a merge flow. It's YC-backed, moves fast, and the core local product is free; $50/mo buys
+      cloud sandboxes. People I trust like it a lot. My caveats: it wants to <em>be</em> the place
+      you work, its GitHub OAuth asks for
+      <a href="https://news.ycombinator.com/item?id=44594584" rel="noopener">broad read-write access</a>,
+      and performance reportedly sags with many workspaces open. If you want a cockpit that owns the
+      whole agent lifecycle, this is the strongest one.
+    </p>
+    <p>
+      <strong>Nimbalyst</strong> (the tool formerly known as Crystal) is the open-source, free,
+      cross-platform take on the same idea: session kanban for Claude Code, Codex, and OpenCode,
+      one-click worktree isolation per session, plus a pile of built-in visual editors. It's
+      Electron and it's a kitchen sink, which you'll either find useful or exhausting. Hard to
+      argue with the price, and it ships several releases a week right now.
+    </p>
+    <p>
+      The thing to understand about both: the worktree is an implementation detail they hide from
+      you. That's the point of them. If your agents run inside these apps, you don't need a worktree
+      manager at all.
+    </p>
+
+    <h2 id="pure-tools">The pure worktree tools</h2>
+
+    <p>
+      <strong>Worktrunk</strong> is the one I'd tell every terminal person to install regardless of
+      what else they use. A Rust CLI, MIT licensed,
+      <a href="https://github.com/max-sixty/worktrunk" rel="noopener">6,400+ GitHub stars</a> and
+      shipping weekly. <code>wt switch</code>, <code>wt list</code>, <code>wt merge</code>, hooks,
+      per-worktree dev servers. It was designed explicitly for the 5-to-10-parallel-agents workflow.
+      It's not a GUI, so it's not really a competitor to anything else here; it's what the GUI tools
+      are all wrapping.
+    </p>
+    <p>
+      <strong>Grovr</strong> is a small Tauri app that lists your worktrees, opens them in your
+      editor, and can create one from a Jira key or PR URL on your clipboard, a clever touch. But
+      it's 40 stars and the <a href="https://github.com/j1king/grovr" rel="noopener">repo</a> hasn't
+      moved since February 2026. I wouldn't build a workflow on it.
+    </p>
+    <p>
+      <strong>WorktreeWise</strong> has the most complete worktree operation list of any GUI here:
+      create, rename, move, lock, unlock, prune, hooks, workflows. It's also paid, closed source,
+      and, per <a href="https://docs.worktreewise.com/" rel="noopener">its own docs</a>, not signed
+      or notarized, so macOS blocks it as from an unidentified developer and you have to override
+      Gatekeeper in System Settings. I can't find a public price, a community, or a single review.
+      Feature list aside, I'd wait until the basics are in order.
+    </p>
+
+    <h2 id="teebe">Where teebe fits</h2>
+
+    <p><strong>teebe</strong> is mine, so read this section with that in mind.</p>
+    <p>
+      I built it because I didn't want an orchestrator. My agents run in terminals; that part of my
+      setup is fine. What I was missing was eyes: several agents editing several worktrees, and no
+      way to see what was changing without cycling through <code>git status</code> in five panes.
+      teebe is a native Swift file browser that shows every worktree of every repo in one window,
+      updates the tree live as files change on disk, and shows the diff inline when you select a
+      changed file. It doesn't create or merge worktrees, it doesn't run agents, and it doesn't
+      replace your editor. It watches. There's a walkthrough in
+      <a href="/guides/view-claude-code-changes/">see what Claude Code changed, live</a>.
+    </p>
+    <p>
+      It's free, GPL, no account, no telemetry, macOS 14+ on Apple Silicon and Intel. If you want
+      the honest anti-pitch: it's young, it's macOS-only, and if what you actually want is worktree
+      CRUD or agent orchestration, the tools above do things teebe deliberately doesn't.
+    </p>
+
+    <h2 id="picks">What I'd actually pick</h2>
+
+    <div class="pick">
+      <p><span class="lead">Running agents in a terminal and want to keep it that way:</span>
+      Worktrunk for the plumbing, teebe for the watching.</p>
+      <p><span class="lead">Want an app that owns your agent sessions end to end:</span>
+      Conductor if you'll pay for polish, Nimbalyst if you want open source and don't mind Electron.</p>
+      <p><span class="lead">Want one git client for everything and accept the platform:</span>
+      GitKraken.</p>
+      <p><span class="lead">Already own Fork or Tower:</span> their worktree support is fine for
+      occasional use, and you don't need anything else until you're running agents in parallel.</p>
+    </div>
+
+    <p>
+      The category is moving fast. Fork shipped its worktree dialog in February, GitKraken shipped
+      agent sessions in April, Nimbalyst renamed and re-launched over the winter. I'll update this
+      page as things change; the sources are linked so you can re-check any claim that smells stale.
+    </p>
+
+    <div class="install">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <a href="mailto:hello@teebe.io">Contact</a> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy.html. -->
+  <script>
+    (function () {
+      try {
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = /[?&]dev=1/.test(location.search) || localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

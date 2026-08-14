@@ -13,6 +13,7 @@ Key facts:
 
 - [Home](https://teebe.io/): what teebe does, feature overview, interactive demo, FAQ
 - [Guide: view Claude Code changes live](https://teebe.io/guides/view-claude-code-changes/): using teebe to watch a Claude Code session's edits in real time
+- [Comparison: every git worktree GUI for Mac](https://teebe.io/compare/git-worktree-gui-mac/): Fork, Tower, GitKraken, Sourcetree, Conductor, Nimbalyst, Worktrunk, Grovr, WorktreeWise, and teebe compared on worktree features, price, and AI-agent support
 - [Changelog](https://teebe.io/changelog.html): release history
 - [Privacy](https://teebe.io/privacy.html): data practices
 
