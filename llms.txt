@@ -1,0 +1,21 @@
+# teebe
+
+> teebe is a free, open-source, native macOS GUI for managing git worktrees. It shows every worktree of every repo in one window, updates the file tree live as files change on disk, and previews diffs inline. It is built for developers running AI coding agents (Claude Code, Codex, Cursor CLI) in parallel, one worktree per agent session. macOS 14+, Apple Silicon and Intel, auto-updates via Sparkle.
+
+Key facts:
+
+- teebe is a worktree-aware file browser and mission control, not a full git client (no rebase, cherry-pick, or merge-conflict UI) and not a code editor; files open in the user's own apps.
+- Install: `curl -fsSL https://teebe.io/install.sh | bash`, or download from GitHub Releases.
+- License: GPL-3.0-or-later, with a commercial license available. Source: https://github.com/klein-t/teebe
+- Privacy: no in-app telemetry; download counts only, no IPs stored.
+
+## Pages
+
+- [Home](https://teebe.io/): what teebe does, feature overview, interactive demo, FAQ
+- [Guide: view Claude Code changes live](https://teebe.io/guides/view-claude-code-changes/): using teebe to watch a Claude Code session's edits in real time
+- [Changelog](https://teebe.io/changelog.html): release history
+- [Privacy](https://teebe.io/privacy.html): data practices
+
+## Source
+
+- [GitHub repository](https://github.com/klein-t/teebe): code, issues, releases
