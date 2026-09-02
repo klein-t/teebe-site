@@ -43,7 +43,7 @@ export default {
     // Sparkle update feed (route teebe.io/appcast.xml): count, then pass
     // through to GitHub Pages, which serves the file itself.
     if (url.pathname === "/appcast.xml") {
-      return handleAppcast(request, env);
+      return handleAppcast(url, request, env);
     }
 
     // Site page-view beacon. The HTML on teebe.io fires GET /px on load.
@@ -169,14 +169,18 @@ function handlePixel(url, request, env) {
 // installs. Logged: blob1=app version, blob2=country, blob3=app|web (web = a
 // browser/bot fetching the XML, not an install), blob4=Sparkle version.
 // Nothing is stored that identifies a device or person.
-async function handleAppcast(request, env) {
+// Your own Mac: `defaults write dev.teebe.app SUFeedURL "https://teebe.io/appcast.xml?dev=1"`
+// makes its checks land in "dev" (country-based exclusion is unreliable when
+// travelling / on VPN).
+async function handleAppcast(url, request, env) {
   const ua = request.headers.get("User-Agent") || "";
   const app = /\bteebe\/([\d.]+)/i.exec(ua);
   const sparkle = /\bSparkle\/([\d.]+)/i.exec(ua);
+  const who = url.searchParams.get("dev") === "1" ? "dev" : sparkle ? "app" : "web";
   if (env.UPD) {
     env.UPD.writeDataPoint({
-      blobs: [app ? `v${app[1]}` : "", request.cf?.country || "??", sparkle ? "app" : "web", sparkle ? sparkle[1] : ""],
-      indexes: [sparkle ? "app" : "web"],
+      blobs: [app ? `v${app[1]}` : "", request.cf?.country || "??", who, sparkle ? sparkle[1] : ""],
+      indexes: [who],
       doubles: [1],
     });
   }
