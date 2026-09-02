@@ -6,6 +6,9 @@ compatibility_date = "2026-05-01"
 # live in this same Cloudflare account.
 routes = [
   { pattern = "dl.teebe.io", custom_domain = true },
+  # Sparkle update checks: the worker counts them (see handleAppcast) and passes
+  # the request through to GitHub Pages. Needs teebe.io proxied (orange cloud).
+  { pattern = "teebe.io/appcast.xml", zone_name = "teebe.io" },
 ]
 
 # Analytics Engine: free, no database. Each download writes one datapoint we
@@ -18,3 +21,9 @@ dataset = "teebe_downloads"
 [[analytics_engine_datasets]]
 binding = "WEB"
 dataset = "teebe_pageviews"
+
+# Sparkle update checks (GET teebe.io/appcast.xml). One datapoint per check;
+# ~one per active install per day, so this approximates active installs.
+[[analytics_engine_datasets]]
+binding = "UPD"
+dataset = "teebe_updates"

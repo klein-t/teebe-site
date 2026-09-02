@@ -40,6 +40,12 @@ export default {
       return handleStats(url, env);
     }
 
+    // Sparkle update feed (route teebe.io/appcast.xml): count, then pass
+    // through to GitHub Pages, which serves the file itself.
+    if (url.pathname === "/appcast.xml") {
+      return handleAppcast(request, env);
+    }
+
     // Site page-view beacon. The HTML on teebe.io fires GET /px on load.
     if (url.pathname === "/px") {
       return handlePixel(url, request, env);
@@ -157,6 +163,27 @@ function handlePixel(url, request, env) {
   });
 }
 
+// --- Sparkle update checks --------------------------------------------------
+// Sparkle sends "teebe/<version> Sparkle/<sparkleVersion>" as its User-Agent
+// and checks about once a day per running install, so checks/day ~= active
+// installs. Logged: blob1=app version, blob2=country, blob3=app|web (web = a
+// browser/bot fetching the XML, not an install), blob4=Sparkle version.
+// Nothing is stored that identifies a device or person.
+async function handleAppcast(request, env) {
+  const ua = request.headers.get("User-Agent") || "";
+  const app = /\bteebe\/([\d.]+)/i.exec(ua);
+  const sparkle = /\bSparkle\/([\d.]+)/i.exec(ua);
+  if (env.UPD) {
+    env.UPD.writeDataPoint({
+      blobs: [app ? `v${app[1]}` : "", request.cf?.country || "??", sparkle ? "app" : "web", sparkle ? sparkle[1] : ""],
+      indexes: [sparkle ? "app" : "web"],
+      doubles: [1],
+    });
+  }
+  // Origin (GitHub Pages) serves the actual feed; never cache it here.
+  return fetch(request, { cf: { cacheTtl: 0 } });
+}
+
 // --- Private stats dashboard ----------------------------------------------
 
 async function handleStats(url, env) {
@@ -187,9 +214,12 @@ async function handleStats(url, env) {
   // Older datapoints predate the "local" tag: also drop local-file paths and
   // localhost referrers that were logged as "human".
   const webHuman = `blob5='human' AND blob3 != '${OWN_COUNTRY}' AND blob1 NOT LIKE '/Users/%' AND blob1 NOT LIKE '%.mockup.html' AND blob2 != 'localhost'`;
+  // Active installs = Sparkle checks from real apps, your own country excluded.
+  const appCheck = `blob3='app' AND blob2 != '${OWN_COUNTRY}'`;
   const [
     overview, byCountry, recent, daily,
     webTotals, webDaily, webByPath, webRefs, webByCountry,
+    updDaily, updByVersion, updByCountry,
   ] = await Promise.all([
     sql("SELECT blob5 AS who, SUM(_sample_interval) AS n FROM teebe_downloads GROUP BY who ORDER BY n DESC"),
     sql(`SELECT blob3 AS country, SUM(_sample_interval) AS n FROM teebe_downloads WHERE ${notMine} GROUP BY country ORDER BY n DESC`),
@@ -200,7 +230,19 @@ async function handleStats(url, env) {
     sql(`SELECT blob1 AS path, SUM(_sample_interval) AS n FROM teebe_pageviews WHERE ${webHuman} GROUP BY path ORDER BY n DESC LIMIT 10`),
     sql(`SELECT blob2 AS ref, SUM(_sample_interval) AS n FROM teebe_pageviews WHERE ${webHuman} AND blob2 != 'direct' GROUP BY ref ORDER BY n DESC LIMIT 10`),
     sql(`SELECT blob3 AS country, SUM(_sample_interval) AS n FROM teebe_pageviews WHERE ${webHuman} GROUP BY country ORDER BY n DESC LIMIT 10`),
+    sql(`SELECT toDate(timestamp) AS day, SUM(_sample_interval) AS n FROM teebe_updates WHERE ${appCheck} GROUP BY day ORDER BY day DESC LIMIT 15`),
+    sql(`SELECT blob1 AS version, SUM(_sample_interval) AS n FROM teebe_updates WHERE ${appCheck} AND timestamp > NOW() - INTERVAL '7' DAY GROUP BY version ORDER BY n DESC LIMIT 10`),
+    sql(`SELECT blob2 AS country, SUM(_sample_interval) AS n FROM teebe_updates WHERE ${appCheck} AND timestamp > NOW() - INTERVAL '7' DAY GROUP BY country ORDER BY n DESC LIMIT 15`),
   ]);
+
+  // Headline: average checks per full day over the last 7 complete days
+  // (today is partial, so it's skipped). ~= installs that ran the app daily.
+  const today = new Date().toISOString().slice(0, 10);
+  const fullDays = updDaily.filter((r) => String(r.day) < today).slice(0, 7);
+  const activeAvg = fullDays.length
+    ? Math.round(fullDays.reduce((s, r) => s + num(r.n), 0) / fullDays.length)
+    : 0;
+  const activeYesterday = fullDays.length ? num(fullDays[0].n) : 0;
 
   const counts = Object.fromEntries(overview.map((r) => [r.who, num(r.n)]));
   // Install headline = real installs only (your OWN_COUNTRY tests excluded).
@@ -236,6 +278,13 @@ async function handleStats(url, env) {
   const webRefRows = webRefs.length
     ? webRefs.map((r) => `<tr><td>${esc(r.ref)}</td><td class="r">${num(r.n)}</td></tr>`).join("")
     : `<tr><td colspan="2" class="muted">nessuno (tutto diretto)</td></tr>`;
+
+  const rows2 = (list, k, empty = "nessuna") => list.length
+    ? list.map((r) => `<tr><td>${esc(r[k])}</td><td class="r">${num(r.n)}</td></tr>`).join("")
+    : `<tr><td colspan="2" class="muted">${empty}</td></tr>`;
+  const updDailyRows = rows2(updDaily, "day");
+  const updVersionRows = rows2(updByVersion, "version");
+  const updCountryRows = rows2(updByCountry, "country");
 
   const webCountryRows = webByCountry.length
     ? webByCountry.map((r) => `<tr><td>${esc(r.country)}</td><td class="r">${num(r.n)}</td></tr>`).join("")
@@ -285,6 +334,24 @@ async function handleStats(url, env) {
 
   <h2>Ultime installazioni</h2>
   <table><thead><tr><th>Quando (UTC)</th><th>Paese</th><th>Versione</th></tr></thead><tbody>${recentRows}</tbody></table>
+
+  <h1 style="margin-top:40px">teebe · installazioni attive</h1>
+  <p class="sub">Controlli aggiornamenti Sparkle su <code>teebe.io/appcast.xml</code>: ogni app aperta ne fa ~1 al giorno, quindi <b>check/giorno ≈ installazioni attive</b>. Install cumulativi − attive ≈ disinstallate o non usate.</p>
+
+  <div class="big">
+    <div class="stat hl"><div class="label">Attive (media 7gg)</div><div class="value">${activeAvg}</div></div>
+    <div class="stat"><div class="label">Ieri</div><div class="value">${activeYesterday}</div></div>
+  </div>
+
+  <h2>Check per giorno (UTC)</h2>
+  <table><thead><tr><th>Giorno</th><th class="r">Check</th></tr></thead><tbody>${updDailyRows}</tbody></table>
+
+  <h2>Versioni in uso (ultimi 7 giorni)</h2>
+  <table><thead><tr><th>Versione</th><th class="r">Check</th></tr></thead><tbody>${updVersionRows}</tbody></table>
+
+  <h2>Paesi (ultimi 7 giorni)</h2>
+  <table><thead><tr><th>Paese</th><th class="r">Check</th></tr></thead><tbody>${updCountryRows}</tbody></table>
+  <p class="note">Solo UA Sparkle (app vere); browser e bot che leggono l'XML sono esclusi, come il paese ${esc(OWN_COUNTRY)}.</p>
 
   <h1 style="margin-top:40px">teebe · sito web</h1>
   <p class="sub">Visite reali al sito (beacon JS su teebe.io). Solo browser veri: i bot non eseguono JS, quindi quasi non compaiono.</p>
