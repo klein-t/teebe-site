@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Git worktree vs branch: when to use which (and vs clone)</title>
+  <meta name="description" content="Git worktree vs branch, worktree vs clone, and worktree vs stash: what each actually does, a decision table, and the commands you need." />
+  <link rel="canonical" href="https://teebe.io/guides/git-worktree-vs-branch/" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/guides/git-worktree-vs-branch/" />
+  <meta property="og:title" content="Git worktree vs branch: when to use which (and vs clone)" />
+  <meta property="og:description" content="Git worktree vs branch, worktree vs clone, and worktree vs stash: what each actually does and when to use which." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Git worktree vs branch: when to use which (and vs clone)" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://teebe.io/#guides" },
+      { "@type": "ListItem", "position": 3, "name": "Git worktree vs branch", "item": "https://teebe.io/guides/git-worktree-vs-branch/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Git worktree vs branch: when to use which (and vs clone)",
+    "description": "What a git branch gives you, what a worktree gives you, how a worktree differs from a clone and from a stash, and when to reach for each.",
+    "image": "https://teebe.io/assets/teebe-diff.png",
+    "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
+    "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
+    "datePublished": "2026-09-02",
+    "dateModified": "2026-09-02",
+    "mainEntityOfPage": "https://teebe.io/guides/git-worktree-vs-branch/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is a git worktree the same as a branch?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. A branch is a pointer to a commit inside one repository's history. A worktree is a second working directory on disk, checked out to a branch (or a detached commit) of a repository you already have. Every worktree has a branch or detached HEAD, but a branch does not require a worktree of its own." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can two worktrees use the same branch?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Git blocks checking out the same branch in two worktrees at once and prints fatal: 'branch' is already checked out at path. Check out a different branch, or create a new one, in the second worktree." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does a git worktree copy the whole repository?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Linked worktrees share the same .git object store, branches, stashes, and remotes as the main worktree. Only the working files and an index are duplicated, so a worktree is much cheaper than a second clone." }
+      },
+      {
+        "@type": "Question",
+        "name": "When should I use git stash instead of a worktree?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Use stash for a short interruption you'll resolve in minutes, like a quick fix on the same branch. Use a worktree when the interruption needs its own build, its own dependency install, or will run for longer than a few minutes, since a worktree does not touch your current working directory at all." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do gitignored files like .env show up in a new worktree?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. A worktree is a fresh checkout, so gitignored files are absent by default. Claude Code and Codex both support a .worktreeinclude file, in gitignore syntax, that lists gitignored files to copy into each new worktree." }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Guides › Git worktree vs branch</p>
+    <h1>Git worktree vs branch: when to use which</h1>
+    <p class="updated">Plus worktree vs clone and worktree vs stash, with a decision table.</p>
+
+    <p>
+      Short answer: a <strong>branch</strong> is a pointer to a commit inside your repository's
+      history. A <strong>worktree</strong> is a second working directory on disk, checked out to a
+      branch (or a detached commit) of that same repository. They aren't competing options for the
+      same job, a git worktree always has a branch (or a detached HEAD) checked out inside it. The
+      real question is whether you want a second branch in your current directory, or a second
+      directory entirely. This guide walks through both, plus how a worktree compares to cloning
+      the repo again and to <code>git stash</code>, so you know which one to reach for. If you want
+      the visual version of all this running live, <a href="/">teebe</a> is a native macOS worktree
+      GUI built for exactly this.
+    </p>
+
+    <h2>What a branch gives you, and what switching costs</h2>
+    <p>
+      A branch costs almost nothing to create: <code>git branch feature-a</code> just writes a new
+      ref pointing at your current commit. The catch is that your repository has only one working
+      directory, so only one branch can be checked out at a time. Moving to another branch means
+      <code>git checkout</code> or <code>git switch</code>, which rewrites every file in your
+      working tree to match that branch's snapshot.
+    </p>
+    <p>
+      That's fine when your tree is clean. It's not fine mid-feature: uncommitted changes either
+      block the switch outright, or force you to commit something half-finished, or send you to
+      <code>git stash</code> first. Then there's the rebuild cost, switch a branch in a project with
+      a compiled asset pipeline or a long <code>npm install</code>, and you're waiting again every
+      time you cross branches. None of this is a bug in branches, it's just what "one working
+      directory" implies.
+    </p>
+
+    <h2>What a worktree gives you</h2>
+    <p>
+      A worktree sidesteps the one-directory limit. <code>git worktree add</code> creates a second
+      working directory, linked to the same <code>.git</code> object store, with its own branch
+      checked out. Branches, stashes, remotes, and the full commit history are shared, only the
+      working files and the index are duplicated. One rule to remember: a branch can be checked out
+      in only one worktree at a time, so each worktree needs its own branch (or a detached HEAD).
+    </p>
+    <pre><code>git worktree add ../repo-hotfix -b hotfix
+git worktree list
+git worktree remove ../repo-hotfix</code></pre>
+    <p>
+      Your main checkout is untouched while the second one exists. No stash, no rebuild, no
+      committing half-done work just to switch context. Removing a worktree does not delete its
+      branch, that's a separate <code>git branch -d</code>.
+    </p>
+
+    <h2>Worktree vs clone</h2>
+    <p>
+      A second <code>git clone</code> also gets you a second working directory, so why not just
+      clone again? Because a clone duplicates the entire object store, every commit, every blob,
+      on disk, and re-fetching keeps two remotes in sync separately. A worktree shares one
+      <code>.git</code> directory, so it's a fraction of the disk cost and there's nothing to
+      re-fetch, new commits made in one worktree are immediately visible to every other worktree
+      of the same repo.
+    </p>
+    <p>
+      A clone still earns its place when you genuinely want isolation: a different remote entirely,
+      a fork you're testing independently, or a case where you don't want any shared state at all,
+      including shared stashes. For everyday parallel work on the same repository, a worktree is
+      the lighter tool.
+    </p>
+
+    <h2>Worktree vs stash</h2>
+    <p>
+      <code>git stash</code> is for a five-minute interruption on the branch you're already on:
+      shelve your changes, do the quick thing, <code>stash pop</code>, keep going. It's fast because
+      it doesn't touch the filesystem layout at all.
+    </p>
+    <p>
+      Once the interruption needs its own build, its own dependency install, or is going to run
+      longer than you'd want to hold your real work in limbo, stash stops being the right tool. A
+      worktree gives the interruption a completely separate directory, so your in-progress branch
+      never moves and never risks a messy stash pop later.
+    </p>
+
+    <h2>Decision table</h2>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr><th>Situation</th><th>Use</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Quick fix on main while mid-feature</td><td>Worktree</td></tr>
+          <tr><td>Reviewing a PR without disturbing your branch</td><td>Worktree</td></tr>
+          <tr><td>Running tests on two branches at once</td><td>Worktree</td></tr>
+          <tr><td>AI coding agents running in parallel</td><td>Worktree (one per agent)</td></tr>
+          <tr><td>Long-lived experiment, weeks of divergence</td><td>Worktree, or a clone if you want full isolation</td></tr>
+          <tr><td>Five-minute interruption on the same branch</td><td>Stash</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Why AI coding agents made worktrees mainstream</h2>
+    <p>
+      Worktrees existed for years as a niche git feature. They went mainstream because terminal
+      coding agents needed a way to run without colliding. <code>claude --worktree</code> creates
+      an isolated worktree and starts a session inside it, on a new branch, by default under
+      <code>.claude/worktrees/</code>, our <a href="/guides/claude-code-worktrees/">Claude Code
+      worktrees guide</a> covers the flags and cleanup behavior. Codex's app does the same
+      thing when you choose "Worktree" in a new chat, starting in a detached HEAD until you name a
+      branch, see the <a href="/guides/codex-worktrees/">Codex worktrees guide</a>. Cursor's
+      parallel agents each get their own isolated checkout too, covered in the
+      <a href="/guides/cursor-worktrees/">Cursor worktrees and parallel agents guide</a>. All three
+      tools converged on the same idea: one worktree per agent session, so agents can't step on
+      each other's files.
+    </p>
+    <p>
+      The side effect is that a single project can end up with several worktrees on disk at once,
+      several separate directories, each mid-change. That's what teebe is for: it lists every
+      worktree of every repo you add, shows a live file tree for each, badges files the instant an
+      agent touches them, and lets you peek any diff inline, all in one native window instead of
+      several terminal tabs. See <a href="/compare/git-worktree-gui-mac/">every git worktree GUI for
+      Mac compared</a> if you want the full landscape.
+    </p>
+
+    <h2>Gotchas</h2>
+    <ul>
+      <li>
+        <strong>Branch already checked out.</strong> <code>fatal: 'x' is already checked out at
+        &lt;path&gt;</code> means that branch is in use by another worktree. Check out a different
+        branch or create a new one for the second worktree.
+      </li>
+      <li>
+        <strong>Gitignored files aren't there.</strong> A new worktree is a fresh checkout, files
+        like <code>.env</code> that are gitignored won't be copied in automatically.
+      </li>
+      <li>
+        <strong>Stale worktree references.</strong> If you delete a worktree directory by hand
+        instead of running <code>git worktree remove</code>, git still thinks it exists. Run
+        <code>git worktree prune</code> to clean up the reference.
+      </li>
+    </ul>
+    <p>
+      For the full set of commands, see the <a href="/guides/git-worktree-cheat-sheet/">git worktree
+      cheat sheet</a>.
+    </p>
+
+    <h2>Frequently asked questions</h2>
+    <h3>Is a git worktree the same as a branch?</h3>
+    <p>
+      No. A branch is a pointer to a commit inside one repository's history. A worktree is a second
+      working directory on disk, checked out to a branch (or a detached commit) of a repository you
+      already have. Every worktree has a branch or detached HEAD, but a branch does not require a
+      worktree of its own.
+    </p>
+    <h3>Can two worktrees use the same branch?</h3>
+    <p>
+      No. Git blocks checking out the same branch in two worktrees at once and prints
+      <code>fatal: 'branch' is already checked out at &lt;path&gt;</code>. Check out a different
+      branch, or create a new one, in the second worktree.
+    </p>
+    <h3>Does a git worktree copy the whole repository?</h3>
+    <p>
+      No. Linked worktrees share the same <code>.git</code> object store, branches, stashes, and
+      remotes as the main worktree. Only the working files and an index are duplicated, so a
+      worktree is much cheaper than a second clone.
+    </p>
+    <h3>When should I use git stash instead of a worktree?</h3>
+    <p>
+      Use stash for a short interruption you'll resolve in minutes, like a quick fix on the same
+      branch. Use a worktree when the interruption needs its own build, its own dependency install,
+      or will run for longer than a few minutes, since a worktree does not touch your current
+      working directory at all.
+    </p>
+    <h3>Do gitignored files like .env show up in a new worktree?</h3>
+    <p>
+      No. A worktree is a fresh checkout, so gitignored files are absent by default. Claude Code and
+      Codex both support a <code>.worktreeinclude</code> file, in gitignore syntax, that lists
+      gitignored files to copy into each new worktree.
+    </p>
+
+    <div class="install" style="margin-top:28px">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub" style="text-align:center">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy.html. -->
+  <script>
+    (function () {
+      try {
+        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
+        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

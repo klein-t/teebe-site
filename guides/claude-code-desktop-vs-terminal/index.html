@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Claude Code desktop vs terminal vs VS Code: which to use</title>
+  <meta name="description" content="Claude Code desktop vs terminal vs the VS Code extension: what each surface adds, what it costs you, and which to pick for your workflow." />
+  <link rel="canonical" href="https://teebe.io/guides/claude-code-desktop-vs-terminal/" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/guides/claude-code-desktop-vs-terminal/" />
+  <meta property="og:title" content="Claude Code desktop vs terminal vs VS Code: which to use" />
+  <meta property="og:description" content="What the desktop app, the VS Code extension, and the terminal CLI each add, and which to pick for your workflow." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Claude Code desktop vs terminal vs VS Code: which to use" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://teebe.io/#guides" },
+      { "@type": "ListItem", "position": 3, "name": "Claude Code desktop vs terminal", "item": "https://teebe.io/guides/claude-code-desktop-vs-terminal/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Claude Code desktop vs terminal vs VS Code: which to use",
+    "description": "What the Claude Code desktop app, the VS Code extension, and the terminal CLI each add over one another, and which to pick for your workflow.",
+    "image": "https://teebe.io/assets/teebe-diff.png",
+    "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
+    "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
+    "mainEntityOfPage": "https://teebe.io/guides/claude-code-desktop-vs-terminal/",
+    "datePublished": "2026-09-02",
+    "dateModified": "2026-09-02"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is Claude Code desktop the same model as the CLI?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The docs say each surface, terminal, VS Code, desktop, and web, connects to the same underlying Claude Code engine, so your repo's CLAUDE.md files, settings, and MCP servers work across all of them." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use the terminal and the desktop app on the same project?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. You can run both on the same machine and the same project. They share configuration: CLAUDE.md files, settings, and MCP servers. Session history stays separate, and the desktop app documents that it does not see sessions you started from the terminal CLI or the VS Code extension, so the two run independently." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does the VS Code extension replace the CLI?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. The extension bundles its own copy of the CLI for its chat panel, but does not put claude on your shell PATH. Some features are CLI-only, and the docs point you to open VS Code's integrated terminal and run the standalone CLI install for those." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I see what Claude changed from the terminal?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The CLI itself does not have a built-in visual diff browser across worktrees. Common options are git status and git diff in each worktree, your editor's source control panel, or a dedicated git worktree GUI like teebe that badges changed files live and shows inline diffs." }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Guides › Claude Code desktop vs terminal</p>
+    <h1>Claude Code desktop vs terminal vs VS Code: which to use</h1>
+    <p class="updated">Same Claude Code engine, three surfaces. Here's what each one actually adds.</p>
+
+    <p>
+      <strong>Claude Code desktop vs terminal</strong> isn't really a fork in the road: the docs
+      describe the terminal, VS Code, the desktop app, and the web as surfaces on top of the same
+      underlying engine, sharing your repo's <code>CLAUDE.md</code>, settings, and MCP servers. The
+      short version: stay in the terminal if you live there and run several sessions with tmux or
+      separate windows; use the VS Code extension if you want diffs and plan review inside your
+      editor; use the desktop app if you want sessions managed for you, each with its own git
+      worktree, plus visual diff review and drag-and-drop panes. This guide goes through what each
+      surface's own docs say it does, so you can pick without guessing. If you're new to running
+      several Claude Code sessions at once, see our <a href="/guides/claude-code-worktrees/">Claude
+      Code worktrees guide</a> first.
+    </p>
+
+    <h2>The terminal CLI</h2>
+    <p>
+      The terminal is "the full-featured CLI for working with Claude Code directly in your
+      terminal," installed with <code>curl -fsSL https://claude.ai/install.sh | bash</code> (or
+      Homebrew, WinGet, apt/dnf/apk) and started with <code>claude</code> in any project directory.
+      It's composable by design: Claude Code "follows the Unix philosophy," so you can pipe logs
+      into it, run it in CI, or chain it with other tools, for example
+      <code>tail -200 app.log | claude -p "Slack me if you see any anomalies"</code> or
+      <code>git diff main --name-only | claude -p "review these changed files for security
+      issues"</code>. The <code>-p</code> flag runs it non-interactively for scripting.
+    </p>
+    <p>
+      This is why power users stay in the terminal: it's the surface every automation path assumes
+      (GitHub Actions, GitLab CI/CD, cron jobs), and it's what
+      runs inside tmux, Ghostty, or any multiplexer so you can keep several sessions open in
+      separate panes or windows without a GUI managing them for you. <code>claude --worktree
+      &lt;name&gt;</code> (or <code>-w</code>) creates an isolated git worktree and starts a session
+      in it, which is how terminal users run parallel agents without one session's edits colliding
+      with another's. See our <a href="/guides/claude-code-worktrees/">Claude Code worktrees
+      guide</a> for the full flag reference and cleanup behavior.
+    </p>
+
+    <h2>The desktop app</h2>
+    <p>
+      The desktop app is described as a way to "get more out of Claude Code Desktop: parallel
+      sessions with Git isolation, drag-and-drop pane layout, integrated terminal and file editor,
+      side chats, computer use, Dispatch sessions from your phone, visual diff review, app previews,
+      PR monitoring, connectors, and enterprise configuration." Each conversation is a
+      <strong>session</strong> with its own chat history, project folder, and code changes,
+      independent of other sessions, and the sidebar lets you run several in parallel
+      (<strong>Cmd+N</strong> / <strong>Ctrl+N</strong> for a new one, <strong>Ctrl+Tab</strong> to
+      cycle).
+    </p>
+    <p>
+      For git repositories, the docs state plainly: "each session gets its own isolated copy of your
+      project using Git worktrees, so changes in one session don't affect other sessions until you
+      commit them." Worktrees live in <code>&lt;project-root&gt;/.claude/worktrees/</code> by
+      default (configurable), and archiving a session from the sidebar removes its worktree. That's
+      the desktop app's core pitch over the terminal: you don't type <code>--worktree</code>
+      yourself, or remember to clean one up, the app does it per session, and you get visual diff
+      review, an integrated terminal, and a file editor pane in the same window.
+    </p>
+    <p>
+      What you give up: it's a separate app, so it doesn't live inside your existing terminal
+      workflow, and it only sees sessions it started itself. The docs are explicit that "Claude
+      doesn't see cloud sessions, or sessions you started from the terminal CLI or the VS Code
+      extension, even in worktrees of the same project." A paid subscription is required.
+    </p>
+
+    <h2>The VS Code extension</h2>
+    <p>
+      The VS Code extension "provides a native graphical interface for Claude Code, integrated
+      directly into your IDE," and per the docs is "the recommended way to use Claude Code in VS
+      Code." With it you can "review and edit Claude's plans before accepting them, auto-accept
+      edits as they're made, @-mention files with specific line ranges from your selection, access
+      conversation history, and open multiple conversations in separate tabs or windows." Its
+      headline features are inline diffs, @-mentions, plan review, and keyboard shortcuts, all shown
+      in the editor rather than a terminal pane.
+    </p>
+    <p>
+      It fits when your loop is editor-centric: you want to see Claude's proposed diff next to the
+      file it touches, without switching windows. It's not a replacement for the CLI, though: "the
+      extension bundles its own copy of the CLI for the chat panel," but "installing the extension
+      does not put <code>claude</code> on your shell PATH." For CLI-only features, the docs say to
+      open VS Code's integrated terminal and run the standalone CLI install. The extension and CLI
+      do share conversation history: run <code>claude --resume</code> in the terminal to continue an
+      extension conversation there.
+    </p>
+
+    <h2>How they compare</h2>
+    <div style="overflow-x:auto">
+    <table style="width:100%; border-collapse:collapse; margin:16px 0">
+      <thead>
+        <tr>
+          <th style="text-align:left; border-bottom:1px solid #333; padding:8px">Capability</th>
+          <th style="text-align:left; border-bottom:1px solid #333; padding:8px">Terminal CLI</th>
+          <th style="text-align:left; border-bottom:1px solid #333; padding:8px">VS Code extension</th>
+          <th style="text-align:left; border-bottom:1px solid #333; padding:8px">Desktop app</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #222">Run several sessions at once</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes, per docs, via <code>--worktree</code> in separate terminals</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes, per docs, multiple tabs/windows</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes, per docs, sidebar lists sessions in parallel</td>
+        </tr>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #222">Worktree per session automatically</td>
+          <td style="padding:8px; border-bottom:1px solid #222">You choose, with <code>--worktree</code></td>
+          <td style="padding:8px; border-bottom:1px solid #222">Not documented as automatic</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes, per docs, every git session gets its own worktree</td>
+        </tr>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #222">Inline diff review in the UI</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Shows edit diffs in the transcript</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes, per docs, inline diffs</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes, per docs, visual diff review</td>
+        </tr>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #222">Works with any editor</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes</td>
+          <td style="padding:8px; border-bottom:1px solid #222">No, VS Code (and forks) only</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes, has its own integrated file editor</td>
+        </tr>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #222">Scriptable / pipeable</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes, per docs, <code>-p</code> flag, CI, hooks</td>
+          <td style="padding:8px; border-bottom:1px solid #222">No, requires the standalone CLI in its integrated terminal</td>
+          <td style="padding:8px; border-bottom:1px solid #222">No, per docs, scripting and automation are not available</td>
+        </tr>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #222">Plan review before edits</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes, Plan mode</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes, per docs, review and edit plans before accepting</td>
+          <td style="padding:8px; border-bottom:1px solid #222">Yes, Plan is one of its permission modes</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>See every worktree in one window</h2>
+    <p>
+      One thing none of the three surfaces solve on their own: the terminal cannot show you, at a
+      glance, which files changed across five worktrees without running <code>git status</code> in
+      each one. The desktop app's worktrees are visible in its own sidebar, but only for sessions it
+      started. If you run <code>claude --worktree</code> from several terminal tabs, or mix terminal
+      and desktop sessions on the same repo, there's no single view of what's changed where.
+    </p>
+    <p>
+      That's the gap <a href="/">teebe</a> fills. It's a native macOS git worktree GUI that pins as
+      a small always-on-top window beside your terminal. It lists every worktree of every repo you
+      add, badges files live the instant an agent touches them on disk, and lets you peek any diff
+      inline with <strong>Space</strong>, no editor required. Because it watches the filesystem and
+      git directly, it doesn't care whether the change came from a terminal session, a desktop
+      session, or a VS Code tab, so it works as the one shared view across all three surfaces. It
+      also opens files in whatever native editor you already use, and can add or remove worktrees
+      itself. See our <a href="/guides/view-claude-code-changes/">guide to reviewing Claude Code
+      changes</a>, or the full <a href="/compare/git-worktree-gui-mac/">comparison of git worktree
+      GUIs for Mac</a>.
+    </p>
+
+    <h2>Recommendation by workflow</h2>
+    <ul>
+      <li><strong>Solo, scripted, or CI work:</strong> the terminal CLI. It's the only surface with
+        <code>-p</code>, pipes, and the automation paths (GitHub Actions, GitLab CI/CD, hooks).</li>
+      <li><strong>Running several agents in parallel:</strong> either terminal windows with
+        <code>--worktree</code> per session, or the desktop app if you want the sidebar, automatic
+        worktrees, and archive-on-done managed for you.</li>
+      <li><strong>Editor-centric work on one task at a time:</strong> the VS Code extension, for
+        inline diffs and plan review without leaving the file you're editing.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <h3>Is Claude Code desktop the same model as the CLI?</h3>
+    <p>
+      The docs say each surface, terminal, VS Code, desktop, and web, connects to the same
+      underlying Claude Code engine, so your repo's <code>CLAUDE.md</code> files, settings, and MCP
+      servers work across all of them.
+    </p>
+    <h3>Can I use the terminal and the desktop app on the same project?</h3>
+    <p>
+      Yes. You can run both on the same machine and the same project. They share configuration:
+      <code>CLAUDE.md</code> files, settings, and MCP servers. Session history stays separate, and the
+      desktop app's own docs note it does not see sessions you started from the terminal CLI or the VS
+      Code extension, so the two run independently.
+    </p>
+    <h3>Does the VS Code extension replace the CLI?</h3>
+    <p>
+      No. The extension bundles its own copy of the CLI for its chat panel, but does not put
+      <code>claude</code> on your shell PATH. Some features are CLI-only; the docs point you to VS
+      Code's integrated terminal and the standalone CLI install for those.
+    </p>
+    <h3>How do I see what Claude changed from the terminal?</h3>
+    <p>
+      The CLI has no built-in visual diff browser across worktrees. The usual options are
+      <code>git status</code> and <code>git diff</code> in each worktree, your editor's source
+      control panel, or a dedicated git worktree GUI like <a href="/">teebe</a> that badges changed
+      files live and shows inline diffs beside your terminal.
+    </p>
+
+    <div class="install" style="margin-top:28px">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub" style="text-align:center">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy.html. -->
+  <script>
+    (function () {
+      try {
+        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
+        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

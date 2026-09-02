@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Codex worktrees: how the Codex app isolates parallel work</title>
+  <meta name="description" content="How the Codex app uses git worktrees to isolate parallel chats: where they live on disk, managed vs permanent, cleanup limits, and the CLI equivalent." />
+  <link rel="canonical" href="https://teebe.io/guides/codex-worktrees/" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/guides/codex-worktrees/" />
+  <meta property="og:title" content="Codex worktrees: how the Codex app isolates parallel work" />
+  <meta property="og:description" content="How the Codex app uses git worktrees to isolate parallel chats: where they live on disk, managed vs permanent, cleanup limits, and the CLI equivalent." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Codex worktrees: how the Codex app isolates parallel work" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://teebe.io/#guides" },
+      { "@type": "ListItem", "position": 3, "name": "Codex worktrees", "item": "https://teebe.io/guides/codex-worktrees/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Codex worktrees: how the Codex app isolates parallel work",
+    "description": "How the Codex app uses git worktrees to isolate parallel chats: where they live on disk, managed vs permanent, cleanup limits, and the CLI equivalent.",
+    "image": "https://teebe.io/assets/teebe-diff.png",
+    "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
+    "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
+    "datePublished": "2026-09-02",
+    "dateModified": "2026-09-02",
+    "mainEntityOfPage": "https://teebe.io/guides/codex-worktrees/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Where are Codex worktrees stored?",
+        "acceptedAnswer": { "@type": "Answer", "text": "By default under $CODEX_HOME/worktrees. You can change the location in Settings > Worktrees > Worktree root." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why is my Codex worktree in detached HEAD?",
+        "acceptedAnswer": { "@type": "Answer", "text": "New Codex worktrees start detached from the branch they were created from, not checked out to a branch. Click Create branch here in the chat header to turn it into a real branch." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does Codex delete worktrees?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Codex keeps up to 15 managed worktrees by default and can auto-delete older ones when you archive a chat or it needs space, after saving a snapshot you can restore by reopening the chat. Permanent worktrees, and worktrees of pinned or in-progress chats, are never auto-deleted." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can two chats share a worktree?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes, but only if it is a permanent worktree, created from the three-dot menu on a project in the sidebar. Managed worktrees are usually one chat each." }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Guides › Codex worktrees</p>
+    <h1>Codex worktrees: how the Codex app isolates parallel work</h1>
+    <p class="updated">How the Codex app uses git worktrees to keep parallel chats out of each other's way, and where they end up on disk.</p>
+
+    <p>
+      When you start a new chat in the Codex app, you can put it in a <strong>Codex worktree</strong>:
+      a separate git checkout, isolated from your main working copy, so that chat's edits don't
+      collide with whatever else you're doing in the repo. This is the same underlying mechanism as
+      <a href="/guides/git-worktree-cheat-sheet/">plain <code>git worktree</code></a>, wired up by
+      Codex so you don't have to run the commands yourself. This guide covers where Codex puts
+      worktrees, the two kinds it manages, how to hand off between them, cleanup limits, and what to
+      do from the CLI if you'd rather drive it by hand.
+    </p>
+
+    <h2>Starting a chat in a worktree</h2>
+    <p>
+      In the new chat view, choose <strong>Worktree</strong>, pick a starting branch, and submit
+      your prompt. Codex creates a git worktree from that branch and runs the chat inside it. Two
+      things worth knowing up front:
+    </p>
+    <ul>
+      <li>The worktree starts in a <strong>detached HEAD</strong> state, it is not checked out to a
+        branch yet. Click <strong>Create branch here</strong> in the chat header when you want to
+        turn it into a real branch you can push.</li>
+      <li>Git only allows a given branch to be checked out in one worktree at a time, so if a branch
+        is already active elsewhere, Codex (like plain git) can't check it out again in a second
+        worktree.</li>
+    </ul>
+
+    <h2>Where Codex puts worktrees on disk</h2>
+    <p>
+      By default, Codex creates worktrees under <code>$CODEX_HOME/worktrees</code>. If you want them
+      somewhere else, change the location in <strong>Settings &gt; Worktrees &gt; Worktree root</strong>.
+      Because this is separate from your project directory, it's easy to lose track of which folder
+      belongs to which chat, especially once you have several running.
+    </p>
+
+    <h2>Managed vs permanent worktrees</h2>
+    <p>Codex distinguishes two kinds of worktree:</p>
+    <ul>
+      <li><strong>Managed worktrees</strong>: lightweight, created automatically per chat, and
+        usually hold one chat each.</li>
+      <li><strong>Permanent worktrees</strong>: created from the three-dot menu on a project in the
+        sidebar. They're never auto-deleted and can host multiple chats at once, which makes them a
+        better fit for a long-running branch you keep coming back to.</li>
+    </ul>
+
+    <h2>Handing off between Local and Worktree</h2>
+    <p>
+      A chat can be moved between your local checkout and a worktree with the <strong>Hand off</strong>
+      control. A couple of details affect what actually shows up when you hand off:
+    </p>
+    <ul>
+      <li>Gitignored files (like <code>.env</code>) are not carried over automatically. List the
+        ones you need in a <code>.worktreeinclude</code> file (gitignore syntax) to have them
+        copied in.</li>
+      <li>Codex automatically copies an ignored <code>AGENTS.override.md</code> into managed
+        worktrees, so per-worktree agent instructions travel with the chat.</li>
+      <li>The <strong>Open</strong> button in the chat header opens your IDE directly at the
+        worktree's path.</li>
+    </ul>
+
+    <h2>Cleanup and limits</h2>
+    <p>
+      Codex keeps up to <strong>15 managed worktrees</strong> by default (configurable). Worktrees
+      belonging to pinned or in-progress chats, and all permanent worktrees, are excluded from
+      auto-deletion. When Codex does clean one up, either because you archived the chat or it needs
+      space, it saves a snapshot first. If you reopen that chat later, the worktree is restored from
+      the snapshot.
+    </p>
+
+    <h2>Codex CLI and plain git worktrees</h2>
+    <p>
+      The worktree behavior above belongs to the Codex app. The <a href="https://learn.chatgpt.com/docs/cli">Codex CLI docs</a>
+      don't document worktree-specific flags or automatic worktree creation. If you drive Codex from a
+      terminal, you get equivalent isolation by driving git yourself:
+    </p>
+    <pre><code>git worktree add ../repo-task -b task
+cd ../repo-task
+codex</code></pre>
+    <p>
+      That's a plain <code>git worktree add</code> followed by <code>cd</code> and <code>codex</code>,
+      one branch, one directory, no collision with your main checkout. See the
+      <a href="/guides/git-worktree-cheat-sheet/">git worktree cheat sheet</a> for the rest of the
+      commands (list, remove, lock, prune) if you're managing these by hand.
+    </p>
+
+    <h2>See every worktree in one window</h2>
+    <p>
+      The blind spot with app-managed worktrees is that they pile up somewhere under
+      <code>$CODEX_HOME/worktrees</code>, in detached HEAD, and it's genuinely hard to tell from
+      Finder or a terminal which folder belongs to which chat, or what any of them actually changed.
+    </p>
+    <p>
+      <a href="/">teebe</a> is a native macOS git worktree GUI built for exactly this. Add your repo
+      once and every worktree shows up in one list, including the ones Codex created for you. Pick
+      one and you get a live file tree that badges the instant Codex edits a file, with no manual
+      refresh. Press Space on a changed file to peek its diff inline, or open it in whatever editor
+      you already use. It also lists ahead/behind counts and can add or remove worktrees itself, and
+      it auto-detects worktrees created or removed externally, so a worktree Codex creates (or
+      deletes) shows up without you doing anything. teebe doesn't edit code, run agents, or touch git
+      history, it's the navigator, not the driver. If you use Claude Code too, the
+      <a href="/guides/claude-code-worktrees/">Claude Code worktrees guide</a> covers the same idea
+      there, and <a href="/compare/git-worktree-gui-mac/">every git worktree GUI for Mac, compared</a>
+      if you want to see the alternatives.
+    </p>
+
+    <h2>Frequently asked questions</h2>
+
+    <h3>Where are Codex worktrees stored?</h3>
+    <p>By default under <code>$CODEX_HOME/worktrees</code>. You can change the location in Settings &gt; Worktrees &gt; Worktree root.</p>
+
+    <h3>Why is my Codex worktree in detached HEAD?</h3>
+    <p>New Codex worktrees start detached from the branch they were created from, not checked out to a branch. Click <strong>Create branch here</strong> in the chat header to turn it into a real branch.</p>
+
+    <h3>Does Codex delete worktrees?</h3>
+    <p>Codex keeps up to 15 managed worktrees by default and can auto-delete older ones when you archive a chat or it needs space, after saving a snapshot you can restore by reopening the chat. Permanent worktrees, and worktrees of pinned or in-progress chats, are never auto-deleted.</p>
+
+    <h3>Can two chats share a worktree?</h3>
+    <p>Yes, but only if it's a permanent worktree, created from the three-dot menu on a project in the sidebar. Managed worktrees are usually one chat each.</p>
+
+    <div class="install" style="margin-top:28px">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub" style="text-align:center">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy.html. -->
+  <script>
+    (function () {
+      try {
+        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
+        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

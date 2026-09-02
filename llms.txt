@@ -12,7 +12,13 @@ Key facts:
 ## Pages
 
 - [Home](https://teebe.io/): what teebe does, feature overview, interactive demo, FAQ
-- [Guide: view Claude Code changes live](https://teebe.io/guides/view-claude-code-changes/): using teebe to watch a Claude Code session's edits in real time
+- [Guide: Claude Code worktrees, explained](https://teebe.io/guides/claude-code-worktrees/): how `claude --worktree` works, where worktrees live (.claude/worktrees), .worktreeinclude, subagent isolation, cleanup, and how to see what each parallel session changed
+- [Guide: Codex worktrees](https://teebe.io/guides/codex-worktrees/): how the Codex app isolates parallel chats in worktrees under $CODEX_HOME/worktrees, managed vs permanent worktrees, cleanup limits
+- [Guide: Cursor worktrees and parallel agents](https://teebe.io/guides/cursor-worktrees/): how Cursor's parallel agents use worktrees, .cursor/worktrees.json setup, /apply-worktree, cleanup settings
+- [Guide: Claude Code diff viewer](https://teebe.io/guides/view-claude-code-changes/): using teebe to watch a Claude Code session's edits in real time, with inline diffs
+- [Guide: Claude Code desktop vs terminal vs VS Code](https://teebe.io/guides/claude-code-desktop-vs-terminal/): which Claude Code surface fits which workflow
+- [Guide: git worktree vs branch](https://teebe.io/guides/git-worktree-vs-branch/): what each is, worktree vs clone vs stash, decision table
+- [Guide: git worktree cheat sheet](https://teebe.io/guides/git-worktree-cheat-sheet/): add, list, remove, prune, move, lock, and common error fixes
 - [Comparison: every git worktree GUI for Mac](https://teebe.io/compare/git-worktree-gui-mac/): Fork, Tower, GitKraken, Sourcetree, Conductor, Nimbalyst, Worktrunk, Grovr, WorktreeWise, and teebe compared on worktree features, price, and AI-agent support
 - [Changelog](https://teebe.io/changelog.html): release history
 - [Privacy](https://teebe.io/privacy.html): data practices

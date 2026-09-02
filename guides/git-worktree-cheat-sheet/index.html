@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Git worktree cheat sheet: add, list, remove, prune, move</title>
+  <meta name="description" content="Every git worktree command you need: add, list, remove, prune, move, lock, and the fixes for the errors you'll actually hit." />
+  <link rel="canonical" href="https://teebe.io/guides/git-worktree-cheat-sheet/" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/guides/git-worktree-cheat-sheet/" />
+  <meta property="og:title" content="Git worktree cheat sheet: add, list, remove, prune, move" />
+  <meta property="og:description" content="Every git worktree command you need: add, list, remove, prune, move, lock, and the fixes for the errors you'll actually hit." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Git worktree cheat sheet: add, list, remove, prune, move" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://teebe.io/#guides" },
+      { "@type": "ListItem", "position": 3, "name": "Git worktree cheat sheet", "item": "https://teebe.io/guides/git-worktree-cheat-sheet/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Git worktree cheat sheet: add, list, remove, prune, move",
+    "description": "Every git worktree command you need: add, list, remove, prune, move, lock, and the fixes for the errors you'll actually hit.",
+    "image": "https://teebe.io/assets/teebe-diff.png",
+    "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
+    "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
+    "mainEntityOfPage": "https://teebe.io/guides/git-worktree-cheat-sheet/",
+    "datePublished": "2026-09-02",
+    "dateModified": "2026-09-02"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I create a worktree from an existing branch?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Run git worktree add <path> <branch>, for example git worktree add ../repo-hotfix hotfix. The branch must not already be checked out in another worktree. For a remote branch, fetch first, then run git worktree add <path> <remote-branch>; git checks out a matching local branch or you can pass --track explicitly." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I delete a worktree and its branch?",
+        "acceptedAnswer": { "@type": "Answer", "text": "First remove the worktree with git worktree remove <path> (add --force if it has uncommitted changes you don't need). Then delete the branch separately with git branch -d <branch>, or -D to force it. Removing a worktree never deletes its branch." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does git say the branch is already checked out?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Git only allows a branch to be checked out in one worktree at a time. If you see fatal: <branch> is already checked out at <path>, either use that existing worktree, check out a different branch, or remove the other worktree first with git worktree remove." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do worktrees share stashes?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Linked worktrees share the same .git object store with the main worktree, which includes branches, stashes, and remotes. Only HEAD, the index, and the working files are separate per worktree." }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Guides › Git worktree cheat sheet</p>
+    <h1>Git worktree cheat sheet</h1>
+    <p class="updated">Every git worktree command you need, plus the errors you'll actually hit.</p>
+
+    <p>
+      A git worktree is a second working directory attached to the same repository: its own HEAD,
+      index, and files, but the same <code>.git</code> object store, branches, stashes, and remotes
+      as your main checkout. The one rule that trips people up: a branch can be checked out in only
+      one worktree at a time. This is a straight command reference. For the difference between a
+      worktree and a branch, see <a href="/guides/git-worktree-vs-branch/">git worktree vs branch</a>.
+    </p>
+
+    <h2>Create a worktree</h2>
+    <p>New branch, off the current HEAD:</p>
+    <pre><code>git worktree add -b feature-a ../repo-feature-a</code></pre>
+    <p>Existing local branch:</p>
+    <pre><code>git worktree add ../repo-feature-a feature-a</code></pre>
+    <p>From a remote branch, fetch first so git can see it, then add it:</p>
+    <pre><code>git fetch origin
+git worktree add -b feature-a ../repo-feature-a origin/feature-a</code></pre>
+    <p>Detached HEAD, no branch at all, useful for a quick look at a commit:</p>
+    <pre><code>git worktree add --detach ../repo-scratch abc1234</code></pre>
+    <p>
+      Naming convention worth adopting: keep worktrees as siblings of the repo, named
+      <code>../repo-&lt;branch&gt;</code>, so they're easy to spot in a file browser and never nested
+      inside the repo itself.
+    </p>
+
+    <h2>List and inspect worktrees</h2>
+    <p>Human-readable list, with the branch and HEAD of each:</p>
+    <pre><code>git worktree list</code></pre>
+    <p>Machine-readable output, useful for scripts:</p>
+    <pre><code>git worktree list --porcelain</code></pre>
+
+    <h2>Remove and prune</h2>
+    <p>Remove a worktree once you're done with it:</p>
+    <pre><code>git worktree remove ../repo-feature-a</code></pre>
+    <p>Force it if the worktree has uncommitted changes you don't need:</p>
+    <pre><code>git worktree remove --force ../repo-feature-a</code></pre>
+    <p>If a worktree's directory was deleted manually instead of through git, clean up the stale metadata:</p>
+    <pre><code>git worktree prune</code></pre>
+    <p>Removing a worktree does not delete its branch. Do that separately:</p>
+    <pre><code>git branch -d feature-a</code></pre>
+
+    <h2>Move, lock, unlock, repair</h2>
+    <p>Move a worktree to a new path, git updates the metadata for you:</p>
+    <pre><code>git worktree move ../repo-feature-a ../repo-feature-a-renamed</code></pre>
+    <p>Lock a worktree so <code>prune</code> and <code>remove</code> leave it alone, for example one on removable media:</p>
+    <pre><code>git worktree lock ../repo-feature-a</code></pre>
+    <pre><code>git worktree unlock ../repo-feature-a</code></pre>
+    <p>If worktree paths moved outside of git's knowledge and metadata is now stale, repair it:</p>
+    <pre><code>git worktree repair</code></pre>
+
+    <h2>Common errors and fixes</h2>
+    <p><code>fatal: '&lt;branch&gt;' is already checked out at '&lt;path&gt;'</code></p>
+    <p>
+      That branch is in use in another worktree. Either <code>cd</code> into that worktree, check
+      out a different branch, or remove the other worktree first with <code>git worktree remove</code>.
+    </p>
+    <p><code>fatal: '&lt;path&gt;' is a missing but locked worktree</code></p>
+    <p>
+      The directory is gone but the worktree was locked, so <code>prune</code> refuses to touch it.
+      Unlock it with <code>git worktree unlock &lt;path&gt;</code>, then <code>git worktree prune</code>
+      or <code>git worktree remove --force &lt;path&gt;</code>.
+    </p>
+    <p><code>cannot delete branch '&lt;x&gt;' used by worktree at '&lt;path&gt;'</code></p>
+    <p>
+      Git won't delete a branch that's checked out somewhere. Remove that worktree first with
+      <code>git worktree remove &lt;path&gt;</code>, then <code>git branch -d &lt;x&gt;</code>.
+    </p>
+    <p>Untracked or ignored files missing in the new worktree</p>
+    <p>
+      A new worktree is a fresh checkout: files git doesn't track, like <code>.env</code>, are not
+      copied over. Copy them manually, or use whatever include mechanism your tooling supports.
+    </p>
+
+    <h2>Worktrees and AI coding agents</h2>
+    <p>
+      Terminal agents lean on worktrees to run isolated sessions without stepping on each other or
+      on your main checkout. One worktree per agent session is the pattern: <code>claude --worktree
+      &lt;name&gt;</code> creates one under <code>.claude/worktrees/&lt;name&gt;</code> on a new branch,
+      Codex's app puts managed worktrees under <code>$CODEX_HOME/worktrees</code>, and Cursor spins up
+      an isolated checkout per parallel agent. See the full guides for each:
+      <a href="/guides/claude-code-worktrees/">Claude Code worktrees</a>,
+      <a href="/guides/codex-worktrees/">Codex worktrees</a>, and
+      <a href="/guides/cursor-worktrees/">Cursor worktrees and parallel agents</a>.
+    </p>
+
+    <h2>See them all at once</h2>
+    <p>
+      <a href="/">teebe</a> is a native macOS git worktree GUI that lists every worktree of every repo
+      you add, in one window. Add or remove worktrees straight from its WORKTREES header, and it
+      auto-detects ones created or removed from the terminal, so it never drifts out of sync with
+      what <code>git worktree add</code> and <code>remove</code> actually did. Files badge live as
+      agents touch them, and Space peeks any diff inline without opening an editor. See
+      <a href="/compare/git-worktree-gui-mac/">every git worktree GUI for Mac compared</a>.
+    </p>
+
+    <h2>Frequently asked questions</h2>
+
+    <h3>How do I create a worktree from an existing branch?</h3>
+    <p>
+      Run <code>git worktree add &lt;path&gt; &lt;branch&gt;</code>, for example
+      <code>git worktree add ../repo-hotfix hotfix</code>. The branch must not already be checked out
+      in another worktree. For a remote branch, fetch first, then run
+      <code>git worktree add -b &lt;branch&gt; &lt;path&gt; origin/&lt;branch&gt;</code>.
+    </p>
+
+    <h3>How do I delete a worktree and its branch?</h3>
+    <p>
+      First remove the worktree with <code>git worktree remove &lt;path&gt;</code> (add
+      <code>--force</code> if it has changes you don't need). Then delete the branch separately with
+      <code>git branch -d &lt;branch&gt;</code>, or <code>-D</code> to force it. Removing a worktree
+      never deletes its branch.
+    </p>
+
+    <h3>Why does git say the branch is already checked out?</h3>
+    <p>
+      Git only allows a branch to be checked out in one worktree at a time. If you see
+      <code>fatal: '&lt;branch&gt;' is already checked out at '&lt;path&gt;'</code>, either use that
+      existing worktree, check out a different branch, or remove the other worktree first.
+    </p>
+
+    <h3>Do worktrees share stashes?</h3>
+    <p>
+      Yes. Linked worktrees share the same <code>.git</code> object store with the main worktree,
+      which includes branches, stashes, and remotes. Only HEAD, the index, and the working files are
+      separate per worktree.
+    </p>
+
+    <div class="install" style="margin-top:28px">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub" style="text-align:center">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy.html. -->
+  <script>
+    (function () {
+      try {
+        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
+        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

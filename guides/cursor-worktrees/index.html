@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Cursor worktrees: run parallel agents without conflicts</title>
+  <meta name="description" content="How Cursor uses git worktrees for parallel agents, how to configure .cursor/worktrees.json, and how to see every worktree at once on macOS." />
+  <link rel="canonical" href="https://teebe.io/guides/cursor-worktrees/" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/guides/cursor-worktrees/" />
+  <meta property="og:title" content="Cursor worktrees: run parallel agents without conflicts" />
+  <meta property="og:description" content="How Cursor uses git worktrees for parallel agents, .cursor/worktrees.json setup, and seeing every worktree at once." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Cursor worktrees: run parallel agents without conflicts" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://teebe.io/#guides" },
+      { "@type": "ListItem", "position": 3, "name": "Cursor worktrees", "item": "https://teebe.io/guides/cursor-worktrees/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Cursor worktrees: run parallel agents without conflicts",
+    "description": "How Cursor uses git worktrees for parallel agents, how to configure .cursor/worktrees.json, and how to bring the work back with /apply-worktree.",
+    "image": "https://teebe.io/assets/teebe-diff.png",
+    "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
+    "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
+    "datePublished": "2026-09-02",
+    "dateModified": "2026-09-02",
+    "mainEntityOfPage": "https://teebe.io/guides/cursor-worktrees/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Where does Cursor store worktrees?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Cursor's docs do not state a fixed on-disk path for worktrees. Run git worktree list in your repo to see exactly where each one lives." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I install dependencies in a Cursor worktree?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Add a .cursor/worktrees.json file in your project root with a setup-worktree key (or setup-worktree-unix and setup-worktree-windows) listing the shell commands to run, or a path to a setup script. Cursor does not recommend symlinking node_modules from the main checkout." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I merge an agent's worktree back into my main checkout?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Commit or open a pull request from the worktree checkout, or run /apply-worktree to bring the changes into your main checkout, then /delete-worktree to clean up." }
+      },
+      {
+        "@type": "Question",
+        "name": "How many worktrees does Cursor keep around?",
+        "acceptedAnswer": { "@type": "Answer", "text": "By default Cursor checks for cleanup every 6 hours (cursor.worktreeCleanupIntervalHours) and caps the count at 25 (cursor.worktreeMaxCount). Both are configurable settings." }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Guides › Cursor worktrees</p>
+    <h1>Cursor worktrees: run parallel agents without conflicts</h1>
+    <p class="updated">How Cursor isolates parallel agents in git worktrees, how to configure the environment, and how to see all of them at once.</p>
+
+    <p>
+      When you run more than one Cursor agent at a time, each one needs its own copy of your files
+      so they don't overwrite each other mid-edit. Cursor solves this with <strong>git worktrees</strong>:
+      every parallel agent gets its own isolated checkout, and your main checkout stays untouched
+      while agents work. This guide covers how that works, how to configure the worktree
+      environment, and how to bring the results back.
+    </p>
+
+    <h2>How Cursor's parallel agents use worktrees</h2>
+    <p>
+      Cursor's parallel agents run in isolated git checkouts, each with its own files, its own
+      installed dependencies, and its own uncommitted changes. Your main checkout is not touched
+      while an agent runs in its worktree, so you can keep working in it, or launch a second agent
+      in a second worktree, without either stepping on the other's files.
+    </p>
+    <p>
+      That's the same underlying mechanism <a href="/guides/claude-code-worktrees/">Claude Code</a>
+      and <a href="/guides/codex-worktrees/">Codex</a> use for their own parallel or isolated
+      sessions: a linked git worktree per agent, sharing one <code>.git</code> object store but each
+      with its own working directory. For the git side of that mechanism, see the
+      <a href="/guides/git-worktree-cheat-sheet/">git worktree cheat sheet</a> and
+      <a href="/guides/git-worktree-vs-branch/">git worktree vs branch</a>.
+    </p>
+
+    <h2>Set up the worktree environment</h2>
+    <p>
+      Agent worktrees are fresh checkouts, so they need their own setup step for things like
+      installing dependencies. Cursor reads this from a <code>.cursor/worktrees.json</code> file in
+      your project root, with three optional keys:
+    </p>
+    <ul>
+      <li><code>setup-worktree</code>, the default setup commands.</li>
+      <li><code>setup-worktree-unix</code>, run on macOS and Linux.</li>
+      <li><code>setup-worktree-windows</code>, run on Windows.</li>
+    </ul>
+    <p>
+      Each key can be an array of shell commands, or a path to a script to run. Inside that setup,
+      the <code>$ROOT_WORKTREE_PATH</code> environment variable points back at your main checkout,
+      which is useful if you need to reference something there. Cursor's docs specifically call out
+      that symlinking dependencies like <code>node_modules</code> from the main checkout is not
+      recommended; installing fresh in each worktree is the supported path.
+    </p>
+    <pre><code>{
+  "setup-worktree-unix": ["npm install"],
+  "setup-worktree-windows": ["npm install"]
+}</code></pre>
+
+    <h2>Bring the work back</h2>
+    <p>
+      Because each agent's worktree is a separate checkout, nothing you do in one affects another
+      agent running in a different worktree, and nothing either agent does affects your main
+      checkout until you explicitly bring it back. That's the whole point of the isolation: you can
+      let an agent run for a while, check on it later, and decide then whether its changes are worth
+      keeping.
+    </p>
+    <p>
+      Once an agent finishes in its worktree, you have two ways to bring the change back:
+    </p>
+    <ol>
+      <li><strong>Commit or open a PR directly from the worktree checkout</strong>, the same as you would from any other git checkout.</li>
+      <li><strong>Run <code>/apply-worktree</code></strong> to bring the changes into your main checkout, then <strong><code>/delete-worktree</code></strong> to remove the worktree once you're done with it.</li>
+    </ol>
+
+    <h2>Cleanup settings</h2>
+    <p>
+      Cursor cleans up worktrees on its own on a schedule, controlled by two settings:
+    </p>
+    <ul>
+      <li><code>cursor.worktreeCleanupIntervalHours</code>, default 6 hours between cleanup passes.</li>
+      <li><code>cursor.worktreeMaxCount</code>, default 25, the cap on how many worktrees Cursor keeps around.</li>
+    </ul>
+    <p>
+      Both are configurable if you want Cursor to hold onto worktrees longer, or cap them tighter.
+      If you regularly run a lot of parallel agents on a big repo, it's worth checking these two
+      settings rather than relying on the defaults, especially if you notice a worktree missing
+      that you expected to still be around.
+    </p>
+
+    <h2>Cursor CLI and plain git worktrees</h2>
+    <p>
+      If you drive an agent from a terminal instead of the Cursor app, you get the same isolation
+      by hand with plain git:
+    </p>
+    <pre><code>git worktree add ../repo-task -b task
+cd ../repo-task
+# run your agent here</code></pre>
+    <p>
+      That's the same primitive Cursor's parallel agents use under the hood, just without the app
+      managing setup and cleanup for you. See the
+      <a href="/guides/git-worktree-cheat-sheet/">git worktree cheat sheet</a> for the full command
+      set, and <a href="/guides/git-worktree-vs-branch/">git worktree vs branch</a> if you're
+      deciding when a worktree is worth it over a plain branch switch.
+    </p>
+
+    <h2>Seeing every agent's worktree at once</h2>
+    <p>
+      Cursor manages the worktrees its own agents create. It gets harder to track once you're also running
+      <a href="/guides/claude-code-worktrees/">Claude Code</a> or
+      <a href="/guides/codex-worktrees/">Codex</a> in other worktrees of the same repo: nothing in
+      any single tool shows you all of them together.
+    </p>
+    <p>
+      <a href="/">teebe</a> is a native macOS git worktree GUI built for exactly this. It lists
+      every worktree of every repo you add, regardless of which agent or tool created it, badges
+      files the instant they change on disk, lets you peek any diff inline with Space, pins as a
+      small always-on-top window beside your terminal, and opens files in whatever native editor
+      you use. See the full rundown in the
+      <a href="/compare/git-worktree-gui-mac/">comparison of git worktree GUIs for Mac</a>.
+    </p>
+
+    <h2>Frequently asked questions</h2>
+
+    <h3>Where does Cursor store worktrees?</h3>
+    <p>
+      Cursor's docs do not state a fixed on-disk path for worktrees. Run <code>git worktree list</code>
+      in your repo to see exactly where each one lives.
+    </p>
+
+    <h3>How do I install dependencies in a Cursor worktree?</h3>
+    <p>
+      Add a <code>.cursor/worktrees.json</code> file with a <code>setup-worktree</code> key (or the
+      platform-specific <code>setup-worktree-unix</code> / <code>setup-worktree-windows</code>
+      keys) listing the commands to run, or a path to a setup script. Don't symlink
+      <code>node_modules</code> from the main checkout.
+    </p>
+
+    <h3>How do I merge an agent's worktree back into my main checkout?</h3>
+    <p>
+      Commit or open a pull request straight from the worktree checkout, or run
+      <code>/apply-worktree</code> to bring the changes into your main checkout, then
+      <code>/delete-worktree</code> to clean up.
+    </p>
+
+    <h3>How many worktrees does Cursor keep around?</h3>
+    <p>
+      Up to <code>cursor.worktreeMaxCount</code> (default 25), checked every
+      <code>cursor.worktreeCleanupIntervalHours</code> (default 6 hours). Both settings are
+      configurable.
+    </p>
+
+    <div class="install" style="margin-top:28px">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub" style="text-align:center">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy.html. -->
+  <script>
+    (function () {
+      try {
+        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
+        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

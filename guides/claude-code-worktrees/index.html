@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Claude Code worktrees: run parallel sessions, explained</title>
+  <meta name="description" content="How Claude Code worktrees work: claude --worktree, .worktreeinclude, parallel agents, cleanup, and how to see what each session changed on macOS." />
+  <link rel="canonical" href="https://teebe.io/guides/claude-code-worktrees/" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/guides/claude-code-worktrees/" />
+  <meta property="og:title" content="Claude Code worktrees: run parallel sessions, explained" />
+  <meta property="og:description" content="How Claude Code worktrees work: claude --worktree, .worktreeinclude, parallel agents, cleanup, and how to see what each session changed." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Claude Code worktrees: run parallel sessions, explained" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://teebe.io/#guides" },
+      { "@type": "ListItem", "position": 3, "name": "Claude Code worktrees", "item": "https://teebe.io/guides/claude-code-worktrees/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Claude Code worktrees: run parallel sessions, explained",
+    "description": "How Claude Code worktrees work: claude --worktree, .worktreeinclude, parallel agents, cleanup, and how to see what each session changed on macOS.",
+    "image": "https://teebe.io/assets/teebe-diff.png",
+    "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
+    "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
+    "datePublished": "2026-09-02",
+    "dateModified": "2026-09-02",
+    "mainEntityOfPage": "https://teebe.io/guides/claude-code-worktrees/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Where does Claude Code put worktrees?",
+        "acceptedAnswer": { "@type": "Answer", "text": "By default at .claude/worktrees/<name> under your repo root, on a new branch named worktree-<name>. Add .claude/worktrees/ to your .gitignore." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does Claude Code delete worktrees automatically?",
+        "acceptedAnswer": { "@type": "Answer", "text": "For an interactive session, yes if it's clean: an unnamed session removes the worktree and branch on exit automatically, a named session prompts you first. If the worktree has changes or new commits, Claude always prompts. Non-interactive -p runs do not clean up; remove them yourself with git worktree remove." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can subagents use their own worktree?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Ask Claude to use worktrees for its agents, or add isolation: worktree to a custom subagent's frontmatter. Subagent worktrees are removed automatically when the subagent finishes without changes." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I see what each parallel Claude Code session changed?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Each worktree is a separate directory, so you have to cd into it and run git status or git diff to check it, one at a time. A git worktree GUI like teebe lists every worktree under .claude/worktrees, badges files live as an agent edits them, and lets you peek any diff without leaving the window." }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog.html">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Guides › Claude Code worktrees</p>
+    <h1>Claude Code worktrees: run parallel sessions without stepping on your main checkout</h1>
+    <p class="updated">How claude --worktree works, how to run several sessions at once, and how to keep track of what each one touched.</p>
+
+    <p>
+      A Claude Code worktree is a separate, isolated git checkout that Claude creates for a session so
+      it can edit files, run commands, and make commits without touching your main working copy. It's
+      built on plain <code>git worktree</code>, so the branch, the index, and the working files are
+      all independent, even though the repo's history is shared. This is what makes it possible to
+      run parallel Claude Code sessions on the same repo at the same time, each on its own branch,
+      without one session's half-finished edit corrupting another's. This guide covers how to start
+      one, run several in parallel, carry over your <code>.env</code>, and the one thing worktree mode
+      doesn't give you: a way to see what each session actually did, which is what <a href="/">teebe</a>
+      is for.
+    </p>
+
+    <h2>Starting a session in a worktree</h2>
+    <p>
+      Run <code>claude --worktree &lt;name&gt;</code> (or the short form <code>claude -w &lt;name&gt;</code>)
+      and Claude creates an isolated worktree and starts the session inside it. By default it lands at
+      <code>.claude/worktrees/&lt;name&gt;/</code> at the repo root, on a new branch named
+      <code>worktree-&lt;name&gt;</code>. Leave off the name and Claude generates one for you, something
+      like <code>bright-running-fox</code>.
+    </p>
+    <p>
+      You don't have to plan ahead either: mid-session you can ask Claude to "work in a worktree" and
+      it uses its <code>EnterWorktree</code> tool to move there, with a matching <code>ExitWorktree</code>
+      to leave. Once inside a worktree session, Claude Code also blocks file edits and commands aimed
+      at your main checkout, so a session can't accidentally reach outside its own tree.
+    </p>
+    <p>
+      One setup step worth doing immediately: add <code>.claude/worktrees/</code> to your
+      <code>.gitignore</code>, or these directories start showing up as untracked clutter in your
+      main checkout's <code>git status</code>.
+    </p>
+
+    <h2>Running several sessions in parallel</h2>
+    <p>
+      Open a second terminal, run <code>claude --worktree &lt;another-name&gt;</code>, and you have a
+      second isolated session on its own branch, editing its own files, entirely independent of the
+      first. This is the normal way to run parallel agents against the same repo: name each worktree
+      for the task it's doing and you can have several Claude Code sessions going without any of them
+      colliding.
+    </p>
+    <p>
+      The same isolation extends to subagents. Ask Claude to "use worktrees for your agents", or add
+      <code>isolation: worktree</code> to a custom subagent's frontmatter, and that subagent gets its
+      own worktree for the duration of its task. A subagent's worktree is removed automatically once
+      it finishes without any changes left behind. The desktop app takes this further and gives every
+      new session its own worktree automatically. For the full picture, see
+      the official docs at <a href="https://code.claude.com/docs/en/worktrees" rel="noopener">code.claude.com/docs/en/worktrees</a>.
+    </p>
+
+    <h2>Carrying your .env over</h2>
+    <p>
+      A worktree is a fresh checkout, which means anything gitignored, your <code>.env</code>,
+      local certs, whatever, is simply absent from it. To fix that, add a <code>.worktreeinclude</code>
+      file at your project root, written in gitignore syntax, listing the gitignored files you want
+      copied into every new worktree. Claude copies them in automatically when the worktree is created.
+    </p>
+
+    <h2>Base branch and PR worktrees</h2>
+    <p>
+      By default, a new worktree branches from the remote default branch. The <code>worktree.baseRef</code>
+      setting controls this: <code>"fresh"</code> (the default) branches from the remote default branch,
+      <code>"head"</code> branches from your current local <code>HEAD</code> instead.
+    </p>
+    <p>
+      You can also hand Claude a pull request directly: <code>claude --worktree "#1234"</code>
+      (or a GitHub PR or GitLab MR URL) creates a worktree checked out from that PR, at
+      <code>.claude/worktrees/pr-&lt;number&gt;</code>. Passing the name of a worktree that already
+      exists just reopens it, which is handy for picking a task back up.
+    </p>
+
+    <h2>Cleanup and resuming a session</h2>
+    <p>
+      What happens when you exit depends on the session. An interactive, unnamed session removes its
+      worktree and branch automatically on exit, as long as the worktree is clean. A named session
+      prompts you first. Either way, if the worktree has uncommitted changes or new commits, Claude
+      always prompts you to keep or remove it rather than deciding for you.
+    </p>
+    <p>
+      Non-interactive <code>-p</code> runs skip cleanup entirely, so those worktrees pile up until you
+      remove them yourself with <code>git worktree remove</code> (running <code>git worktree unlock</code>
+      first if one is locked). Resuming a session later with <code>--resume</code> or <code>--continue</code>
+      drops you right back into its worktree.
+    </p>
+
+    <h2>The blind spot: five sessions, five directories</h2>
+    <p>
+      Worktree mode solves isolation, but it doesn't solve visibility. Run five parallel Claude Code
+      sessions and you end up with five separate <code>.claude/worktrees/&lt;name&gt;</code>
+      directories, each on its own branch, each mid-edit. Nothing tells you which files each one has
+      touched without <code>cd</code>-ing into every directory and running <code>git status</code> by
+      hand, over and over, as the sessions keep working.
+    </p>
+    <p>
+      This is the gap <a href="/">teebe</a> fills. It's a native macOS git worktree GUI that lists
+      every worktree of every repo you add in one window, and it auto-detects the worktrees Claude
+      Code creates under <code>.claude/worktrees</code> the moment they appear, no configuration
+      needed. Files badge live the instant an agent edits them on disk, so you can watch several
+      sessions at a glance instead of polling each one. Press Space on any changed file to peek its
+      diff inline, and pin the window beside your terminal so it's always in view while the sessions
+      run. See more on this in the <a href="/guides/view-claude-code-changes/">Claude Code diff viewer guide</a>,
+      or check the <a href="/compare/git-worktree-gui-mac/">full comparison of git worktree GUIs for Mac</a>
+      if you want to weigh alternatives.
+    </p>
+
+    <h2>The manual alternative</h2>
+    <p>
+      If you'd rather not use <code>--worktree</code> at all, plain git gets you the same isolation:
+    </p>
+    <pre><code>git worktree add ../repo-feature -b feature
+cd ../repo-feature
+claude</code></pre>
+    <p>
+      That's a worktree at a path you chose, on a branch you named, with Claude started inside it
+      manually. It behaves the same as a Claude-managed worktree once you're in it, you just own the
+      naming and the cleanup. For the full set of <code>git worktree</code> commands, see the
+      <a href="/guides/git-worktree-cheat-sheet/">git worktree cheat sheet</a>, and if you're deciding
+      whether a worktree or a plain branch switch fits your workflow, read
+      <a href="/guides/git-worktree-vs-branch/">git worktree vs branch</a>.
+    </p>
+
+    <h2>Frequently asked questions</h2>
+
+    <h3>Where does Claude Code put worktrees?</h3>
+    <p>
+      By default at <code>.claude/worktrees/&lt;name&gt;</code> under your repo root, on a new branch
+      named <code>worktree-&lt;name&gt;</code>. Add <code>.claude/worktrees/</code> to your
+      <code>.gitignore</code>.
+    </p>
+
+    <h3>Does Claude Code delete worktrees automatically?</h3>
+    <p>
+      For an interactive session, yes if it's clean: an unnamed session removes the worktree and
+      branch on exit automatically, a named session prompts you first. If the worktree has changes or
+      new commits, Claude always prompts. Non-interactive <code>-p</code> runs do not clean up, remove
+      them yourself with <code>git worktree remove</code>.
+    </p>
+
+    <h3>Can subagents use their own worktree?</h3>
+    <p>
+      Yes. Ask Claude to use worktrees for its agents, or add <code>isolation: worktree</code> to a
+      custom subagent's frontmatter. Subagent worktrees are removed automatically when the subagent
+      finishes without changes.
+    </p>
+
+    <h3>How do I see what each parallel Claude Code session changed?</h3>
+    <p>
+      Each worktree is a separate directory, so by default you have to <code>cd</code> into it and run
+      <code>git status</code> or <code>git diff</code> to check it, one at a time. A git worktree GUI
+      like teebe lists every worktree under <code>.claude/worktrees</code>, badges files live as an
+      agent edits them, and lets you peek any diff without leaving the window.
+    </p>
+
+    <div class="install" style="margin-top:28px">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub" style="text-align:center">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy.html. -->
+  <script>
+    (function () {
+      try {
+        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
+        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
