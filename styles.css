@@ -14,7 +14,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -34,9 +34,14 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: 20px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 14px max(24px, calc((100% - var(--max)) / 2));
+  background: rgba(10,10,11,.72);
+  -webkit-backdrop-filter: saturate(160%) blur(16px);
+  backdrop-filter: saturate(160%) blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,.07);
 }
 .brand { display: flex; align-items: center; gap: 14px; font-weight: 650; font-size: 2.3rem; }
 .brand img { border-radius: 14px; }

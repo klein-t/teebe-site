@@ -133,7 +133,7 @@
       --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; overscroll-behavior-y: none; background: var(--bg); }
+    html { scroll-behavior: smooth; scroll-padding-top: 84px; overscroll-behavior-y: none; background: var(--bg); }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
@@ -167,8 +167,19 @@
     /* ---------------- Nav ---------------- */
     .nav {
       display: flex; align-items: center; justify-content: space-between;
-      max-width: var(--max); margin: 0 auto; padding: 22px 24px;
-      position: relative; z-index: 2;
+      position: sticky; top: 0; z-index: 50;
+      padding: 22px max(24px, calc((100% - var(--max)) / 2));
+      background: transparent; border-bottom: 1px solid transparent;
+      transition: padding .25s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+    /* frosted glass once the page scrolls */
+    .nav.scrolled {
+      padding-top: 12px; padding-bottom: 12px;
+      background: rgba(6,7,9,.62);
+      -webkit-backdrop-filter: saturate(160%) blur(16px);
+      backdrop-filter: saturate(160%) blur(16px);
+      border-bottom-color: rgba(255,255,255,.07);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
     }
     .brand { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 1.5rem; letter-spacing: -.01em; font-family: var(--font-display); }
     .brand img { width: 38px; height: 38px; border-radius: 11px; box-shadow: 0 6px 22px rgba(16,185,129,.28); }
@@ -1201,6 +1212,16 @@
         if (m) document.getElementById('version').textContent = 'v' + m[1].trim() + ' · beta';
       })
       .catch(function () {});
+  </script>
+
+  <script>
+    (function () {
+      var nav = document.querySelector('.nav');
+      if (!nav) return;
+      var update = function () { nav.classList.toggle('scrolled', window.scrollY > 8); };
+      window.addEventListener('scroll', update, { passive: true });
+      update();
+    })();
   </script>
 
   <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). No cookies,
