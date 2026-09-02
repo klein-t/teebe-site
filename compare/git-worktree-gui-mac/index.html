@@ -555,9 +555,11 @@
   <script>
     (function () {
       try {
+        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
+        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
         var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
         if (v) sessionStorage.setItem('tb_seen', '1');
-        var dev = /[?&]dev=1/.test(location.search) || localStorage.getItem('tb_dev') ? 1 : 0;
+        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
         var ref = '';
         try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
         new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)

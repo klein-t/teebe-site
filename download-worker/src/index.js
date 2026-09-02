@@ -134,7 +134,12 @@ function handlePixel(url, request, env) {
   const path = clip(url.searchParams.get("p") || "/", 128);
   const ref = clip(url.searchParams.get("r") || "", 128) || "direct";
   const visit = url.searchParams.get("v") === "1" ? "visit" : "view";
-  const who = url.searchParams.get("dev") === "1" ? "dev" : "human";
+  // "local" = not a real teebe.io page load: a file:// or localhost copy of the
+  // site, or a beacon whose Referer is some other host. Kept out of /stats.
+  let refHost = "";
+  try { refHost = new URL(request.headers.get("Referer") || "").hostname; } catch (e) {}
+  const local = (refHost && refHost !== "teebe.io") || path.startsWith("/Users/") || ref === "localhost";
+  const who = url.searchParams.get("dev") === "1" ? "dev" : local ? "local" : "human";
 
   if (env.WEB) {
     env.WEB.writeDataPoint({
@@ -179,7 +184,9 @@ async function handleStats(url, env) {
   // Real installs exclude OWN_COUNTRY (your own tests).
   const notMine = `blob5='install' AND blob3 != '${OWN_COUNTRY}'`;
   // Real page views exclude your own browsing (dev flag or OWN_COUNTRY).
-  const webHuman = `blob5='human' AND blob3 != '${OWN_COUNTRY}'`;
+  // Older datapoints predate the "local" tag: also drop local-file paths and
+  // localhost referrers that were logged as "human".
+  const webHuman = `blob5='human' AND blob3 != '${OWN_COUNTRY}' AND blob1 NOT LIKE '/Users/%' AND blob1 NOT LIKE '%.mockup.html' AND blob2 != 'localhost'`;
   const [
     overview, byCountry, recent, daily,
     webTotals, webDaily, webByPath, webRefs, webByCountry,
