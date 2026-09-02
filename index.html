@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Primary SEO -->
-  <title>teebe · macOS git worktree GUI for AI coding agents</title>
-  <meta name="description" content="A native macOS git worktree GUI: watch what your AI coding agents change, with live file badges and inline diffs, beside your terminal. Free, open source." />
+  <title>teebe · macOS git worktree GUI for Claude Code &amp; Codex</title>
+  <meta name="description" content="Native macOS git worktree GUI for Claude Code, Codex and Cursor agents: every worktree in one window, live file badges, inline diffs. Free, open source." />
   <link rel="canonical" href="https://teebe.io/" />
   <meta name="theme-color" content="#060709" />
   <meta name="robots" content="index, follow" />
@@ -14,7 +14,7 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://teebe.io/" />
-  <meta property="og:title" content="teebe · macOS git worktree GUI for AI coding agents" />
+  <meta property="og:title" content="teebe · macOS git worktree GUI for Claude Code &amp; Codex" />
   <meta property="og:description" content="Watch what your AI coding agents change across git worktrees: live file badges and inline diffs, beside your terminal. Native macOS, free and open source." />
   <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
   <meta property="og:image:type" content="image/png" />
@@ -25,7 +25,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="teebe · macOS git worktree GUI for AI coding agents" />
+  <meta name="twitter:title" content="teebe · macOS git worktree GUI for Claude Code &amp; Codex" />
   <meta name="twitter:description" content="Watch what your AI coding agents change across git worktrees: live file badges and inline diffs, beside your terminal." />
   <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
   <meta name="twitter:image:alt" content="teebe: a native macOS git worktree GUI for AI coding agents" />
@@ -68,7 +68,7 @@
     "operatingSystem": "macOS 14.0",
     "url": "https://teebe.io/",
     "installUrl": "https://teebe.io/install.sh",
-    "softwareVersion": "0.4.2",
+    "softwareVersion": "0.7.0",
     "screenshot": [
       "https://teebe.io/assets/teebe-hero.png",
       "https://teebe.io/assets/teebe-diff.png"
@@ -97,6 +97,7 @@
       { "@type": "Question", "name": "Does teebe edit my code, run my agents, or replace my terminal?", "acceptedAnswer": { "@type": "Answer", "text": "No to all three. teebe is the navigator, not the editor, the orchestrator, or the terminal. It browses, watches, and shows diffs, but never writes to your files and never runs your agents. You keep running agents in your terminal and writing code in your editor; teebe sits beside them and opens any file in the native editor you already use." } },
       { "@type": "Question", "name": "Which AI coding agents does teebe work with, and can I use it without any?", "acceptedAnswer": { "@type": "Answer", "text": "All of them, and yes. teebe works with Claude Code, Codex/CMAX, Cursor's CLI, and any terminal agent, because it just watches the filesystem and git rather than hooking into a specific tool. With no agents running it's still a fast, native git worktree browser: full tree, live updates, inline diffs, and a changes view with ahead/behind counts." } },
       { "@type": "Question", "name": "How is teebe different from an orchestrator (Conductor, Vibe Kanban) or a git client (Tower, Fork)?", "acceptedAnswer": { "@type": "Answer", "text": "Orchestrators run and manage agents for you; git clients handle staging, commits, rebasing, and conflicts. teebe does neither. It's the passive watch layer beside them: a live file browser that shows what changed, with inline diffs and ahead/behind counts, so you can see what your agents did at a glance. Use it alongside an orchestrator or on its own." } },
+      { "@type": "Question", "name": "Does teebe show the worktrees Claude Code and Codex create on their own?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. teebe watches each repo's git metadata, so a worktree created by claude --worktree (under .claude/worktrees/), by the Codex app (under $CODEX_HOME/worktrees), by Cursor's parallel agents, or by a plain git worktree add shows up in the WORKTREES list the moment it exists, and disappears when it's removed. You can also add and remove worktrees from teebe itself." } },
       { "@type": "Question", "name": "Does teebe send my code anywhere?", "acceptedAnswer": { "@type": "Answer", "text": "No. teebe reads your files and git locally on your Mac. It doesn't upload your code, and there's no backend it talks to, so it works fully offline. The only thing that touches the network is the optional Sparkle auto-update check." } },
       { "@type": "Question", "name": "Is teebe free and open source?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, both. teebe is free and open source, with no trial, no paid tier, and no account. The code lives on GitHub and installs come straight from GitHub Releases as a signed .app with auto-updates." } },
       { "@type": "Question", "name": "What do I need to run teebe, and how do I install it?", "acceptedAnswer": { "@type": "Answer", "text": "macOS 14 or newer, on Apple Silicon or Intel; teebe is a native Mac app, so it's Mac-only. To install, run 'curl -fsSL https://teebe.io/install.sh | bash' in your terminal, or download the .dmg from GitHub Releases. It's a signed .app, so it opens without Gatekeeper warnings." } }
@@ -565,9 +566,9 @@
           <p class="eyebrow">Native macOS · git worktree GUI</p>
           <h1>Git worktrees,<br /><span class="grad">without the IDE.</span></h1>
           <p class="lede">
-            <strong>teebe</strong> is a native macOS git worktree GUI. Pick any worktree and
-            watch the files inside it, live, as your agents edit them, with inline diffs
-            right beside your terminal.
+            <strong>teebe</strong> is a native macOS git worktree GUI. Pick any worktree, including
+            the ones Claude Code, Codex and Cursor create for each session, and watch the files
+            inside it, live, as your agents edit them, with inline diffs right beside your terminal.
           </p>
           <div class="hero-terminal" id="install">
             <span class="ps">$</span>
@@ -835,8 +836,8 @@
     <!-- ===================== FEATURES ===================== -->
     <section id="features" class="features">
       <div class="section-head">
-        <h2>A native macOS git worktree GUI, beside your terminal</h2>
-        <p>Browse, watch, and diff every worktree, without ever opening an IDE or leaving your flow.</p>
+        <h2>One git worktree GUI for Claude Code, Codex and Cursor sessions</h2>
+        <p>Browse, watch, and diff every worktree, including the ones your agents create, without opening an IDE or leaving your flow.</p>
       </div>
       <div class="bento">
         <article class="wide">
@@ -904,6 +905,10 @@
         <div class="answer"><p>Orchestrators run and manage agents for you; git clients handle staging, commits, rebasing, and conflicts. teebe does neither. It's the passive watch layer beside them: a live file browser that shows what changed, with inline diffs and ahead/behind counts, so you can see what your agents did at a glance. Use it alongside an orchestrator or on its own.</p></div>
       </details>
       <details>
+        <summary>Does teebe show the worktrees Claude Code and Codex create on their own?</summary>
+        <div class="answer"><p>Yes. teebe watches each repo's git metadata, so a worktree created by <code>claude --worktree</code> (under <code>.claude/worktrees/</code>), by the Codex app (under <code>$CODEX_HOME/worktrees</code>), by Cursor's parallel agents, or by a plain <code>git worktree add</code> shows up in the WORKTREES list the moment it exists, and disappears when it's removed. You can also add and remove worktrees from teebe itself. See <a href="/guides/claude-code-worktrees/">Claude Code worktrees, explained</a> and <a href="/guides/codex-worktrees/">Codex worktrees</a>.</p></div>
+      </details>
+      <details>
         <summary>Does teebe send my code anywhere?</summary>
         <div class="answer"><p>No. teebe reads your files and git locally on your Mac. It doesn't upload your code, and there's no backend it talks to, so it works fully offline. The only thing that touches the network is the optional Sparkle auto-update check. See the <a href="/privacy.html">privacy page</a>.</p></div>
       </details>
@@ -918,10 +923,16 @@
     </section>
 
     <!-- ===================== GUIDES ===================== -->
-    <section class="guides">
+    <section class="guides" id="guides">
       <h2>Guides</h2>
       <ul>
-        <li><a href="/guides/view-claude-code-changes/">See what Claude Code changed, live →</a></li>
+        <li><a href="/guides/claude-code-worktrees/">Claude Code worktrees, explained →</a></li>
+        <li><a href="/guides/codex-worktrees/">Codex worktrees →</a></li>
+        <li><a href="/guides/cursor-worktrees/">Cursor worktrees and parallel agents →</a></li>
+        <li><a href="/guides/view-claude-code-changes/">Claude Code diff viewer: see what changed, live →</a></li>
+        <li><a href="/guides/claude-code-desktop-vs-terminal/">Claude Code desktop vs terminal vs VS Code →</a></li>
+        <li><a href="/guides/git-worktree-vs-branch/">Git worktree vs branch →</a></li>
+        <li><a href="/guides/git-worktree-cheat-sheet/">Git worktree cheat sheet →</a></li>
         <li><a href="/compare/git-worktree-gui-mac/">Every git worktree GUI for Mac, compared →</a></li>
         <li><a href="https://github.com/klein-t/teebe" rel="noopener">Source on GitHub →</a></li>
       </ul>
@@ -943,7 +954,7 @@
   </main>
 
   <footer>
-    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <a href="mailto:hello@teebe.io">Contact</a> · macOS only · <span id="version">v0.4.2 · beta</span></p>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only · <span id="version">v0.4.2 · beta</span></p>
   </footer>
 
   <!-- Real GrainGradient background (Paper Shaders, vendored & self-contained; no CDN, no runtime deps). -->

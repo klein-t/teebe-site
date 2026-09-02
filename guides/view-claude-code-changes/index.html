@@ -4,20 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>See what Claude Code changed, without opening your editor</title>
-  <meta name="description" content="How to view what Claude Code changed across your git worktrees, with live file badges and inline diffs on macOS, without opening an editor." />
+  <title>Claude Code diff viewer: see what changed, without an editor</title>
+  <meta name="description" content="A Claude Code diff viewer for macOS: watch what Claude Code changed across git worktrees with live file badges and inline diffs, without opening an editor." />
   <link rel="canonical" href="https://teebe.io/guides/view-claude-code-changes/" />
   <meta name="theme-color" content="#0a0a0b" />
   <meta name="robots" content="index, follow" />
 
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://teebe.io/guides/view-claude-code-changes/" />
-  <meta property="og:title" content="See what Claude Code changed, without opening your editor" />
+  <meta property="og:title" content="Claude Code diff viewer: see what changed, without an editor" />
   <meta property="og:description" content="View what your AI coding agents changed across git worktrees: live file badges and inline diffs on macOS." />
   <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
   <meta property="og:site_name" content="teebe" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="See what Claude Code changed, without opening your editor" />
+  <meta name="twitter:title" content="Claude Code diff viewer: see what changed, without an editor" />
   <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
 
   <link rel="icon" type="image/png" href="/assets/logo.png" />
@@ -29,7 +29,7 @@
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
-      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://teebe.io/#faq" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://teebe.io/#guides" },
       { "@type": "ListItem", "position": 3, "name": "See what Claude Code changed", "item": "https://teebe.io/guides/view-claude-code-changes/" }
     ]
   }
@@ -38,7 +38,9 @@
   {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "See what Claude Code changed, without opening your editor",
+    "headline": "Claude Code diff viewer: see what changed, without an editor",
+    "datePublished": "2026-07-01",
+    "dateModified": "2026-09-02",
     "description": "How to view what Claude Code and other terminal agents changed across git worktrees, live, on macOS.",
     "image": "https://teebe.io/assets/teebe-diff.png",
     "author": { "@type": "Organization", "name": "teebe", "url": "https://teebe.io/" },
@@ -65,22 +67,25 @@
 
   <main class="article">
     <p class="breadcrumb"><a href="/">teebe</a> › Guides › See what Claude Code changed</p>
-    <h1>See what Claude Code changed, without opening your editor</h1>
-    <p class="updated">A short guide for reviewing AI agent changes across git worktrees on macOS.</p>
+    <h1>Claude Code diff viewer: see what changed, without opening your editor</h1>
+    <p class="updated">A short guide to reviewing Claude Code changes across git worktrees on macOS. Updated September 2026.</p>
 
     <p>
       When Claude Code (or Codex, or any terminal agent) runs, it can touch dozens of files in
       seconds. The usual way to see what changed is to stop, <code>git status</code>, open an
       editor, and read diffs one by one, which pulls you out of the terminal and slows the loop.
       This guide shows a faster way: <strong>watch the changes live in a git worktree GUI</strong>,
-      beside your terminal, and peek each diff inline without opening an editor.
+      beside your terminal, and peek each diff inline without opening an editor. It works the same
+      whether Claude runs in your main checkout or in a worktree it created with
+      <code>claude --worktree</code> (see <a href="/guides/claude-code-worktrees/">Claude Code worktrees, explained</a>).
     </p>
 
     <h2>Why reviewing agent changes is awkward</h2>
     <ul>
       <li>Agents edit many files at once, so a flat <code>git diff</code> is a wall of text.</li>
       <li>Opening each file in your editor breaks focus and buries the shape of the change.</li>
-      <li>With several agents in <a href="/#faq">parallel worktrees</a>, it's hard to keep track of which tree changed what.</li>
+      <li>With several agents in <a href="/guides/claude-code-worktrees/">parallel worktrees</a>, it's hard to keep track of which tree changed what.</li>
+      <li>The <a href="/guides/claude-code-desktop-vs-terminal/">desktop app and VS Code extension</a> have their own diff views, but if you run Claude Code in a terminal, you're on your own.</li>
     </ul>
 
     <h2>The fast path: watch the worktree live</h2>
@@ -112,7 +117,8 @@
       teebe is the navigator, not the editor or the orchestrator. It never writes to your files and
       never runs your agents. You keep doing that in the terminal. It also isn't a full git client:
       for staging, committing, or resolving conflicts you'll still reach for your usual tools. Its one
-      job is to show you, live, what changed.
+      job is to show you, live, what changed. If you're deciding between tools, the
+      <a href="/compare/git-worktree-gui-mac/">git worktree GUI comparison</a> covers what else exists.
     </p>
 
     <div class="install" style="margin-top:28px">
@@ -123,7 +129,7 @@
   </main>
 
   <footer>
-    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <a href="mailto:hello@teebe.io">Contact</a> · macOS only</p>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog.html">Changelog</a> · <a href="/privacy.html">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
   </footer>
 
   <script>
