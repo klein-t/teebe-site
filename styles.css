@@ -294,6 +294,16 @@ footer a:hover { color: var(--text); }
   border-radius: 6px;
   padding: 1px 6px;
 }
+.article .tldr {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 0 0 28px;
+}
+.article .tldr strong:first-child { display: block; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.article .tldr ul { margin: 0 0 0 18px; }
+.article .tldr li { margin: 4px 0; }
 .breadcrumb { font-size: 0.85rem; color: var(--muted); margin-bottom: 20px; }
 .breadcrumb a { color: var(--muted); }
 .breadcrumb a:hover { color: var(--text); }
