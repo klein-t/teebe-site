@@ -103,7 +103,6 @@
       <ul>
         <li>A git worktree is a second working directory for a repo you already have: own files, own branch, same <code>.git</code>.</li>
         <li>Benefit: work on two branches at once with no stash, no checkout, no rebuild.</li>
-        <li>Start with <code>git worktree add -b hotfix ../repo-hotfix</code>, list with <code>git worktree list</code>, clean up with <code>git worktree remove</code>.</li>
         <li>Running several worktrees, one per AI agent, gets hard to track from a terminal. <a href="/">teebe</a> is a free macOS app that shows them all, live, in one window.</li>
       </ul>
     </div>
@@ -150,14 +149,20 @@
       <li><strong>One worktree per AI agent.</strong> Claude Code, Codex and Cursor isolate parallel sessions in worktrees so agents can't overwrite each other's files, or yours.</li>
     </ul>
 
-    <h2>Worktrees and AI coding agents</h2>
+    <h2>Why AI coding agents made worktrees mainstream</h2>
     <p>
-      <code>claude --worktree</code> starts a Claude Code session in a fresh worktree under
-      <code>.claude/worktrees/</code>, the Codex app offers "Worktree" on a new chat, and Cursor
-      gives each parallel agent its own checkout. Guides for each:
+      For a decade, worktrees were a git feature most developers had never touched. A person works
+      on one thing at a time, so one working directory was rarely the bottleneck. Coding agents
+      changed that almost overnight. Once a Claude Code, Codex or Cursor session can take a task and
+      run with it for twenty minutes, the obvious next move is to start a second one, and a third.
+      Two agents editing the same checkout overwrite each other, and both trample whatever you were
+      doing. Give each one its own worktree and the problem disappears: every agent gets its own
+      branch, its own files and its own build, and you review each result like any other pull
+      request. That's why all three tools now offer a worktree per session, and why a git feature
+      from 2015 suddenly matters to everyone. Details for each in our
       <a href="/guides/claude-code-worktrees/">Claude Code</a>,
       <a href="/guides/codex-worktrees/">Codex</a> and
-      <a href="/guides/cursor-worktrees/">Cursor</a>.
+      <a href="/guides/cursor-worktrees/">Cursor</a> guides.
     </p>
     <p>
       The side effect is several directories on disk, each mid-change, with no easy way to see them
