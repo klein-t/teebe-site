@@ -37,6 +37,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://teebe.io/guides/what-is-a-git-worktree/</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://teebe.io/guides/git-worktree-vs-branch/</loc>
     <lastmod>2026-09-02</lastmod>
     <changefreq>monthly</changefreq>
