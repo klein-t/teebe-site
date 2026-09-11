@@ -8,7 +8,7 @@
 #
 # The download is fetched via https://dl.teebe.io, which records anonymous,
 # aggregate install stats (app version, country, user-agent, never your IP)
-# then redirects to the GitHub release asset. See https://teebe.io/privacy.html.
+# then redirects to the GitHub release asset. See https://teebe.io/privacy/.
 set -euo pipefail
 
 REPO="klein-t/teebe"
