@@ -15,6 +15,10 @@ in a browser or run any static server (e.g. `python3 -m http.server`).
 - `.nojekyll`: disables Jekyll processing.
 - `assets/`: logo + product screenshots.
 
+Public pages use directory URLs (for example, `/privacy/` served from
+`privacy/index.html`). Use those URLs in links, canonical metadata, and the
+sitemap; keep redirects when replacing an existing page URL.
+
 ## Deploy
 
 Pushing to `main` publishes automatically via GitHub Pages.

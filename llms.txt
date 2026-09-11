@@ -21,7 +21,7 @@ Key facts:
 - [Guide: git worktree cheat sheet](https://teebe.io/guides/git-worktree-cheat-sheet/): add, list, remove, prune, move, lock, and common error fixes
 - [Comparison: every git worktree GUI for Mac](https://teebe.io/compare/git-worktree-gui-mac/): Fork, Tower, GitKraken, Sourcetree, Conductor, Nimbalyst, Worktrunk, Grovr, WorktreeWise, and teebe compared on worktree features, price, and AI-agent support
 - [Changelog](https://teebe.io/changelog/): release history
-- [Privacy](https://teebe.io/privacy.html): data practices
+- [Privacy](https://teebe.io/privacy/): data practices
 
 ## Source
 
