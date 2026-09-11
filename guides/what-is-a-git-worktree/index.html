@@ -56,27 +56,22 @@
       {
         "@type": "Question",
         "name": "What is a git worktree in simple terms?",
-        "acceptedAnswer": { "@type": "Answer", "text": "A git worktree is an extra working directory attached to a repository you already have. It has its own checked-out files, its own branch and its own index, but shares the same .git history, branches, stashes and remotes as your main checkout. It lets you work on two branches at the same time in two folders, without switching." }
+        "acceptedAnswer": { "@type": "Answer", "text": "An extra working directory for a repository you already have, with its own files and branch but the same .git history. Two folders, two branches, one repository, no switching." }
       },
       {
         "@type": "Question",
         "name": "What is the benefit of git worktrees?",
-        "acceptedAnswer": { "@type": "Answer", "text": "You stop switching branches. Each worktree keeps its own files, build output and dependencies on disk, so you can fix a bug on main, review a pull request, or run an AI coding agent on a second branch while your in-progress work stays exactly where it is. No stash, no rebuild, no half-done commits." }
+        "acceptedAnswer": { "@type": "Answer", "text": "You stop switching branches. Fix a bug on main, review a pull request, or run an AI coding agent on another branch while your in-progress work stays where it is. No stash, no rebuild, no half-done commits." }
       },
       {
         "@type": "Question",
         "name": "Is a git worktree the same as a clone?",
-        "acceptedAnswer": { "@type": "Answer", "text": "No. A clone copies the entire object store and has its own remotes to keep in sync. A worktree shares one .git directory with the main checkout, so it costs only the working files and a small index, and commits made in one worktree are instantly visible in all the others." }
+        "acceptedAnswer": { "@type": "Answer", "text": "No. A clone copies the whole object store and has its own remotes to keep in sync. A worktree shares one .git with the main checkout, so it costs only the working files and commits made in one worktree show up in all the others instantly." }
       },
       {
         "@type": "Question",
-        "name": "How do I create a git worktree?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Run git worktree add -b <branch> <path> to create a new worktree on a new branch, for example git worktree add -b hotfix ../repo-hotfix. Use git worktree list to see all worktrees and git worktree remove <path> when you are done." }
-      },
-      {
-        "@type": "Question",
-        "name": "Can two worktrees check out the same branch?",
-        "acceptedAnswer": { "@type": "Answer", "text": "No. Git allows a branch to be checked out in only one worktree at a time and refuses with fatal: 'branch' is already checked out. Give each worktree its own branch, or use a detached HEAD." }
+        "name": "How do I see all my git worktrees?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Run git worktree list in any checkout of the repository. On macOS, teebe shows every worktree of every repo in one window, with a live file tree and inline diffs, and picks up worktrees the moment they are created from the terminal or by an AI agent." }
       }
     ]
   }
@@ -103,69 +98,50 @@
     <h1>What is a git worktree?</h1>
     <p class="updated">The plain-English definition, why you'd want one, and the three commands to get started.</p>
 
+    <div class="tldr">
+      <strong>TL;DR</strong>
+      <ul>
+        <li>A git worktree is a second working directory for a repo you already have: own files, own branch, same <code>.git</code>.</li>
+        <li>Benefit: work on two branches at once with no stash, no checkout, no rebuild.</li>
+        <li>Start with <code>git worktree add -b hotfix ../repo-hotfix</code>, list with <code>git worktree list</code>, clean up with <code>git worktree remove</code>.</li>
+        <li>Running several worktrees, one per AI agent, gets hard to track from a terminal. <a href="/">teebe</a> is a free macOS app that shows them all, live, in one window.</li>
+      </ul>
+    </div>
+
     <p>
       A <strong>git worktree</strong> is an extra working directory attached to a repository you
-      already have. It gets its own checked-out files, its own branch and its own index, but it
-      shares the same <code>.git</code> history, branches, stashes and remotes as your main
-      checkout. In practice: two folders, two branches, one repository, and you can work in both at
-      the same time without ever running <code>git checkout</code>. Git has shipped
-      <code>git worktree</code> since version 2.5 in 2015, but it stayed niche until AI coding
-      agents made "run several branches at once" an everyday need. If you'd rather see your
-      worktrees than list them, <a href="/">teebe</a> is a free macOS GUI built for exactly that.
+      already have. It gets its own checked-out files, branch and index, but shares the same
+      <code>.git</code> history, branches, stashes and remotes as your main checkout. Two folders,
+      two branches, one repository, and you work in both without ever running
+      <code>git checkout</code>. Git has had <code>git worktree</code> since 2.5 in 2015; AI coding
+      agents are what finally made it an everyday tool.
     </p>
 
     <h2>The problem worktrees solve</h2>
     <p>
       A normal repository has one working directory, so only one branch can be checked out at a
-      time. Every time you need another branch, you switch, and switching rewrites your files.
-      Uncommitted work has to be stashed or committed half-finished first, and anything that depends
-      on the files on disk, a <code>node_modules</code> folder, a build cache, a running dev server,
-      has to be rebuilt or restarted. Do that four times a day and it adds up.
-    </p>
-    <p>
-      A worktree removes the "one directory" limit instead of working around it. Your feature
-      branch stays checked out where it is. The hotfix, the pull request you're reviewing, or the
-      agent session you just kicked off gets a directory of its own.
+      time. Switching rewrites your files: uncommitted work gets stashed or committed half-finished,
+      and <code>node_modules</code>, build caches and dev servers get rebuilt or restarted. A
+      worktree removes the one-directory limit. Your feature branch stays put, and the hotfix, the
+      pull request you're reviewing, or the agent you just started gets a directory of its own.
     </p>
 
-    <h2>How a git worktree works</h2>
+    <h2>How it works</h2>
     <p>
-      <code>git worktree add</code> creates a new directory and checks a branch out into it. Under
-      the hood, git writes a small <code>.git</code> file in that directory that points back to the
-      main repository. The object store, the commit history and all the refs stay in one place and
-      are shared. Only the working files and an index are duplicated, which is why a worktree costs
-      a fraction of a second clone and never needs its own <code>git fetch</code>.
-    </p>
-    <p>
-      One rule to remember: a branch can be checked out in only one worktree at a time. Each worktree
-      therefore needs its own branch, or a detached HEAD. The full differences are in
-      <a href="/guides/git-worktree-vs-branch/">git worktree vs branch</a>.
+      <code>git worktree add</code> creates a directory and checks a branch out into it. A small
+      <code>.git</code> file there points back to the main repository, so history and refs are
+      shared and only the working files are duplicated. That makes a worktree far cheaper than a
+      second clone, with nothing to re-fetch. One rule: a branch can be checked out in only one
+      worktree at a time. More in <a href="/guides/git-worktree-vs-branch/">git worktree vs branch</a>.
     </p>
 
     <h2>Benefits of git worktrees</h2>
     <ul>
-      <li>
-        <strong>No more branch switching.</strong> Your in-progress work never moves, so there's
-        nothing to stash, nothing to commit early, and no chance of a messy <code>stash pop</code>
-        later.
-      </li>
-      <li>
-        <strong>Each branch keeps its own build.</strong> Dependencies, compiled output and caches
-        live per directory. Switching context is <code>cd</code>, not a rebuild.
-      </li>
-      <li>
-        <strong>Run things side by side.</strong> Tests on two branches at once, a dev server on
-        main while you work on a feature, or a pull request checked out for review next to your own
-        work.
-      </li>
-      <li>
-        <strong>Cheaper than a clone.</strong> One shared object store, one set of remotes to keep in
-        sync, and commits made in any worktree are visible in all the others immediately.
-      </li>
-      <li>
-        <strong>One worktree per AI agent.</strong> Claude Code, Codex and Cursor all isolate parallel
-        sessions in worktrees, so agents can't overwrite each other's files or yours.
-      </li>
+      <li><strong>No more branch switching.</strong> In-progress work never moves, so there's nothing to stash and no messy <code>stash pop</code> later.</li>
+      <li><strong>Each branch keeps its own build.</strong> Dependencies and caches live per directory. Changing context is <code>cd</code>, not a rebuild.</li>
+      <li><strong>Run things side by side.</strong> Tests on two branches, a dev server on main next to a feature, a pull request checked out for review.</li>
+      <li><strong>Cheaper than a clone.</strong> One object store, one set of remotes, and a commit in any worktree is visible in all of them instantly.</li>
+      <li><strong>One worktree per AI agent.</strong> Claude Code, Codex and Cursor isolate parallel sessions in worktrees so agents can't overwrite each other's files, or yours.</li>
     </ul>
 
     <h2>The three commands you need</h2>
@@ -176,72 +152,61 @@
     <p>Remove it when you're done (the branch stays until you delete it separately):</p>
     <pre><code>git worktree remove ../repo-hotfix</code></pre>
     <p>
-      That covers most days. For creating from an existing or remote branch, moving, locking, pruning
-      stale entries and the errors you'll hit, see the
-      <a href="/guides/git-worktree-cheat-sheet/">git worktree cheat sheet</a>.
+      Past two or three worktrees, <code>git worktree list</code> tells you they exist but not
+      what's happening inside them. <a href="/">teebe</a> keeps that list on screen for every repo
+      you add, picks up new worktrees the moment they're created from the terminal, and adds or
+      removes them without leaving the window. Existing branches, moving, locking and pruning are
+      in the <a href="/guides/git-worktree-cheat-sheet/">git worktree cheat sheet</a>.
     </p>
-
-    <h2>When a worktree is not the right tool</h2>
     <p>
-      For a two-minute interruption on the branch you're already on, <code>git stash</code> is
-      faster. If you want a completely separate copy with its own remote, a fork you're testing or a
-      repository you never want sharing state with your main one, a second <code>git clone</code> is
-      the honest answer. Everything in between, which is most parallel work on a single repository,
-      is worktree territory.
+      Not the right tool: a two-minute interruption on your current branch, where
+      <code>git stash</code> is faster, or a fully separate copy with its own remote, where you
+      want a second <code>git clone</code>.
     </p>
 
     <h2>Worktrees and AI coding agents</h2>
     <p>
-      This is why worktrees went from a niche git feature to a daily one. <code>claude --worktree</code>
-      starts a Claude Code session in a fresh worktree under <code>.claude/worktrees/</code>, the
-      Codex app offers "Worktree" when you open a new chat, and Cursor gives each parallel agent its
-      own isolated checkout. Our guides cover each:
-      <a href="/guides/claude-code-worktrees/">Claude Code worktrees</a>,
-      <a href="/guides/codex-worktrees/">Codex worktrees</a>, and
-      <a href="/guides/cursor-worktrees/">Cursor worktrees and parallel agents</a>.
+      <code>claude --worktree</code> starts a Claude Code session in a fresh worktree under
+      <code>.claude/worktrees/</code>, the Codex app offers "Worktree" on a new chat, and Cursor
+      gives each parallel agent its own checkout. Guides for each:
+      <a href="/guides/claude-code-worktrees/">Claude Code</a>,
+      <a href="/guides/codex-worktrees/">Codex</a> and
+      <a href="/guides/cursor-worktrees/">Cursor</a>.
     </p>
     <p>
-      The side effect is several directories on disk, each mid-change, and no easy way to see them
-      together. <a href="/">teebe</a> lists every worktree of every repo you add in one native macOS
-      window, badges files the instant an agent touches them, and peeks any diff inline, so you can
-      watch three sessions without three terminal tabs. If you're weighing tools, see
-      <a href="/compare/git-worktree-gui-mac/">every git worktree GUI for Mac compared</a>.
+      The side effect is several directories on disk, each mid-change, with no easy way to see them
+      together. teebe was built for exactly this: every worktree of every repo in one native macOS
+      window, files badged the instant an agent touches them, and any diff one keypress away. Three
+      sessions, no three terminal tabs. Free and open source;
+      <a href="/compare/git-worktree-gui-mac/">here's how it compares</a> to every other worktree
+      GUI for Mac.
     </p>
 
     <h2>Frequently asked questions</h2>
     <h3>What is a git worktree in simple terms?</h3>
     <p>
-      An extra working directory attached to a repository you already have. It has its own
-      checked-out files, its own branch and its own index, but shares the same <code>.git</code>
-      history, branches, stashes and remotes as your main checkout. It lets you work on two branches
-      at the same time in two folders, without switching.
+      An extra working directory for a repository you already have, with its own files and branch
+      but the same <code>.git</code> history. Two folders, two branches, one repository, no
+      switching.
     </p>
     <h3>What is the benefit of git worktrees?</h3>
     <p>
-      You stop switching branches. Each worktree keeps its own files, build output and dependencies
-      on disk, so you can fix a bug on main, review a pull request, or run an AI coding agent on a
-      second branch while your in-progress work stays exactly where it is. No stash, no rebuild, no
-      half-done commits.
+      You stop switching branches. Fix a bug on main, review a pull request, or run an AI coding
+      agent on another branch while your in-progress work stays where it is. No stash, no rebuild,
+      no half-done commits.
     </p>
     <h3>Is a git worktree the same as a clone?</h3>
     <p>
-      No. A clone copies the entire object store and has its own remotes to keep in sync. A worktree
-      shares one <code>.git</code> directory with the main checkout, so it costs only the working
-      files and a small index, and commits made in one worktree are instantly visible in all the
-      others.
+      No. A clone copies the whole object store and has its own remotes to keep in sync. A worktree
+      shares one <code>.git</code> with the main checkout, so it costs only the working files and
+      commits made in one worktree show up in all the others instantly.
     </p>
-    <h3>How do I create a git worktree?</h3>
+    <h3>How do I see all my git worktrees?</h3>
     <p>
-      Run <code>git worktree add -b &lt;branch&gt; &lt;path&gt;</code> to create a new worktree on a
-      new branch, for example <code>git worktree add -b hotfix ../repo-hotfix</code>. Use
-      <code>git worktree list</code> to see all worktrees and <code>git worktree remove &lt;path&gt;</code>
-      when you're done.
-    </p>
-    <h3>Can two worktrees check out the same branch?</h3>
-    <p>
-      No. Git allows a branch to be checked out in only one worktree at a time and refuses with
-      <code>fatal: 'branch' is already checked out</code>. Give each worktree its own branch, or use
-      a detached HEAD.
+      Run <code>git worktree list</code> in any checkout of the repository. On macOS,
+      <a href="/">teebe</a> shows every worktree of every repo in one window, with a live file tree
+      and inline diffs, and picks up worktrees the moment they're created from the terminal or by an
+      AI agent.
     </p>
 
     <div class="install" style="margin-top:28px">
