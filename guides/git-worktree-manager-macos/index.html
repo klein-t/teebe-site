@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Git worktree managers for macOS: what to look for</title>
+  <meta name="description" content="What a git worktree manager does, why a standalone one suits AI agent workflows, and an honest look at the macOS tools available today." />
+  <link rel="canonical" href="https://teebe.io/guides/git-worktree-manager-macos/" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/guides/git-worktree-manager-macos/" />
+  <meta property="og:title" content="Git worktree managers for macOS: what to look for" />
+  <meta property="og:description" content="What a git worktree manager does, why a standalone one suits AI agent workflows, and an honest look at the macOS tools available today." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Git worktree managers for macOS: what to look for" />
+  <meta name="twitter:description" content="What a git worktree manager does, why a standalone one suits AI agent workflows, and an honest look at the macOS tools available today." />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://teebe.io/#guides" },
+      { "@type": "ListItem", "position": 3, "name": "Git worktree managers for macOS", "item": "https://teebe.io/guides/git-worktree-manager-macos/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Git worktree managers for macOS: what to look for",
+    "description": "What a git worktree manager does, why a standalone one suits AI agent workflows, and an honest look at the macOS tools available today.",
+    "image": "https://teebe.io/assets/teebe-diff.png",
+    "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
+    "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
+    "mainEntityOfPage": "https://teebe.io/guides/git-worktree-manager-macos/",
+    "datePublished": "2026-09-18",
+    "dateModified": "2026-09-18"
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Guides › Git worktree managers for macOS</p>
+    <h1>Git worktree managers for macOS: what to look for</h1>
+    <p class="updated">What the category actually covers, and the tools in it today.</p>
+
+    <p>
+      A git worktree manager is a tool whose whole job is the set of working directories attached to
+      your repositories. Once you run more than two or three worktrees at a time, usually because
+      each AI coding agent session gets its own, keeping track of them with
+      <code>git worktree list</code> stops being practical. This page covers what a manager is
+      supposed to do, why a standalone one fits agent work better than an IDE, and the macOS tools
+      that exist right now.
+    </p>
+
+    <h2>What a worktree manager does</h2>
+    <p>
+      There are two halves to the job. The first is the lifecycle: list every worktree across every
+      repo you care about, create one on a new or existing branch, remove one when the work lands,
+      and prune the metadata git leaves behind when a directory disappears. Doing this by hand is not
+      hard, it is just repetitive, and the repetition is where mistakes happen, usually deleting the
+      wrong directory or leaving a branch checked out somewhere you forgot about. The
+      <a href="/guides/git-worktree-cheat-sheet/">cheat sheet</a> has the raw commands if you prefer
+      to stay in the terminal.
+    </p>
+    <p>
+      The second half is status, and it is the part that decides whether a manager is useful. For
+      each worktree you want to know whether it has uncommitted changes, whether it has commits you
+      have not pushed, and whether its branch has already been merged into the trunk. Those three
+      answers are what tell you which worktrees are still live work and which are safe to delete.
+      Most managers add a way to open a worktree in your editor, terminal, or Finder, because that is
+      the action you take right after reading the status.
+    </p>
+
+    <h2>Why a standalone tool, not the IDE</h2>
+    <p>
+      IDE worktree support is built around the assumption that you are the one editing. It opens one
+      worktree as a project window and treats the others as somewhere to switch to. With agents the
+      shape of the problem is different: four or five worktrees are being written to at once, by
+      processes you are not driving keystroke by keystroke, and what you need is a view across all
+      of them rather than a deep view into one. Opening five IDE windows to watch five agents is a
+      lot of memory and a lot of window management for something that is really a monitoring task.
+      A standalone manager sits beside the terminal where the agents run and answers the across-all
+      question, which is the one you keep asking.
+    </p>
+
+    <h2>The macOS tools available today</h2>
+    <p>
+      All of these are open source. They split roughly into menu bar apps, full windows, and
+      launcher or pool style tools.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Tool</th>
+            <th scope="col">Shape</th>
+            <th scope="col">One honest line</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tool"><a href="https://github.com/shivamx96/gitacre" rel="noopener">gitacre</a></td>
+            <td>Menu bar</td>
+            <td>Groups worktrees under their repo and folds in a GitHub pull request rollup via the <code>gh</code> CLI session you already have.</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/oreillymedia/worktreebuddy" rel="noopener">WorkTreeBuddy</a></td>
+            <td>Menu bar</td>
+            <td>Small and focused: status dots per worktree and a jump into your editor, not much beyond that.</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/afterxleep/trees" rel="noopener">Trees</a></td>
+            <td>Menu bar</td>
+            <td>Lightweight worktree list and create/remove, from the menu bar rather than a window.</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/mourato/GitMenuBar" rel="noopener">GitMenuBar</a></td>
+            <td>Menu bar</td>
+            <td>Everyday git operations in the menu bar generally, with worktrees as one part rather than the point.</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/j1king/grovr" rel="noopener">Grovr</a></td>
+            <td>Launcher</td>
+            <td>Tauri app built around quickly spinning up a worktree and launching an agent in it; less about ongoing status.</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/Brechard/worktree-manager" rel="noopener">Worktree Manager (Brechard)</a></td>
+            <td>Window, cross platform</td>
+            <td>Audits worktrees across all your repos against five safety checks and reports the disk they are holding.</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/gregnazario/worktree-ui" rel="noopener">worktree-tool</a></td>
+            <td>Window, cross platform</td>
+            <td>Rust and GPUI, and growing into a fuller git client with staging, history, and conflict handling.</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/nino/worktree-manager" rel="noopener">Worktree Manager (nino)</a></td>
+            <td>Window</td>
+            <td>Repos and worktrees as a tree, with per-worktree push, pull, merge trunk in, and a branch switcher.</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/ricwo/forest" rel="noopener">forest</a></td>
+            <td>Window</td>
+            <td>A straightforward macOS worktree list and create/remove app, young and small in scope.</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/tokudayo/treepool" rel="noopener">Treepool</a></td>
+            <td>CLI plus menu bar</td>
+            <td>Different idea: keeps a warm pool of reusable worktree slots so you assign a branch instead of creating a directory each time.</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="/">teebe</a></td>
+            <td>Window</td>
+            <td>Worktree list plus a live file view inside the selected worktree, with inline diffs.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Where teebe sits</h2>
+    <p>
+      Most of the tools above stop at the worktree row. <a href="/">teebe</a> treats that row as the
+      way in: select a worktree and you get its full file tree in the same window, badging live as
+      files change on disk, so you can watch an agent work rather than refresh a status list. Press
+      Space on any file for an inline diff. Worktrees are grouped by state, merged versus
+      uncommitted, and the merged group can be cleaned up in one click, which is the action that
+      piles up when every session created its own. There is also an @-ref copy for pasting a file
+      path back into an agent prompt.
+    </p>
+    <p>
+      What it does not do: there is no built-in terminal, and no pull request list. Agents run in
+      your own terminal and teebe watches the result. If a PR rollup in the menu bar is what you
+      want, gitacre is the closer fit. For the wider field including full git clients, see
+      <a href="/compare/git-worktree-gui-mac/">every git worktree GUI for Mac compared</a>.
+    </p>
+
+    <h2>How to try teebe</h2>
+    <p>
+      One line in your terminal. Free, open source, macOS 14 and later, Apple Silicon and Intel.
+    </p>
+
+    <div class="install" style="margin-top:28px">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub" style="text-align:center">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog/">Changelog</a> · <a href="/privacy/">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy/. -->
+  <script>
+    (function () {
+      try {
+        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
+        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
