@@ -129,14 +129,14 @@ git worktree add -b feature-a ../repo-feature-a origin/feature-a</code></pre>
     <pre><code>git worktree list --porcelain</code></pre>
 
     <h2>Remove and prune</h2>
-    <p>Remove a worktree once you're done with it:</p>
+    <p>Remove a worktree once you're done with it. The branch stays, delete it separately with <code>git branch -d</code>:</p>
     <pre><code>git worktree remove ../repo-feature-a</code></pre>
-    <p>Force it if the worktree has uncommitted changes you don't need:</p>
-    <pre><code>git worktree remove --force ../repo-feature-a</code></pre>
-    <p>If a worktree's directory was deleted manually instead of through git, clean up the stale metadata:</p>
-    <pre><code>git worktree prune</code></pre>
-    <p>Removing a worktree does not delete its branch. Do that separately:</p>
-    <pre><code>git branch -d feature-a</code></pre>
+    <p>
+      If the directory was deleted by hand, <code>git worktree prune</code> clears the stale record.
+      For <code>--force</code>, locked worktrees, <code>cannot delete branch used by worktree</code>
+      and every other removal error, see
+      <a href="/guides/git-worktree-remove/">git worktree remove and troubleshooting</a>.
+    </p>
 
     <h2>Move, lock, unlock, repair</h2>
     <p>Move a worktree to a new path, git updates the metadata for you:</p>
@@ -152,17 +152,13 @@ git worktree add -b feature-a ../repo-feature-a origin/feature-a</code></pre>
     <p>
       That branch is in use in another worktree. Either <code>cd</code> into that worktree, check
       out a different branch, or remove the other worktree first with <code>git worktree remove</code>.
+      Newer versions of git word it <code>fatal: '&lt;branch&gt;' is already used by worktree at '&lt;path&gt;'</code>.
     </p>
-    <p><code>fatal: '&lt;path&gt;' is a missing but locked worktree</code></p>
     <p>
-      The directory is gone but the worktree was locked, so <code>prune</code> refuses to touch it.
-      Unlock it with <code>git worktree unlock &lt;path&gt;</code>, then <code>git worktree prune</code>
-      or <code>git worktree remove --force &lt;path&gt;</code>.
-    </p>
-    <p><code>cannot delete branch '&lt;x&gt;' used by worktree at '&lt;path&gt;'</code></p>
-    <p>
-      Git won't delete a branch that's checked out somewhere. Remove that worktree first with
-      <code>git worktree remove &lt;path&gt;</code>, then <code>git branch -d &lt;x&gt;</code>.
+      Errors from <code>git worktree remove</code>, <code>prune</code> and <code>git branch -d</code>,
+      including the locked and missing worktree messages and
+      <code>cannot delete branch '&lt;x&gt;' used by worktree</code>, are covered in
+      <a href="/guides/git-worktree-remove/">git worktree remove and troubleshooting</a>.
     </p>
     <p>Untracked or ignored files missing in the new worktree</p>
     <p>
