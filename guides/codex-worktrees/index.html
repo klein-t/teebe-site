@@ -14,11 +14,11 @@
   <meta property="og:url" content="https://teebe.io/guides/codex-worktrees/" />
   <meta property="og:title" content="Codex worktrees: how the Codex app isolates parallel work" />
   <meta property="og:description" content="How the Codex app uses git worktrees to isolate parallel chats: where they live on disk, managed vs permanent, cleanup limits, and the CLI equivalent." />
-  <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v4.png" />
   <meta property="og:site_name" content="teebe" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Codex worktrees: how the Codex app isolates parallel work" />
-  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v4.png" />
 
   <link rel="icon" type="image/png" href="/assets/logo.png" />
   <link rel="apple-touch-icon" href="/assets/logo.png" />
@@ -44,7 +44,7 @@
     "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
     "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
     "datePublished": "2026-09-02",
-    "dateModified": "2026-09-02",
+    "dateModified": "2026-10-06",
     "mainEntityOfPage": "https://teebe.io/guides/codex-worktrees/"
   }
   </script>
@@ -192,10 +192,11 @@ codex</code></pre>
       once and every worktree shows up in one list, including the ones Codex created for you. Pick
       one and you get a live file tree that badges the instant Codex edits a file, with no manual
       refresh. Press Space on a changed file to peek its diff inline, or open it in whatever editor
-      you already use. It also lists ahead/behind counts and can add or remove worktrees itself, and
-      it auto-detects worktrees created or removed externally, so a worktree Codex creates (or
-      deletes) shows up without you doing anything. teebe doesn't edit code, run agents, or touch git
-      history, it's the navigator, not the driver. If you use Claude Code too, the
+      you already use. While Codex works in a worktree, its row shows an animated orb. teebe also
+      shows whether each Codex worktree is merged, removes the merged ones (and their branches) in
+      one step after a confirmation, and auto-detects worktrees created or removed externally, so a
+      worktree Codex creates (or deletes) shows up without you doing anything. teebe doesn't edit
+      code or run agents, it's the navigator, not the driver. If you use Claude Code too, the
       <a href="/guides/claude-code-worktrees/">Claude Code worktrees guide</a> covers the same idea
       there, and <a href="/compare/git-worktree-gui-mac/">every git worktree GUI for Mac, compared</a>
       if you want to see the alternatives.
