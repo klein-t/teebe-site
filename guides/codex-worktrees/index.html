@@ -44,7 +44,7 @@
     "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
     "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
     "datePublished": "2026-09-02",
-    "dateModified": "2026-09-02",
+    "dateModified": "2026-10-06",
     "mainEntityOfPage": "https://teebe.io/guides/codex-worktrees/"
   }
   </script>
@@ -192,10 +192,11 @@ codex</code></pre>
       once and every worktree shows up in one list, including the ones Codex created for you. Pick
       one and you get a live file tree that badges the instant Codex edits a file, with no manual
       refresh. Press Space on a changed file to peek its diff inline, or open it in whatever editor
-      you already use. It also lists ahead/behind counts and can add or remove worktrees itself, and
-      it auto-detects worktrees created or removed externally, so a worktree Codex creates (or
-      deletes) shows up without you doing anything. teebe doesn't edit code, run agents, or touch git
-      history, it's the navigator, not the driver. If you use Claude Code too, the
+      you already use. While Codex works in a worktree, its row shows an animated orb. teebe also
+      shows whether each Codex worktree is merged, removes the merged ones (and their branches) in
+      one step after a confirmation, and auto-detects worktrees created or removed externally, so a
+      worktree Codex creates (or deletes) shows up without you doing anything. teebe doesn't edit
+      code or run agents, it's the navigator, not the driver. If you use Claude Code too, the
       <a href="/guides/claude-code-worktrees/">Claude Code worktrees guide</a> covers the same idea
       there, and <a href="/compare/git-worktree-gui-mac/">every git worktree GUI for Mac, compared</a>
       if you want to see the alternatives.

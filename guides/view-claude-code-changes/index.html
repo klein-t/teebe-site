@@ -40,7 +40,7 @@
     "@type": "Article",
     "headline": "Claude Code diff viewer: see what changed, without an editor",
     "datePublished": "2026-07-01",
-    "dateModified": "2026-09-02",
+    "dateModified": "2026-10-06",
     "description": "How to view what Claude Code and other terminal agents changed across git worktrees, live, on macOS.",
     "image": "https://teebe.io/assets/teebe-diff.png",
     "author": { "@type": "Organization", "name": "teebe", "url": "https://teebe.io/" },
@@ -108,16 +108,20 @@
     <p>
       Because teebe watches the filesystem and git directly, it doesn't care which agent made the
       change. Add multiple repos and worktrees side by side and you get one calm view of several
-      Claude Code sessions running in parallel, each with live badges and ahead/behind counts,
-      so you can review what every agent changed at a glance instead of tailing logs.
+      Claude Code sessions running in parallel, each with live badges and one status mark, so you
+      can review what every agent changed at a glance instead of tailing logs. While Claude Code
+      works in a worktree its row shows an animated orb, and teebe can notify you when the turn
+      finishes.
     </p>
 
     <h2>What teebe doesn't do</h2>
     <p>
-      teebe is the navigator, not the editor or the orchestrator. It never writes to your files and
-      never runs your agents. You keep doing that in the terminal. It also isn't a full git client:
-      for staging, committing, or resolving conflicts you'll still reach for your usual tools. Its one
-      job is to show you, live, what changed. If you're deciding between tools, the
+      teebe is the navigator, not the editor or the orchestrator. It never edits the contents of your
+      files and never runs your agents. You keep doing that in the terminal. The git actions it does
+      run are the ones you ask for: creating and removing worktrees, deleting a merged branch, and
+      staging, unstaging or discarding changes, with a confirmation before anything destructive. It
+      isn't a full git client: for committing, rebasing or resolving conflicts you'll still reach for
+      your usual tools. Its job is to show you, live, what changed, and which worktrees are done. If you're deciding between tools, the
       <a href="/compare/git-worktree-gui-mac/">git worktree GUI comparison</a> covers what else exists.
     </p>
 

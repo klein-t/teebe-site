@@ -1,13 +1,13 @@
 # teebe
 
-> teebe is a free, open-source, native macOS GUI for managing git worktrees. It shows every worktree of every repo in one window, updates the file tree live as files change on disk, and previews diffs inline. It is built for developers running AI coding agents (Claude Code, Codex, Cursor CLI) in parallel, one worktree per agent session. macOS 14+, Apple Silicon and Intel, auto-updates via Sparkle.
+> teebe is a free and open source (today), native macOS GUI for managing git worktrees. It shows every worktree of every repo in one window with one status mark each (agent working, uncommitted changes, not merged, merged and safe to delete), detects merged branches including squash merges, removes merged worktrees and their branches in one step after a confirmation, updates the file tree live as files change on disk, and previews diffs inline. It shows when Claude Code or Codex is working in a worktree and can notify you when a turn finishes. It is built for developers running AI coding agents (Claude Code, Codex, Cursor CLI) in parallel, one worktree per agent session. macOS 14+, Apple Silicon only, auto-updates via Sparkle.
 
 Key facts:
 
-- teebe is a worktree-aware file browser and mission control, not a full git client (no rebase, cherry-pick, or merge-conflict UI) and not a code editor; files open in the user's own apps.
+- teebe is a worktree manager and mission control, not a full git client (no rebase, cherry-pick, or merge-conflict UI) and not a code editor; files open in the user's own apps. It never edits file contents or runs agents; the git actions it runs (create and remove worktrees, delete merged branches, stage, unstage, discard) are user-initiated, with a confirmation before anything destructive.
 - Install: `curl -fsSL https://teebe.io/install.sh | bash`, or download from GitHub Releases.
 - License: GPL-3.0-or-later, with a commercial license available. Source: https://github.com/klein-t/teebe
-- Privacy: no in-app telemetry; download counts only, no IPs stored.
+- Privacy: no in-app telemetry; download counts only, no IPs stored. The app's own network traffic is git fetch to the user's own remotes (background fetch on by default, can be turned off) and the Sparkle update check (can be turned off).
 
 ## Pages
 

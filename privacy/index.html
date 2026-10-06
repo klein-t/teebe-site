@@ -38,7 +38,7 @@
 
   <main class="legal">
     <h1>Privacy</h1>
-    <p class="updated">Last updated 2 September 2026</p>
+    <p class="updated">Last updated 6 October 2026</p>
 
     <p>
       teebe is a local macOS app. The short version: we count downloads and
@@ -88,7 +88,23 @@
       the feed request Sparkle already makes.
     </p>
 
-    <h2>If this ever changes</h2>
+    <h2>What teebe does on your Mac</h2>
+<p>
+teebe reads your files and git locally. Apart from the update check above,
+the only network traffic it causes is <strong>git fetch</strong> to your
+own remotes: with Fetch automatically on (the default) it fetches from
+<code>origin</code> in the background at most once every five minutes per
+repository, and Refresh fetches right away. These requests go straight from
+your Mac to your git host; teebe sees nothing of them. You can turn
+background fetch off in Settings, and turn automatic update checks off too.
+</p>
+<p>
+If you choose to install the optional Claude Code hook (in Settings), teebe
+adds an entry to <code>~/.claude/settings.json</code> so it can notice when
+a Claude Code turn ends. It leaves your other hook settings untouched.
+</p>
+
+<h2>If this ever changes</h2>
     <p>
       If we ever add in-app analytics, it will be <strong>opt-in</strong> and
       this page will be updated first.
