@@ -6,7 +6,7 @@
 
   <!-- Primary SEO -->
   <title>teebe &middot; git worktree manager for macOS, built for Claude Code and Codex</title>
-  <meta name="description" content="Native macOS git worktree manager: every worktree in one window, merged and uncommitted status, live file badges, inline diffs. Free, open source." />
+  <meta name="description" content="Native macOS git worktree manager for Claude Code and Codex: see which worktrees are merged and safe to delete, live file badges, inline diffs. Free." />
   <link rel="canonical" href="https://teebe.io/" />
   <meta name="theme-color" content="#060709" />
   <meta name="robots" content="index, follow" />
@@ -15,8 +15,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://teebe.io/" />
   <meta property="og:title" content="teebe &middot; git worktree manager for macOS, built for Claude Code and Codex" />
-  <meta property="og:description" content="Native macOS git worktree manager: every worktree in one window, merged and uncommitted status, live file badges, inline diffs. Free, open source." />
-  <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta property="og:description" content="Native macOS git worktree manager for Claude Code and Codex: see which worktrees are merged and safe to delete, live file badges, inline diffs. Free." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v4.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -26,8 +26,8 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="teebe &middot; git worktree manager for macOS, built for Claude Code and Codex" />
-  <meta name="twitter:description" content="Native macOS git worktree manager: every worktree in one window, merged and uncommitted status, live file badges, inline diffs. Free, open source." />
-  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta name="twitter:description" content="Native macOS git worktree manager for Claude Code and Codex: see which worktrees are merged and safe to delete, live file badges, inline diffs. Free." />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v4.png" />
   <meta name="twitter:image:alt" content="teebe: a native macOS git worktree GUI for AI coding agents" />
 
   <!-- Icons -->
@@ -65,22 +65,28 @@
     "@type": "SoftwareApplication",
     "name": "teebe",
     "applicationCategory": "DeveloperApplication",
-    "operatingSystem": "macOS 14.0",
+    "operatingSystem": "macOS 14 or later (Apple Silicon)",
     "url": "https://teebe.io/",
     "installUrl": "https://teebe.io/install.sh",
-    "softwareVersion": "0.7.0",
+    "downloadUrl": "https://github.com/klein-t/teebe/releases/latest",
+    "softwareVersion": "0.8.0",
+    "releaseNotes": "https://teebe.io/changelog/",
+    "license": "https://www.gnu.org/licenses/gpl-3.0.html",
     "screenshot": [
       "https://teebe.io/assets/teebe-hero.png",
       "https://teebe.io/assets/teebe-diff.png"
     ],
     "featureList": [
+      "One status mark per worktree: agent working, uncommitted changes, not merged, merged and safe to delete",
+      "Automatic merge detection, including squash merges",
+      "Remove merged worktrees and their branches in one step, after a confirmation",
+      "Create worktrees on a new or existing branch from the New Worktree sheet",
+      "Shows when Claude Code or Codex is working or waiting, with optional completion notifications",
       "Live file badges as your AI agents edit",
-      "Inline git diff peek without opening an editor",
-      "Browse multiple git worktrees and repos at once",
-      "Changes view with ahead/behind counts",
-      "Opens files in your native editor"
+      "Inline git diff peek with Space, without opening an editor",
+      "Global settings with per-project overrides"
     ],
-    "description": "A native macOS git worktree GUI that shows what your AI coding agents change, with live file badges and inline diffs.",
+    "description": "A native macOS git worktree GUI that shows what your AI coding agents change, with live file badges and inline diffs, and tells you which worktrees are merged and safe to delete.",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
     "author": { "@id": "https://teebe.io/#org" }
   }
@@ -92,15 +98,20 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
-      { "@type": "Question", "name": "I already vibecode from the terminal (tmux, Ghostty, cmux). Why teebe?", "acceptedAnswer": { "@type": "Answer", "text": "Because the terminal is great for running agents but poor at showing you files. When you have a window per project spread across your monitors, it gets messy to see which files an agent actually changed, and sometimes you need to look. teebe gives you that visual file tree and inline diffs beside your terminal, so you stay in the terminal-first flow you like and still see what changed." } },
-      { "@type": "Question", "name": "How do I watch what my AI agents change in real time?", "acceptedAnswer": { "@type": "Answer", "text": "Point teebe at a git worktree and it shows the full file tree with live badges. Every file an agent touches lights up the moment it changes on disk, and you can add multiple repos and worktrees side by side to keep an eye on several agents running in parallel at once. Click any file for an inline diff to see exactly what changed, without opening your editor." } },
-      { "@type": "Question", "name": "Does teebe edit my code, run my agents, or replace my terminal?", "acceptedAnswer": { "@type": "Answer", "text": "No to all three. teebe is the navigator, not the editor, the orchestrator, or the terminal. It browses, watches, and shows diffs, but never writes to your files and never runs your agents. You keep running agents in your terminal and writing code in your editor; teebe sits beside them and opens any file in the native editor you already use." } },
-      { "@type": "Question", "name": "Which AI coding agents does teebe work with, and can I use it without any?", "acceptedAnswer": { "@type": "Answer", "text": "All of them, and yes. teebe works with Claude Code, Codex/CMAX, Cursor's CLI, and any terminal agent, because it just watches the filesystem and git rather than hooking into a specific tool. With no agents running it's still a fast, native git worktree browser: full tree, live updates, inline diffs, and a changes view with ahead/behind counts." } },
-      { "@type": "Question", "name": "How is teebe different from an orchestrator (Conductor, Vibe Kanban) or a git client (Tower, Fork)?", "acceptedAnswer": { "@type": "Answer", "text": "Orchestrators run and manage agents for you; git clients handle staging, commits, rebasing, and conflicts. teebe does neither. It's the passive watch layer beside them: a live file browser that shows what changed, with inline diffs and ahead/behind counts, so you can see what your agents did at a glance. Use it alongside an orchestrator or on its own." } },
-      { "@type": "Question", "name": "Does teebe show the worktrees Claude Code and Codex create on their own?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. teebe watches each repo's git metadata, so a worktree created by claude --worktree (under .claude/worktrees/), by the Codex app (under $CODEX_HOME/worktrees), by Cursor's parallel agents, or by a plain git worktree add shows up in the WORKTREES list the moment it exists, and disappears when it's removed. You can also add and remove worktrees from teebe itself." } },
-      { "@type": "Question", "name": "Does teebe send my code anywhere?", "acceptedAnswer": { "@type": "Answer", "text": "No. teebe reads your files and git locally on your Mac. It doesn't upload your code, and there's no backend it talks to, so it works fully offline. The only thing that touches the network is the optional Sparkle auto-update check." } },
-      { "@type": "Question", "name": "Is teebe free and open source?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, both. teebe is free and open source, with no trial, no paid tier, and no account. The code lives on GitHub and installs come straight from GitHub Releases as a signed .app with auto-updates." } },
-      { "@type": "Question", "name": "What do I need to run teebe, and how do I install it?", "acceptedAnswer": { "@type": "Answer", "text": "macOS 14 or newer, on Apple Silicon or Intel; teebe is a native Mac app, so it's Mac-only. To install, run 'curl -fsSL https://teebe.io/install.sh | bash' in your terminal, or download the .dmg from GitHub Releases. It's a signed .app, so it opens without Gatekeeper warnings." } }
+      {"@type": "Question", "name": "I already vibecode from the terminal (tmux, Ghostty, cmux). Why teebe?", "acceptedAnswer": {"@type": "Answer", "text": "Because the terminal is great for running agents and poor at showing you files and state. With a window per project spread across your monitors, it gets hard to tell which worktree an agent is still working in, which one has uncommitted changes, and which one is merged and can go. teebe sits beside your terminal and shows all of that at a glance, with a live file tree and inline diffs when you need to look closer. There's a walkthrough in see what Claude Code changed, live."}},
+      {"@type": "Question", "name": "How do I see which worktrees are done and which are still in progress?", "acceptedAnswer": {"@type": "Answer", "text": "Every worktree in teebe shows one mark. An animated orb means a coding agent is working in it. An orange dot means it has uncommitted changes. A ring means its commits are not merged yet. A green check means it is merged and safe to delete. Hover any mark for a short card that explains it, and group your worktrees by state to see Uncommitted changes, Not merged and Safe to delete as separate lists."}},
+      {"@type": "Question", "name": "How does teebe know a worktree is merged?", "acceptedAnswer": {"@type": "Answer", "text": "teebe checks every worktree against your default branch plus dev, develop, main and master, and one extra comparison branch you can choose in Settings. Squash merges and branches merged commit by commit both count as merged. A brand new branch with no commits of its own never does. With background fetch on, the result stays current with your remote."}},
+      {"@type": "Question", "name": "Can removing a worktree in teebe lose my work?", "acceptedAnswer": {"@type": "Answer", "text": "teebe is built so it doesn't. A worktree is only offered for removal when it is merged and clean, and teebe checks everything again right before it removes anything. It never offers a worktree with uncommitted changes, an unfinished rebase or merge, a lock, or ignored files that hold a nested repository with unpushed commits. The confirmation lists every worktree and says how many ignored files will be deleted. Commits that only the removed worktree could still reach are kept under a hidden backup ref for 90 days, so you can bring them back with git branch."}},
+      {"@type": "Question", "name": "Does teebe show the worktrees Claude Code, Codex and Cursor create on their own?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. teebe watches each repo's git metadata, so a worktree created by claude --worktree (under .claude/worktrees/), by the Codex app (under $CODEX_HOME/worktrees), by Cursor's parallel agents, or by a plain git worktree add shows up the moment it exists and disappears when it's removed. You can also create worktrees from teebe with the New Worktree sheet: pick a new or existing branch, its starting point and where the folder goes. See Claude Code worktrees, explained and Codex worktrees."}},
+      {"@type": "Question", "name": "Which AI coding agents does teebe work with?", "acceptedAnswer": {"@type": "Answer", "text": "All of them. File badges, diffs and merge status come from the filesystem and git, so any terminal agent works. teebe also knows when Claude Code or Codex is working or waiting for you in a worktree and shows it with the orb, and it can notify you when a turn finishes. Without any agents it's still a fast, native worktree manager."}},
+      {"@type": "Question", "name": "Can teebe notify me when an agent finishes?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Settings has switches for completion notifications and their sound, plus a Test Notification button. For Claude Code, an optional hook lets teebe notice the end of a turn even while it sits in the background; Settings shows whether it's installed and leaves your other hook settings untouched. Notifications are off by default for new installs, and stay on if you already had them."}},
+      {"@type": "Question", "name": "Does teebe edit my code or run my agents?", "acceptedAnswer": {"@type": "Answer", "text": "No. teebe never edits the contents of your files and never starts or controls an agent. It does run the git actions you ask for: creating and removing worktrees, deleting a merged branch, and staging, unstaging or discarding changes, with a confirmation before anything destructive. Files open in the editor you already use."}},
+      {"@type": "Question", "name": "Does teebe fetch from my remote, and will it trigger my SSH agent?", "acceptedAnswer": {"@type": "Answer", "text": "With Fetch automatically on (the default), teebe runs a quiet git fetch from origin when you return to the app or select a project, at most once every five minutes, so sync arrows and merge status stay current. These background fetches run without your SSH agent, so 1Password, Secretive and similar agents never pop up an approval prompt on their own. Refresh fetches right away and does use your agent. You can turn background fetch off in Settings."}},
+      {"@type": "Question", "name": "Can I use different settings per project?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Settings holds your defaults: which terminal opens a worktree (Terminal or cmux), how files open, the extra comparison branch and where new worktrees go. Change any of them inside a project and the change applies to that project only, until you return it to the defaults. Appearance follows the system or can be set to Light or Dark."}},
+      {"@type": "Question", "name": "How is teebe different from an orchestrator (Conductor, Vibe Kanban) or a git client (Tower, Fork)?", "acceptedAnswer": {"@type": "Answer", "text": "Orchestrators run your agents for you. Git clients handle commits, rebases and conflicts. teebe does neither. It's the layer beside your terminal that shows what every agent changed, tells you which worktrees are merged, and cleans up the ones that are done. Use it alongside an orchestrator or on its own. The git worktree GUI comparison covers the alternatives."}},
+      {"@type": "Question", "name": "Does teebe send my code anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. teebe reads your files and git locally on your Mac, and there is no teebe backend and no in-app analytics. The network traffic it causes is git fetch to your own remotes (which you can turn off) and the Sparkle update check against teebe.io (which you can also turn off). See the privacy page for details."}},
+      {"@type": "Question", "name": "Is teebe free and open source?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. teebe is free and open source today, under GPL-3.0, and needs no account. The code is on GitHub, and installs come from GitHub Releases with automatic updates."}},
+      {"@type": "Question", "name": "What do I need to run teebe, and how do I install it?", "acceptedAnswer": {"@type": "Answer", "text": "macOS 14 or newer on Apple Silicon. Run curl -fsSL https://teebe.io/install.sh | bash in your terminal: it installs teebe into Applications and opens it without a Gatekeeper prompt. If you download the .dmg from GitHub Releases instead, macOS blocks the first launch until you allow it in System Settings, under Privacy & Security, because teebe is not notarized yet. Updates arrive automatically after that."}}
     ]
   }
   </script>
@@ -253,14 +264,14 @@
     .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; }
     /* the curl one-liner IS the install CTA (no downloads) */
     .hero-terminal {
-      display: flex; align-items: center; gap: 10px; max-width: 520px;
+      display: flex; align-items: center; gap: 10px; max-width: 520px; min-width: 0;
       background: rgba(5,16,12,.72); border: 1px solid rgba(52,211,153,.42); border-radius: 13px;
       padding: 12px 12px 12px 16px; font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
       backdrop-filter: blur(10px);
       box-shadow: 0 14px 44px rgba(16,185,129,.18);
     }
     .hero-terminal .ps { color: var(--accent-2); font-weight: 700; font-size: 0.92rem; user-select: none; }
-    .hero-terminal code { flex: 1; text-align: left; font-size: 0.9rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hero-terminal code { flex: 1; min-width: 0; text-align: left; font-size: 0.9rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .hero-terminal .copy {
       flex-shrink: 0; color: var(--accent-ink); border: 0;
       background: linear-gradient(140deg, var(--accent-2), var(--accent));
@@ -279,7 +290,7 @@
     .hero .sub { font-size: 0.9rem; color: var(--muted-dim); margin-top: 16px; }
 
     /* ---------------- Animated teebe panel (faithful recreation) ---------------- */
-    .hero-visual { display: flex; justify-content: center; min-height: 480px; padding-top: 8px; }
+    .hero-visual { display: flex; justify-content: center; min-height: 480px; padding-top: 26px; }
     .tb {
       width: 360px; max-width: 100%; align-self: flex-start; border-radius: 12px; overflow: hidden;
       background: #262628;
@@ -344,6 +355,112 @@
     }
     .tb.static .tb-sec .tb-body { grid-template-rows: 1fr; }
     .tb.static .tb-chev { transform: rotate(0deg); }
+
+    /* ---------------- Hero window: teebe 0.8 (dark glass, status marks, groups) ---------------- */
+    .tw-stage { position: relative; width: 340px; max-width: 100%; align-self: flex-start; }
+    .tw {
+      position: relative; overflow: hidden; border-radius: 12px;
+      /* behind-window glass: the hero gradient shows through, like the app's vibrancy */
+      background: rgba(34,34,38,.56);
+      -webkit-backdrop-filter: blur(30px) saturate(175%);
+              backdrop-filter: blur(30px) saturate(175%);
+      border: 1px solid rgba(255,255,255,.13);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 40px 100px rgba(0,0,0,.55), 0 2px 10px rgba(0,0,0,.35);
+      color: rgba(255,255,255,.88); font-size: 13px; line-height: 1.2;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      user-select: none;
+    }
+    @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+      .tw { background: #26262a; }
+    }
+    .tw-titlebar { display: flex; align-items: center; height: 34px; padding: 0 12px; position: relative; }
+    .tw-title { position: absolute; left: 0; right: 0; text-align: center; font-weight: 600; color: rgba(255,255,255,.62); pointer-events: none; }
+    .tw-pin { margin-left: auto; color: #0a84ff; display: flex; }
+    .tw-sechead { display: flex; align-items: center; gap: 5px; height: 32px; padding: 0 11px; }
+    .tw-line { border-top: 1px solid rgba(255,255,255,.07); }
+    .tw-chev { width: 13px; height: 13px; display: grid; place-items: center; color: #86868b; }
+    .tw-chev.open { transform: rotate(90deg); }
+    .tw-label { font-size: 11px; font-weight: 700; letter-spacing: .5px; color: #8a8a90; }
+    .tw-tools { margin-left: auto; display: flex; align-items: center; gap: 16px; padding-right: 8px; color: #86868b; }
+    .tw-repo { display: flex; align-items: center; gap: 7px; height: 29px; padding: 0 11px; color: #86868b; }
+    .tw-repo span { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,.88); }
+    /* fixed height: rows move between groups without the window resizing */
+    .tw-list { height: 238px; padding: 4px 0; position: relative; }
+    .tw-row, .tw-gh { position: relative; display: flex; align-items: center; overflow: hidden; }
+    .tw-row { height: 26px; padding: 0 11px 0 24px; transition: height .4s cubic-bezier(.3,.7,.25,1), opacity .3s ease; }
+    .tw-row::before, .tw-gh::before { content: ""; position: absolute; inset: 0 6px; border-radius: 4px; z-index: -1; }
+    .tw-row.sel { color: #fff; }
+    .tw-row.sel::before { background: #0a84ff; }
+    .tw-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 2px; min-width: 0; }
+    .tw-gh { height: 25px; padding: 0 11px 0 12px; transition: height .4s cubic-bezier(.3,.7,.25,1), opacity .3s ease; }
+    .tw-gchev { width: 8px; display: flex; color: #86868b; }
+    .tw-gh .mk { margin: 0 3px; }
+    .tw-gt { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.88); }
+    .tw-gn { font-size: 11px; color: #86868b; margin-left: 7px; font-variant-numeric: tabular-nums; }
+    .tw-bin { margin-left: auto; width: 22px; height: 20px; border-radius: 5px; display: grid; place-items: center; color: #98989d; transition: background .15s ease, color .15s ease, transform .12s ease; }
+    .tw-bin.hot { background: rgba(255,255,255,.12); color: #ff453a; }
+    .tw-bin.press { transform: scale(.88); }
+    .tw-row.gone, .tw-gh.gone { height: 0; opacity: 0; }
+
+    /* status marks: one 22x20 slot, the active mark fades in */
+    .mk { position: relative; flex: 0 0 22px; width: 22px; height: 20px; }
+    .mk > * { position: absolute; left: 50%; top: 50%; opacity: 0; transform: translate(-50%,-50%) scale(.5); transition: opacity .3s ease, transform .35s cubic-bezier(.2,.8,.25,1.2); }
+    .mk[data-m="orb"] .m-orb, .mk[data-m="dot"] .m-dot, .mk[data-m="ring"] .m-ring, .mk[data-m="check"] .m-check { opacity: 1; transform: translate(-50%,-50%); }
+    .m-orb { width: 20px; height: 20px; }
+    .m-dot { width: 8px; height: 8px; border-radius: 50%; background: #f08c1a; }
+    .m-ring { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.28); box-sizing: border-box; }
+    .m-check { color: #30d158; }
+
+    /* removal sheet */
+    .tw-sheetclip { position: absolute; left: 0; right: 0; top: 34px; bottom: 0; overflow: hidden; pointer-events: none; }
+    .tw-sheet {
+      margin: 0 auto; width: calc(100% - 28px); max-width: 300px; padding: 14px 14px 12px;
+      background: rgba(44,44,48,.97); border: 1px solid rgba(255,255,255,.12); border-top: 0;
+      border-radius: 0 0 11px 11px; box-shadow: 0 18px 40px rgba(0,0,0,0); visibility: hidden;
+      transform: translateY(-105%); transition: transform .38s cubic-bezier(.2,.8,.25,1), box-shadow .38s ease, visibility 0s .38s;
+    }
+    .tw-sheet.on { transform: none; box-shadow: 0 18px 40px rgba(0,0,0,.5); visibility: visible; transition-delay: 0s; }
+    .tw-sheet b { display: block; font-size: 12.5px; margin-bottom: 5px; color: #fff; }
+    .tw-sheet p { font-size: 11px; line-height: 1.4; color: rgba(255,255,255,.6); }
+    .tw-items { margin-top: 9px; border: 1px solid rgba(255,255,255,.09); border-radius: 7px; background: rgba(255,255,255,.04); }
+    .tw-items div { display: flex; align-items: center; gap: 7px; padding: 5px 8px; font-size: 11.5px; font-weight: 600; }
+    .tw-items div + div { border-top: 1px solid rgba(255,255,255,.08); }
+    .tw-items small { display: block; font-weight: 400; font-size: 10px; color: rgba(255,255,255,.5); }
+    .tw-items span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tw-items .m-check { flex: 0 0 auto; }
+    .tw-cb { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 11px; }
+    .tw-cb i { width: 13px; height: 13px; border-radius: 3.5px; background: #0a84ff; display: grid; place-items: center; }
+    .tw-btns { display: flex; justify-content: flex-end; gap: 7px; margin-top: 11px; font-size: 11.5px; font-weight: 500; }
+    .tw-btns span { padding: 3px 11px; border-radius: 6px; background: rgba(255,255,255,.14); transition: filter .12s ease, transform .12s ease; }
+    .tw-btns .tw-rm { background: #e5342b; color: #fff; }
+    .tw-btns .tw-rm.press { filter: brightness(1.25); transform: scale(.95); }
+
+    /* notification banner, like macOS shows it at the top right of the screen */
+    .tw-note {
+      position: absolute; top: -18px; right: -44px; width: 292px; z-index: 3;
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-radius: 16px; background: rgba(52,52,56,.78);
+      -webkit-backdrop-filter: blur(24px) saturate(170%); backdrop-filter: blur(24px) saturate(170%);
+      border: 1px solid rgba(255,255,255,.12); box-shadow: 0 16px 40px rgba(0,0,0,.45);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; color: #fff;
+      opacity: 0; transform: translateX(26px); transition: opacity .35s ease, transform .45s cubic-bezier(.2,.8,.25,1);
+    }
+    .tw-note.on { opacity: 1; transform: none; }
+    .tw-note img { width: 30px; height: 30px; border-radius: 7px; flex: 0 0 auto; }
+    .tw-ntext { min-width: 0; flex: 1; }
+    .tw-nt { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; }
+    .tw-nt span { font-size: 11px; color: rgba(255,255,255,.5); }
+    .tw-nb { font-size: 12px; color: rgba(255,255,255,.82); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .tw-cursor { position: absolute; left: 0; top: 0; z-index: 4; pointer-events: none; opacity: 0; transition: opacity .25s ease, transform .7s cubic-bezier(.45,0,.2,1); filter: drop-shadow(0 2px 3px rgba(0,0,0,.4)); }
+    .tw-cursor.on { opacity: 1; }
+    /* deep links (#story=N) and resets snap without transitions */
+    .tw-stage.instant *, .tw-stage.instant { transition: none !important; }
+    .tw-list.fade { opacity: 0; }
+    .tw-list { transition: opacity .3s ease; }
+    @media (max-width: 560px) {
+      .tw-note { right: 8px; left: 8px; width: auto; top: 40px; }
+    }
 
     /* ---------------- Section scaffolding ---------------- */
     section { position: relative; }
@@ -474,12 +591,20 @@
     .vig-live .vig-row:nth-child(3) .m { animation: vigm 5.4s ease-in-out infinite 3.6s; }
     @keyframes vigm { 0%, 100% { opacity: .2; } 12%, 55% { opacity: 1; } }
     @media (prefers-reduced-motion: reduce) { .vig-live .vig-row .m { animation: none; opacity: 1; } }
+    .vig-marks .vig-row, .vig-clean .vig-row { gap: 6px; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; font-size: 13px; }
+    .vig .m-check { color: #30d158; }
+    .vig-marks .t { margin-left: auto; color: #7d8682; font-size: 11.5px; }
+    .vig-clean .vig-row:not(.vig-head) { padding-left: 14px; }
+    .vig-head { font-weight: 600; font-size: 12px !important; }
+    .vig-head .n { color: #7d8682; font-weight: 400; margin-left: 4px; }
+    .vig-head .bin { margin-left: auto; color: #ff6b61; }
     .vig-diff .l { padding: 2px 9px; border-radius: 5px; white-space: pre-wrap; overflow-wrap: anywhere; }
     .vig-diff .l.ctx { color: #8e9793; }
     .vig-diff .l.del { background: rgba(207,34,46,.16); color: #ff9088; }
     .vig-diff .l.add { background: rgba(26,127,55,.22); color: #7ee2a8; }
     @media (max-width: 980px) {
       .bento article, .bento article.wide { grid-column: span 3; }
+      .bento article:last-child { grid-column: span 6; }
     }
     @media (max-width: 640px) {
       .bento article, .bento article.wide { grid-column: span 6; }
@@ -530,6 +655,7 @@
     /* ---------------- Footer ---------------- */
     footer { text-align: center; padding: 34px 24px; color: var(--muted-dim); font-size: 0.9rem; border-top: 1px solid var(--border); }
     footer a:hover { color: var(--text); }
+    footer .credits { margin-top: 8px; font-size: 0.8rem; }
 
     /* ---------------- Responsive ---------------- */
     @media (max-width: 880px) {
@@ -541,7 +667,7 @@
           linear-gradient(to right, rgba(6,7,9,.50), rgba(6,7,9,0) 70%),
           linear-gradient(to bottom, rgba(6,7,9,0) 62%, var(--bg));
       }
-      .hero-grid { grid-template-columns: 1fr; gap: 40px; padding-top: 12px; }
+      .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; padding-top: 12px; }
       .hero-visual { min-height: 0; }
       .lede { max-width: none; }
     }
@@ -577,9 +703,9 @@
           <p class="eyebrow">Native macOS · git worktree GUI</p>
           <h1>Git worktrees,<br /><span class="grad">without the IDE.</span></h1>
           <p class="lede">
-            <strong>teebe</strong> is a native macOS git worktree manager. Pick any worktree, including
-            the ones Claude Code, Codex and Cursor create for each session, and watch the files
-            inside it, live, as your agents edit them, with inline diffs right beside your terminal.
+            <strong>teebe</strong> is a native macOS git worktree manager for Claude Code, Codex and
+            Cursor. See which worktrees an agent is still working in, which have uncommitted changes
+            and which are merged, then clean up the done ones safely, right beside your terminal.
           </p>
           <div class="hero-terminal" id="install">
             <span class="ps">$</span>
@@ -589,99 +715,108 @@
           <div class="hero-cta">
             <a class="btn ghost" href="https://github.com/klein-t/teebe" rel="noopener">View on GitHub</a>
           </div>
-          <p class="sub">Free · open source · macOS 14+ · Apple Silicon &amp; Intel · auto-updates via Sparkle.</p>
+          <p class="sub">Free and open source today · macOS 14+ · Apple Silicon · auto-updates via Sparkle.</p>
         </div>
 
         <div class="hero-visual">
-          <!-- animated recreation of the real teebe panel -->
-          <div class="tb" id="tb" aria-hidden="true">
-            <div class="tb-titlebar">
-              <div class="tb-lights"><i></i><i></i><i></i></div>
-              <span class="tb-title">teebe</span>
-              <span class="tb-pin"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14.6 2.6a1.5 1.5 0 0 1 2.1 0l4.7 4.7a1.5 1.5 0 0 1 0 2.1l-.4.4c-.5.5-1.2.7-1.9.6l-3.2 3.2c.3 1.2 0 2.5-.9 3.4l-.6.6a1 1 0 0 1-1.4 0l-3-3-4.9 4.9a1 1 0 0 1-1.4-1.4l4.9-4.9-3-3a1 1 0 0 1 0-1.4l.6-.6c.9-.9 2.2-1.2 3.4-.9l3.2-3.2c-.1-.7.1-1.4.6-1.9l.4-.4z"/></svg></span>
-            </div>
+          <!-- animated recreation of the teebe 0.8 window: an agent finishes, its worktree
+               gets merged, and the Safe to delete group removes it -->
+          <div class="tw-stage" id="tw-stage" aria-hidden="true">
+            <div class="tw" id="tw">
+              <div class="tw-titlebar">
+                <div class="tb-lights"><i></i><i></i><i></i></div>
+                <span class="tw-title">teebe</span>
+                <span class="tw-pin"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14.6 2.6a1.5 1.5 0 0 1 2.1 0l4.7 4.7a1.5 1.5 0 0 1 0 2.1l-.4.4c-.5.5-1.2.7-1.9.6l-3.2 3.2c.3 1.2 0 2.5-.9 3.4l-.6.6a1 1 0 0 1-1.4 0l-3-3-4.9 4.9a1 1 0 0 1-1.4-1.4l4.9-4.9-3-3a1 1 0 0 1 0-1.4l.6-.6c.9-.9 2.2-1.2 3.4-.9l3.2-3.2c-.1-.7.1-1.4.6-1.9l.4-.4z"/></svg></span>
+              </div>
 
-            <div class="tb-sec" id="sec-wt">
-              <div class="tb-sechead">
-                <span class="tb-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-                WORKTREES
-                <span class="tb-tools">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
+              <div class="tw-sechead">
+                <span class="tw-chev open"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>
+                <span class="tw-label">WORKTREES</span>
+                <span class="tw-tools">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M20.5 3.5v5h-5"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>
                 </span>
               </div>
-              <div class="tb-body"><div class="tb-clip"><div class="tb-list">
-                <div class="tb-repo">
-                  <span class="tb-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.5 21 7v10l-9 4.5L3 17V7l9-4.5z"/><path d="M3 7l9 4.5L21 7"/><path d="M12 11.5V21.5"/></svg></span>
-                  UltraTurboFable
-                </div>
-                <div class="tb-indent">
-                  <div class="tb-row" data-wt="dev">
-                    <span class="tb-dot"></span>
-                    <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><circle cx="18" cy="9" r="2.4"/><path d="M6 8.4v7.2"/><path d="M6 10c0 3 3 4 6 4"/><path d="M15.6 9H12"/></svg></span>
-                    <span class="tb-name">dev</span>
-                    <span class="tb-right"><span class="tb-updown">↓0 ↑0</span></span>
+              <div class="tw-repo">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.5 21 7v10l-9 4.5L3 17V7l9-4.5z"/><path d="M3 7l9 4.5L21 7"/><path d="M12 11.5V21.5"/></svg>
+                <span>UltraTurboFable</span>
+              </div>
+
+              <div class="tw-list" id="tw-list">
+                <div class="tw-row sel" data-wt="dev"><span class="mk" data-m="none"></span><span class="tw-name">dev</span></div>
+
+                <div class="tw-grp" data-g="uc">
+                  <div class="tw-gh">
+                    <span class="tw-gchev"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></span>
+                    <span class="mk" data-m="dot"><i class="m-dot"></i></span>
+                    <span class="tw-gt">Uncommitted changes</span><span class="tw-gn">2</span>
                   </div>
-                  <div class="tb-row" data-wt="agi">
-                    <span class="tb-dot"></span>
-                    <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><circle cx="18" cy="9" r="2.4"/><path d="M6 8.4v7.2"/><path d="M6 10c0 3 3 4 6 4"/><path d="M15.6 9H12"/></svg></span>
-                    <span class="tb-name">feat/agi</span>
-                    <span class="tb-right"><span class="tb-updown">↓0 ↑0</span></span>
-                  </div>
-                  <div class="tb-row" data-wt="fable">
-                    <span class="tb-dot"></span>
-                    <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><circle cx="18" cy="9" r="2.4"/><path d="M6 8.4v7.2"/><path d="M6 10c0 3 3 4 6 4"/><path d="M15.6 9H12"/></svg></span>
-                    <span class="tb-name">feat/fable5.1</span>
-                    <span class="tb-right"><span class="tb-updown">↓0 ↑0</span></span>
-                  </div>
-                  <div class="tb-row" data-wt="final">
-                    <span class="tb-dot"></span>
-                    <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><circle cx="18" cy="9" r="2.4"/><path d="M6 8.4v7.2"/><path d="M6 10c0 3 3 4 6 4"/><path d="M15.6 9H12"/></svg></span>
-                    <span class="tb-name">fix/final-final-v2-R…</span>
-                    <span class="tb-right"><span class="tb-updown">↓0 ↑0</span></span>
+                  <div class="tw-rows">
+                    <div class="tw-row" data-wt="fable"><span class="mk" data-m="orb"><canvas class="orb m-orb" width="20" height="20"></canvas><i class="m-dot"></i><i class="m-ring"></i><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tw-name">feat/fable5.1</span></div>
+                    <div class="tw-row" data-wt="agi"><span class="mk" data-m="dot"><i class="m-dot"></i></span><span class="tw-name">feat/agi</span></div>
                   </div>
                 </div>
-              </div></div></div>
+
+                <div class="tw-grp" data-g="nm">
+                  <div class="tw-gh">
+                    <span class="tw-gchev"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></span>
+                    <span class="mk" data-m="ring"><i class="m-ring"></i></span>
+                    <span class="tw-gt">Not merged</span><span class="tw-gn">1</span>
+                  </div>
+                  <div class="tw-rows">
+                    <div class="tw-row" data-wt="mythos"><span class="mk" data-m="ring"><i class="m-ring"></i></span><span class="tw-name">exp/mythos-leak</span></div>
+                  </div>
+                </div>
+
+                <div class="tw-grp" data-g="sd">
+                  <div class="tw-gh">
+                    <span class="tw-gchev"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></span>
+                    <span class="mk" data-m="check"><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="tw-gt">Safe to delete</span><span class="tw-gn">1</span>
+                    <span class="tw-bin" id="tw-bin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h16"/><path d="M9 6.5V4h6v2.5"/><path d="M6 6.5l1 13.5h10l1-13.5"/><path d="M10 10.5v6M14 10.5v6"/></svg></span>
+                  </div>
+                  <div class="tw-rows">
+                    <div class="tw-row" data-wt="final"><span class="mk" data-m="check"><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tw-name">fix/final-final-v2-REAL</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tw-sechead tw-line">
+                <span class="tw-chev"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>
+                <span class="tw-label">CHANGES</span>
+              </div>
+              <div class="tw-sechead tw-line">
+                <span class="tw-chev"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>
+                <span class="tw-label">FILES</span>
+                <span class="tw-tools"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></span>
+              </div>
+
+              <!-- the removal confirmation, a sheet that slides out under the title bar -->
+              <div class="tw-sheetclip">
+                <div class="tw-sheet" id="tw-sheet">
+                  <b>Remove 2 worktrees?</b>
+                  <p>The folders will be deleted from your Mac. Their local branches will be deleted too; remote branches are kept.</p>
+                  <div class="tw-items">
+                    <div><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg><span>feat/fable5.1<small>~/code/worktrees/fable5.1</small></span></div>
+                    <div><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg><span>fix/final-final-v2-REAL<small>~/code/worktrees/final-final-v2-REAL</small></span></div>
+                  </div>
+                  <div class="tw-cb"><i><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Also delete the branches</div>
+                  <div class="tw-btns"><span>Cancel</span><span class="tw-rm" id="tw-rm">Remove</span></div>
+                </div>
+              </div>
             </div>
 
-            <div class="tb-sec" id="sec-ch">
-              <div class="tb-sechead">
-                <span class="tb-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-                CHANGES
-                <span class="tb-tools"><span class="tb-pill" id="ch-count">0</span><span class="tb-updown">↓0 ↑0</span></span>
+            <!-- macOS notification banner -->
+            <div class="tw-note" id="tw-note">
+              <img src="assets/logo.png" alt="" width="30" height="30" />
+              <div class="tw-ntext">
+                <div class="tw-nt"><b>Agent finished</b><span>now</span></div>
+                <div class="tw-nb">feat/fable5.1: Codex finished a turn</div>
               </div>
-              <div class="tb-body"><div class="tb-clip"><div class="tb-list">
-                <div class="tb-row" data-ch="fable5md">
-                  <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span>
-                  <span class="tb-name">FABLE5.md</span>
-                  <span class="tb-right"><span class="tb-m">M</span></span>
-                </div>
-              </div></div></div>
             </div>
 
-            <div class="tb-sec" id="sec-fi">
-              <div class="tb-sechead">
-                <span class="tb-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-                FILES
-                <span class="tb-tools"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg></span>
-              </div>
-              <div class="tb-body"><div class="tb-clip"><div class="tb-list">
-                <div class="tb-search">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-                  Search files
-                </div>
-                <div class="tb-row" data-fi="fable5md">
-                  <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span>
-                  <span class="tb-name">FABLE5.md</span>
-                  <span class="tb-right"><span class="tb-m">M</span></span>
-                </div>
-                <div class="tb-row" data-fi="readme">
-                  <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span>
-                  <span class="tb-name">README.md</span>
-                </div>
-              </div></div></div>
-            </div>
+            <svg class="tw-cursor" id="tw-cursor" width="17" height="24" viewBox="0 0 17 24"><path d="M1.6 1.6v17.6l4.5-4.3 2.9 6.8 3-1.3-2.8-6.6h6.3z" fill="#000" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"/></svg>
           </div>
         </div>
       </div>
@@ -693,11 +828,12 @@
       <p>
         Terminal agents are the fastest way to ship with AI. They're also a black box: the agent
         says "done", and you're left tabbing between <code>git status</code> and your editor to
-        find out what "done" actually means across five worktrees. teebe fixes exactly that, and
-        nothing else. Point it at your worktrees and each one gets a full file tree in a small
-        native window beside your terminal: browse what's actually inside every worktree, watch
-        files light up as agents edit them, and peek any diff with one keystroke. It doesn't run
-        your agents, doesn't touch your code, doesn't replace your tools. Keep your setup.
+        find out what "done" actually means across five worktrees. teebe fixes exactly that.
+        Every worktree gets one mark and a full file tree in a small native window beside your
+        terminal: watch files light up as agents edit them, peek any diff with one keystroke, and
+        see at a glance which worktrees are still live and which are merged. It doesn't run your
+        agents or edit your code. It tells you which worktrees are done, and cleans up the done
+        ones safely. Keep your setup.
       </p>
     </section>
 
@@ -848,7 +984,7 @@
     <section id="features" class="features">
       <div class="section-head">
         <h2>One git worktree GUI for Claude Code, Codex and Cursor sessions</h2>
-        <p>Browse, watch, and diff every worktree, including the ones your agents create, without opening an IDE or leaving your flow.</p>
+        <p>See the state of every worktree, watch files change, peek diffs and clean up, including the worktrees your agents create, without opening an IDE or leaving your flow.</p>
       </div>
       <div class="bento">
         <article class="wide">
@@ -870,20 +1006,40 @@
           <h3>Peek any diff with Space</h3>
           <p>Select a changed file and hit Space for a side-by-side git diff, right there. Review what an agent actually did without opening an editor or switching apps.</p>
         </article>
+        <article class="wide">
+          <div class="vig vig-marks" aria-hidden="true">
+            <div class="vig-row"><span class="mk" data-m="orb"><canvas class="orb m-orb" width="20" height="20"></canvas></span>feat/fable5.1<span class="t">Agent working</span></div>
+            <div class="vig-row"><span class="mk" data-m="dot"><i class="m-dot"></i></span>feat/agi<span class="t">Uncommitted changes</span></div>
+            <div class="vig-row"><span class="mk" data-m="ring"><i class="m-ring"></i></span>exp/mythos-leak<span class="t">Not merged</span></div>
+            <div class="vig-row"><span class="mk" data-m="check"><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span>fix/final-final-v2<span class="t">Safe to delete</span></div>
+          </div>
+          <h3>Know what's done</h3>
+          <p>One mark per worktree: an orb while an agent works, an orange dot for uncommitted changes, a ring until it's merged, a green check when it's safe to delete. Squash merges count.</p>
+        </article>
+        <article class="wide">
+          <div class="vig vig-clean" aria-hidden="true">
+            <div class="vig-row vig-head"><span class="mk" data-m="check"><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Safe to delete<span class="n">3</span><svg class="bin" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h16"/><path d="M9 6.5V4h6v2.5"/><path d="M6 6.5l1 13.5h10l1-13.5"/><path d="M10 10.5v6M14 10.5v6"/></svg></div>
+            <div class="vig-row"><span class="mk" data-m="check"><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span>feat/fable5.1</div>
+            <div class="vig-row"><span class="mk" data-m="check"><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span>fix/final-final-v2</div>
+            <div class="vig-row"><span class="mk" data-m="check"><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span>worktree-agent-a3f1</div>
+          </div>
+          <h3>Clean up in one step</h3>
+          <p>Remove every merged worktree, and its branch, after a confirmation that lists each one. Worktrees with uncommitted work or an unfinished rebase are never offered, and commits only a removed worktree could reach are kept for 90 days.</p>
+        </article>
         <article>
           <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="9" r="2.5"/><path d="M6 8.5v7"/><path d="M6 10c0 3 3 4 6 4"/><path d="M15.6 9H12"/></svg></div>
           <h3>Every repo, every worktree</h3>
-          <p>Add all the repos and worktrees your agents run in and flip between them instantly. One calm window for the whole fleet.</p>
+          <p>The worktrees your agents create show up on their own. Make new ones from the New Worktree sheet, and get a notification when an agent finishes a turn.</p>
         </article>
         <article>
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v7"/><path d="M8.5 6.5 12 10l3.5-3.5"/><path d="M12 21v-7"/><path d="M8.5 17.5 12 14l3.5 3.5"/></svg></div>
-          <h3>Ahead / behind at a glance</h3>
-          <p>The changes view shows ahead/behind counts per worktree, so you know what's merged, what's stale, and what needs a look.</p>
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10"/><path d="M18 7h2"/><circle cx="16" cy="7" r="2"/><path d="M4 17h2"/><path d="M10 17h10"/><circle cx="8" cy="17" r="2"/></svg></div>
+          <h3>Settings that fit each project</h3>
+          <p>Global defaults for your terminal (Terminal or cmux), how files open, the comparison branch and where new worktrees go. Override any of them per project.</p>
         </article>
         <article>
           <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7L12 2.5z"/><path d="M12 11.5 20.5 7"/><path d="M12 11.5 3.5 7"/><path d="M12 11.5v10"/></svg></div>
           <h3>Native, fast, private</h3>
-          <p>A real Mac app in Swift, not an Electron wrapper. It reads git locally and your code never leaves your machine.</p>
+          <p>A real Mac app in Swift, not an Electron wrapper, translucent in light and dark. It reads git locally and your code never leaves your machine.</p>
         </article>
       </div>
     </section>
@@ -897,39 +1053,59 @@
 
       <details>
         <summary>I already vibecode from the terminal (tmux, Ghostty, cmux). Why teebe?</summary>
-        <div class="answer"><p>Because the terminal is great for running agents but poor at showing you files. When you have a window per project spread across your monitors, it gets messy to see which files an agent actually changed, and sometimes you need to look. teebe gives you that visual file tree and inline diffs beside your terminal, so you stay in the terminal-first flow you like and still see what changed.</p></div>
+        <div class="answer"><p>Because the terminal is great for running agents and poor at showing you files and state. With a window per project spread across your monitors, it gets hard to tell which worktree an agent is still working in, which one has uncommitted changes, and which one is merged and can go. teebe sits beside your terminal and shows all of that at a glance, with a live file tree and inline diffs when you need to look closer. There's a walkthrough in <a href="/guides/view-claude-code-changes/">see what Claude Code changed, live</a>.</p></div>
       </details>
       <details>
-        <summary>How do I watch what my AI agents change in real time?</summary>
-        <div class="answer"><p>Point teebe at a git worktree and it shows the full file tree with live badges. Every file an agent touches lights up the moment it changes on disk, and you can add multiple repos and worktrees side by side to keep an eye on several agents running in parallel at once. Click any file for an inline diff to see exactly what changed, without opening your editor. There's a walkthrough in <a href="/guides/view-claude-code-changes/">see what Claude Code changed, live</a>.</p></div>
+        <summary>How do I see which worktrees are done and which are still in progress?</summary>
+        <div class="answer"><p>Every worktree in teebe shows one mark. An animated orb means a coding agent is working in it. An orange dot means it has uncommitted changes. A ring means its commits are not merged yet. A green check means it is merged and safe to delete. Hover any mark for a short card that explains it, and group your worktrees by state to see Uncommitted changes, Not merged and Safe to delete as separate lists.</p></div>
       </details>
       <details>
-        <summary>Does teebe edit my code, run my agents, or replace my terminal?</summary>
-        <div class="answer"><p>No to all three. teebe is the navigator, not the editor, the orchestrator, or the terminal. It browses, watches, and shows diffs, but never writes to your files and never runs your agents. You keep running agents in your terminal and writing code in your editor; teebe sits beside them and opens any file in the native editor you already use.</p></div>
+        <summary>How does teebe know a worktree is merged?</summary>
+        <div class="answer"><p>teebe checks every worktree against your default branch plus dev, develop, main and master, and one extra comparison branch you can choose in Settings. Squash merges and branches merged commit by commit both count as merged. A brand new branch with no commits of its own never does. With background fetch on, the result stays current with your remote.</p></div>
       </details>
       <details>
-        <summary>Which AI coding agents does teebe work with, and can I use it without any?</summary>
-        <div class="answer"><p>All of them, and yes. teebe works with Claude Code, Codex/CMAX, Cursor's CLI, and any terminal agent, because it just watches the filesystem and git rather than hooking into a specific tool. With no agents running it's still a fast, native git worktree browser: full tree, live updates, inline diffs, and a changes view with ahead/behind counts.</p></div>
+        <summary>Can removing a worktree in teebe lose my work?</summary>
+        <div class="answer"><p>teebe is built so it doesn't. A worktree is only offered for removal when it is merged and clean, and teebe checks everything again right before it removes anything. It never offers a worktree with uncommitted changes, an unfinished rebase or merge, a lock, or ignored files that hold a nested repository with unpushed commits. The confirmation lists every worktree and says how many ignored files will be deleted. Commits that only the removed worktree could still reach are kept under a hidden backup ref for 90 days, so you can bring them back with <code>git branch</code>.</p></div>
+      </details>
+      <details>
+        <summary>Does teebe show the worktrees Claude Code, Codex and Cursor create on their own?</summary>
+        <div class="answer"><p>Yes. teebe watches each repo's git metadata, so a worktree created by <code>claude --worktree</code> (under <code>.claude/worktrees/</code>), by the Codex app (under <code>$CODEX_HOME/worktrees</code>), by Cursor's parallel agents, or by a plain <code>git worktree add</code> shows up the moment it exists and disappears when it's removed. You can also create worktrees from teebe with the New Worktree sheet: pick a new or existing branch, its starting point and where the folder goes. See <a href="/guides/claude-code-worktrees/">Claude Code worktrees, explained</a> and <a href="/guides/codex-worktrees/">Codex worktrees</a>.</p></div>
+      </details>
+      <details>
+        <summary>Which AI coding agents does teebe work with?</summary>
+        <div class="answer"><p>All of them. File badges, diffs and merge status come from the filesystem and git, so any terminal agent works. teebe also knows when Claude Code or Codex is working or waiting for you in a worktree and shows it with the orb, and it can notify you when a turn finishes. Without any agents it's still a fast, native worktree manager.</p></div>
+      </details>
+      <details>
+        <summary>Can teebe notify me when an agent finishes?</summary>
+        <div class="answer"><p>Yes. Settings has switches for completion notifications and their sound, plus a Test Notification button. For Claude Code, an optional hook lets teebe notice the end of a turn even while it sits in the background; Settings shows whether it's installed and leaves your other hook settings untouched. Notifications are off by default for new installs, and stay on if you already had them.</p></div>
+      </details>
+      <details>
+        <summary>Does teebe edit my code or run my agents?</summary>
+        <div class="answer"><p>No. teebe never edits the contents of your files and never starts or controls an agent. It does run the git actions you ask for: creating and removing worktrees, deleting a merged branch, and staging, unstaging or discarding changes, with a confirmation before anything destructive. Files open in the editor you already use.</p></div>
+      </details>
+      <details>
+        <summary>Does teebe fetch from my remote, and will it trigger my SSH agent?</summary>
+        <div class="answer"><p>With Fetch automatically on (the default), teebe runs a quiet git fetch from origin when you return to the app or select a project, at most once every five minutes, so sync arrows and merge status stay current. These background fetches run without your SSH agent, so 1Password, Secretive and similar agents never pop up an approval prompt on their own. Refresh fetches right away and does use your agent. You can turn background fetch off in Settings.</p></div>
+      </details>
+      <details>
+        <summary>Can I use different settings per project?</summary>
+        <div class="answer"><p>Yes. Settings holds your defaults: which terminal opens a worktree (Terminal or cmux), how files open, the extra comparison branch and where new worktrees go. Change any of them inside a project and the change applies to that project only, until you return it to the defaults. Appearance follows the system or can be set to Light or Dark.</p></div>
       </details>
       <details>
         <summary>How is teebe different from an orchestrator (Conductor, Vibe Kanban) or a git client (Tower, Fork)?</summary>
-        <div class="answer"><p>Orchestrators run and manage agents for you; git clients handle staging, commits, rebasing, and conflicts. teebe does neither. It's the passive watch layer beside them: a live file browser that shows what changed, with inline diffs and ahead/behind counts, so you can see what your agents did at a glance. Use it alongside an orchestrator or on its own.</p></div>
-      </details>
-      <details>
-        <summary>Does teebe show the worktrees Claude Code and Codex create on their own?</summary>
-        <div class="answer"><p>Yes. teebe watches each repo's git metadata, so a worktree created by <code>claude --worktree</code> (under <code>.claude/worktrees/</code>), by the Codex app (under <code>$CODEX_HOME/worktrees</code>), by Cursor's parallel agents, or by a plain <code>git worktree add</code> shows up in the WORKTREES list the moment it exists, and disappears when it's removed. You can also add and remove worktrees from teebe itself. See <a href="/guides/claude-code-worktrees/">Claude Code worktrees, explained</a> and <a href="/guides/codex-worktrees/">Codex worktrees</a>.</p></div>
+        <div class="answer"><p>Orchestrators run your agents for you. Git clients handle commits, rebases and conflicts. teebe does neither. It's the layer beside your terminal that shows what every agent changed, tells you which worktrees are merged, and cleans up the ones that are done. Use it alongside an orchestrator or on its own. The <a href="/compare/git-worktree-gui-mac/">git worktree GUI comparison</a> covers the alternatives.</p></div>
       </details>
       <details>
         <summary>Does teebe send my code anywhere?</summary>
-        <div class="answer"><p>No. teebe reads your files and git locally on your Mac. It doesn't upload your code, and there's no backend it talks to, so it works fully offline. The only thing that touches the network is the optional Sparkle auto-update check. See the <a href="/privacy/">privacy page</a>.</p></div>
+        <div class="answer"><p>No. teebe reads your files and git locally on your Mac, and there is no teebe backend and no in-app analytics. The network traffic it causes is git fetch to your own remotes (which you can turn off) and the Sparkle update check against teebe.io (which you can also turn off). See the <a href="/privacy/">privacy page</a> for details.</p></div>
       </details>
       <details>
         <summary>Is teebe free and open source?</summary>
-        <div class="answer"><p>Yes, both. teebe is free and open source, with no trial, no paid tier, and no account. The code lives on <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> and installs come straight from GitHub Releases as a signed .app with auto-updates.</p></div>
+        <div class="answer"><p>Yes. teebe is free and open source today, under GPL-3.0, and needs no account. The code is on <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>, and installs come from GitHub Releases with automatic updates.</p></div>
       </details>
       <details>
         <summary>What do I need to run teebe, and how do I install it?</summary>
-        <div class="answer"><p>macOS 14 or newer, on Apple Silicon or Intel; teebe is a native Mac app, so it's Mac-only. To install, run <code>curl -fsSL https://teebe.io/install.sh | bash</code> in your terminal, or download the .dmg from GitHub Releases. It's a signed .app, so it opens without Gatekeeper warnings.</p></div>
+        <div class="answer"><p>macOS 14 or newer on Apple Silicon. Run <code>curl -fsSL https://teebe.io/install.sh | bash</code> in your terminal: it installs teebe into Applications and opens it without a Gatekeeper prompt. If you download the .dmg from GitHub Releases instead, macOS blocks the first launch until you allow it in System Settings, under Privacy &amp; Security, because teebe is not notarized yet. Updates arrive automatically after that.</p></div>
       </details>
     </section>
 
@@ -954,7 +1130,7 @@
     <!-- ===================== FINAL CTA ===================== -->
     <section class="cta-final">
       <h2>See what your agents are touching, right now.</h2>
-      <p class="kick">Native macOS git worktree GUI · free &amp; open source · macOS 14+.</p>
+      <p class="kick">Native macOS git worktree GUI · free and open source today · macOS 14+ on Apple Silicon.</p>
       <div class="hero-terminal">
         <span class="ps">$</span>
         <code>curl -fsSL https://teebe.io/install.sh | bash</code>
@@ -967,7 +1143,8 @@
   </main>
 
   <footer>
-    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog/">Changelog</a> · <a href="/privacy/">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only · <span id="version">v0.4.2 · beta</span> · <a href="https://github.com/jaywcjlove/awesome-mac#version-control" rel="noopener">Listed in awesome-mac</a></p>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog/">Changelog</a> · <a href="/privacy/">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only · <span id="version">v0.8.0 · beta</span> · <a href="https://github.com/jaywcjlove/awesome-mac#version-control" rel="noopener">Listed in awesome-mac</a></p>
+    <p class="credits">Agent orb: <a href="https://libraries.dev/orbs" rel="noopener">thinking-orbs</a> by Jakub Antalik, MIT License (<a href="/assets/vendor/thinking-orbs/LICENSE.txt">license</a>).</p>
   </footer>
 
   <!-- Real GrainGradient background (Paper Shaders, vendored & self-contained; no CDN, no runtime deps). -->
@@ -1042,52 +1219,139 @@
     })();
   </script>
 
-  <!-- Animated hero panel: loops through the real teebe flow (expand worktrees,
-       select one, watch a file flip to Modified). Static when reduced motion. -->
+  <!-- Hero window story, about 12 s per loop: an agent works (orb), finishes (notification),
+       its worktree is committed (ring), then merged (green check, moves to Safe to delete),
+       and the group's bin removes it. Runs only while on screen and the tab is visible.
+       Reduced motion: one static frame with every mark. #story=0..5 freezes on a step. -->
   <script>
     (function () {
-      var tb = document.getElementById('tb');
-      if (!tb) return;
-      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var secWt = document.getElementById('sec-wt'),
-          secCh = document.getElementById('sec-ch'),
-          secFi = document.getElementById('sec-fi'),
-          count = document.getElementById('ch-count'),
-          rowFable = tb.querySelector('[data-wt="fable"]'),
-          rowFileF = tb.querySelector('[data-fi="fable5md"]');
+      var stage = document.getElementById('tw-stage');
+      if (!stage) return;
+      var win = document.getElementById('tw'),
+          list = document.getElementById('tw-list'),
+          note = document.getElementById('tw-note'),
+          sheet = document.getElementById('tw-sheet'),
+          bin = document.getElementById('tw-bin'),
+          rm = document.getElementById('tw-rm'),
+          cursor = document.getElementById('tw-cursor');
+      var group = function (k) { return list.querySelector('.tw-grp[data-g="' + k + '"]'); };
+      var rowsOf = function (k) { return group(k).querySelector('.tw-rows'); };
+      var row = function (k) { return list.querySelector('.tw-row[data-wt="' + k + '"]'); };
+      var fable = row('fable'), agi = row('agi'), final = row('final');
+      var mark = function (r, m) { r.querySelector('.mk').setAttribute('data-m', m); };
+      var instant = false;
 
-      if (reduce) {
-        tb.classList.add('static', 'changed');
-        rowFable.classList.add('sel');
-        rowFileF.classList.add('sel');
-        count.textContent = '1';
+      var counts = function () {
+        ['uc', 'nm', 'sd'].forEach(function (k) {
+          var n = rowsOf(k).querySelectorAll('.tw-row:not(.gone)').length;
+          group(k).querySelector('.tw-gn').textContent = n;
+        });
+      };
+      // Move rows between groups and let them glide to their new place (FLIP).
+      var flip = function (mutate) {
+        var els = Array.prototype.slice.call(list.querySelectorAll('.tw-row, .tw-gh'));
+        var before = els.map(function (e) { return e.getBoundingClientRect().top; });
+        mutate(); counts();
+        if (instant) return;
+        els.forEach(function (e, i) {
+          var dy = before[i] - e.getBoundingClientRect().top;
+          if (dy) { e.style.transition = 'none'; e.style.transform = 'translateY(' + dy + 'px)'; }
+        });
+        void list.offsetHeight;
+        els.forEach(function (e) {
+          if (!e.style.transform) return;
+          e.style.transition = 'transform .5s cubic-bezier(.2,.8,.25,1)';
+          e.style.transform = '';
+        });
+        setTimeout(function () { els.forEach(function (e) { e.style.transition = ''; }); }, 600);
+      };
+      var pointAt = function (el, dx, dy) {
+        var s = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+        cursor.style.transform = 'translate(' + (r.left - s.left + r.width * dx) + 'px,' + (r.top - s.top + r.height * dy) + 'px)';
+      };
+
+      var steps = [
+        function reset() {
+          note.classList.remove('on'); sheet.classList.remove('on'); cursor.classList.remove('on');
+          bin.classList.remove('hot', 'press'); rm.classList.remove('press');
+          rowsOf('uc').insertBefore(fable, agi);
+          rowsOf('sd').appendChild(final);
+          list.querySelectorAll('.gone').forEach(function (e) { e.classList.remove('gone'); });
+          mark(fable, 'orb'); counts();
+          var w = win.getBoundingClientRect(), s = stage.getBoundingClientRect();
+          cursor.style.transform = 'translate(' + (w.width * .62) + 'px,' + (w.bottom - s.top + 24) + 'px)';
+        },
+        function finished() { mark(fable, 'dot'); note.classList.add('on'); },
+        function committed() {
+          note.classList.remove('on');
+          mark(fable, 'ring');
+          flip(function () { rowsOf('nm').appendChild(fable); });
+        },
+        function merged() {
+          mark(fable, 'check');
+          flip(function () { rowsOf('sd').insertBefore(fable, final); });
+        },
+        function confirm() {
+          cursor.classList.add('on'); pointAt(bin, .45, .4);
+          bin.classList.add('hot');
+          later(instant ? 0 : 750, function () {
+            bin.classList.add('press');
+            later(instant ? 0 : 140, function () { bin.classList.remove('press', 'hot'); sheet.classList.add('on'); });
+            later(instant ? 0 : 700, function () { pointAt(rm, .4, .45); });
+          });
+        },
+        function removed() {
+          rm.classList.add('press');
+          later(instant ? 0 : 160, function () {
+            rm.classList.remove('press'); sheet.classList.remove('on'); cursor.classList.remove('on');
+            later(instant ? 0 : 320, function () {
+              [fable, final, group('sd').querySelector('.tw-gh')].forEach(function (e) { e.classList.add('gone'); });
+              counts();
+            });
+          });
+        }
+      ];
+      // when each step runs, in ms from the start of the loop
+      var AT = [0, 2900, 4700, 6000, 7300, 9150], LOOP = 12000;
+
+      var timers = [];
+      var later = function (ms, fn) { if (instant) fn(); else timers.push(setTimeout(fn, ms)); };
+      var stop = function () { timers.forEach(clearTimeout); timers = []; };
+      var snap = function (fn) {
+        stage.classList.add('instant'); instant = true;
+        fn();
+        void stage.offsetHeight;
+        instant = false; stage.classList.remove('instant');
+      };
+      var loop = function () {
+        stop();
+        snap(steps[0]);
+        AT.forEach(function (t, i) { if (i) later(t, steps[i]); });
+        later(LOOP - 400, function () { list.classList.add('fade'); });
+        later(LOOP, function () { loop(); list.classList.remove('fade'); });
+      };
+
+      var m = /#story=(\d)/.exec(location.hash);
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (m || reduce) {
+        var n = m ? Math.min(+m[1], steps.length - 1) : 0;
+        snap(function () { for (var i = 0; i <= n; i++) steps[i](); });
         return;
       }
 
-      var at = function (ms, fn) { setTimeout(fn, ms); };
-      var cycle = function () {
-        at(600,   function () { secWt.classList.add('open'); });
-        at(1700,  function () { rowFable.classList.add('sel'); });
-        at(2600,  function () { secFi.classList.add('open'); });
-        at(4100,  function () { tb.classList.add('changed'); count.textContent = '1'; rowFileF.classList.add('sel'); });
-        at(4900,  function () { secCh.classList.add('open'); });
-        at(9200,  function () { secFi.classList.remove('open'); });
-        at(9650,  function () { secCh.classList.remove('open'); });
-        at(10100, function () { secWt.classList.remove('open'); });
-        at(10900, function () {
-          tb.classList.remove('changed'); count.textContent = '0';
-          rowFable.classList.remove('sel'); rowFileF.classList.remove('sel');
-        });
-        at(11800, cycle);
+      var onScreen = false;
+      var update = function () {
+        var run = onScreen && document.visibilityState !== 'hidden';
+        if (run && !timers.length) loop();
+        else if (!run && timers.length) stop();
       };
-
-      var started = false;
-      var start = function () { if (!started) { started = true; cycle(); } };
       if ('IntersectionObserver' in window) {
-        new IntersectionObserver(function (es) { if (es[es.length - 1].isIntersecting) start(); }).observe(tb);
-      } else start();
+        new IntersectionObserver(function (es) { onScreen = es[es.length - 1].isIntersecting; update(); }).observe(stage);
+      } else { onScreen = true; update(); }
+      document.addEventListener('visibilitychange', update);
     })();
   </script>
+  <script type="module" src="assets/hero-orb.js"></script>
 
   <!-- Interactive diff demo: Space peeks the Quick Look window open/closed
        (exactly like the real app), click or arrow keys switch between files. -->
