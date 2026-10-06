@@ -289,118 +289,92 @@
     }
     .hero .sub { font-size: 0.9rem; color: var(--muted-dim); margin-top: 16px; }
 
-    /* ---------------- Animated teebe panel (faithful recreation) ---------------- */
-    .hero-visual { display: flex; justify-content: center; min-height: 480px; padding-top: 26px; }
-    .tb {
-      width: 360px; max-width: 100%; align-self: flex-start; border-radius: 12px; overflow: hidden;
-      background: #262628;
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 2px 10px rgba(0,0,0,.35);
-      color: #d9d9de; font-size: 13px;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-      user-select: none;
-    }
-    .tb-titlebar {
-      display: flex; align-items: center; padding: 10px 12px; position: relative;
-      border-bottom: 1px solid rgba(255,255,255,.07);
-    }
-    .tb-lights { display: flex; gap: 8px; }
-    .tb-lights i { width: 12px; height: 12px; border-radius: 50%; display: block; }
-    .tb-lights i:nth-child(1) { background: #ff5f57; }
-    .tb-lights i:nth-child(2) { background: #febc2e; }
-    .tb-lights i:nth-child(3) { background: #28c840; }
-    .tb-title { position: absolute; left: 0; right: 0; text-align: center; font-weight: 600; color: #b8b8bd; pointer-events: none; }
-    .tb-pin { margin-left: auto; color: #0a84ff; display: flex; }
-    .tb-sec { border-bottom: 1px solid rgba(255,255,255,.07); }
-    .tb-sec:last-child { border-bottom: 0; }
-    .tb-sechead {
-      display: flex; align-items: center; gap: 7px; padding: 12px 14px;
-      color: #98989d; font-size: 12px; font-weight: 700; letter-spacing: .06em;
-    }
-    .tb-chev { display: flex; transition: transform .35s ease; transform: rotate(-90deg); color: #7c7c81; }
-    .tb-sec.open .tb-chev { transform: rotate(0deg); }
-    .tb-tools { margin-left: auto; display: flex; align-items: center; gap: 12px; color: #8e8e93; }
-    .tb-pill {
-      min-width: 19px; height: 19px; border-radius: 10px; background: #3a3a3c; color: #c7c7cc;
-      display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;
-      padding: 0 6px; letter-spacing: 0; transition: background .3s ease, color .3s ease;
-    }
-    .tb.changed .tb-pill { background: #0a84ff; color: #fff; }
-    .tb-updown { font-size: 11px; color: #8e8e93; letter-spacing: 0; font-weight: 500; }
-    .tb-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .5s cubic-bezier(.3,.7,.25,1); }
-    .tb-sec.open .tb-body { grid-template-rows: 1fr; }
-    .tb-clip { overflow: hidden; min-height: 0; }
-    .tb-list { padding: 0 8px 10px; }
-    .tb-row {
-      display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 7px;
-      color: #d9d9de; transition: background .25s ease, color .25s ease;
-    }
-    .tb-row .tb-ico { display: flex; color: #98989d; flex: 0 0 auto; transition: color .25s ease; }
-    .tb-row .tb-dot { width: 7px; height: 7px; border-radius: 50%; background: #5a5a5e; flex: 0 0 auto; transition: background .25s ease; }
-    .tb-row .tb-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .tb-row .tb-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
-    .tb-row.sel { background: #0a84ff; color: #fff; }
-    .tb-row.sel .tb-ico, .tb-row.sel .tb-updown { color: rgba(255,255,255,.85); }
-    .tb-row.sel .tb-dot { background: rgba(255,255,255,.8); }
-    .tb-repo { display: flex; align-items: center; gap: 8px; padding: 7px 8px 6px; font-weight: 600; color: #e8e8ec; }
-    .tb-repo .tb-ico { color: #b0b0b5; display: flex; }
-    .tb-indent { padding-left: 14px; }
-    .tb-m { font-size: 11px; font-weight: 700; color: #ffb340; opacity: 0; transition: opacity .3s ease; }
-    .tb.changed .tb-m { opacity: 1; }
-    .tb-row.sel .tb-m { color: #ffd60a; }
-    .tb-search {
-      margin: 2px 8px 8px; display: flex; align-items: center; gap: 6px;
-      background: #1c1c1e; border: 1px solid rgba(255,255,255,.10); border-radius: 7px;
-      padding: 5px 8px; color: #7c7c81; font-size: 12.5px;
-    }
-    .tb.static .tb-sec .tb-body { grid-template-rows: 1fr; }
-    .tb.static .tb-chev { transform: rotate(0deg); }
-
-    /* ---------------- Hero window: teebe 0.8 (dark glass, status marks, groups) ---------------- */
-    .tw-stage { position: relative; width: 340px; max-width: 100%; align-self: flex-start; }
+    /* ---------------- teebe window recreation (0.8.0, dark appearance) ----------------
+       Colours measured from the real app: the dark .headerView material renders as
+       rgb(33,31,30) at about 82% opacity (a deep, nearly opaque warm grey that lets a
+       little of the background through), 1pt separators at 10% white, #6E6E73 section
+       labels, #86868B secondary text, #0A84FF selection. Sizes are the app's points. */
+    .hero-visual { display: flex; justify-content: center; padding-top: 26px; }
+    /* fixed height: sections open and close (the window resizes like the app's)
+       without moving anything else on the page */
+    .tw-stage { position: relative; width: 340px; max-width: 100%; height: 430px; }
     .tw {
-      position: relative; overflow: hidden; border-radius: 12px;
-      /* behind-window glass: the hero gradient shows through, like the app's vibrancy */
-      background: rgba(34,34,38,.56);
-      -webkit-backdrop-filter: blur(30px) saturate(175%);
-              backdrop-filter: blur(30px) saturate(175%);
-      border: 1px solid rgba(255,255,255,.13);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 40px 100px rgba(0,0,0,.55), 0 2px 10px rgba(0,0,0,.35);
-      color: rgba(255,255,255,.88); font-size: 13px; line-height: 1.2;
+      position: relative; overflow: hidden; border-radius: 10px;
+      background: rgba(33,31,30,.82);
+      -webkit-backdrop-filter: blur(40px); backdrop-filter: blur(40px);
+      border: 1px solid rgba(255,255,255,.11);
+      box-shadow: 0 0 0 .5px rgba(0,0,0,.6), 0 30px 80px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.35);
+      color: rgba(255,255,255,.85); font-size: 13px; line-height: 1.2;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-      user-select: none;
+      user-select: none; text-align: left;
     }
     @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-      .tw { background: #26262a; }
+      .tw { background: #1d1b1b; }
     }
-    .tw-titlebar { display: flex; align-items: center; height: 34px; padding: 0 12px; position: relative; }
-    .tw-title { position: absolute; left: 0; right: 0; text-align: center; font-weight: 600; color: rgba(255,255,255,.62); pointer-events: none; }
-    .tw-pin { margin-left: auto; color: #0a84ff; display: flex; }
+    /* title bar: the app hides the window buttons until the title bar is hovered */
+    .tw-titlebar { display: flex; align-items: center; height: 28px; padding: 0 11px; position: relative; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .tw-lights { display: flex; gap: 8px; opacity: 0; transition: opacity .15s ease; }
+    .tw-lights i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+    .tw-lights i:nth-child(1) { background: #ff5f57; }
+    .tw-lights i:nth-child(2) { background: #febc2e; }
+    .tw-lights i:nth-child(3) { background: #28c840; }
+    .tw-titlebar:hover .tw-lights { opacity: 1; }
+    .tw-title { position: absolute; left: 0; right: 0; text-align: center; font-weight: 600; color: #86868b; pointer-events: none; }
+    .tw-pin { margin-left: auto; color: #86868b; display: flex; }
+    .tw-sec + .tw-sec { border-top: 1px solid rgba(255,255,255,.1); }
+    .tw-sec { position: relative; }
+    /* the section resize handle the app draws on the divider below an open WORKTREES */
+    .tw-sec[data-s="wt"].open::after { content: ""; position: absolute; left: 50%; bottom: -2px; width: 28px; height: 3px; margin-left: -14px; border-radius: 2px; background: rgba(255,255,255,.18); z-index: 1; }
     .tw-sechead { display: flex; align-items: center; gap: 5px; height: 32px; padding: 0 11px; }
-    .tw-line { border-top: 1px solid rgba(255,255,255,.07); }
     .tw-chev { width: 13px; height: 13px; display: grid; place-items: center; color: #86868b; }
-    .tw-chev.open { transform: rotate(90deg); }
-    .tw-label { font-size: 11px; font-weight: 700; letter-spacing: .5px; color: #8a8a90; }
+    .tw-sec.open .tw-chev { transform: rotate(90deg); }
+    .tw-label { font-size: 11px; font-weight: 700; letter-spacing: .5px; color: #6e6e73; }
     .tw-tools { margin-left: auto; display: flex; align-items: center; gap: 16px; padding-right: 8px; color: #86868b; }
+    .tw-cur { margin-left: auto; display: none; align-items: center; gap: 3px; min-width: 0; }
+    .tw-cur .tw-branch { font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; color: #0a84ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tw-sec[data-s="wt"]:not(.open) .tw-tools { display: none; }
+    .tw-sec[data-s="wt"]:not(.open) .tw-cur { display: flex; }
+    .tw-count { margin-left: auto; min-width: 18px; height: 16px; padding: 0 5px; border-radius: 8px; display: grid; place-items: center; background: rgba(255,255,255,.07); color: #6e6e73; font-size: 10px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    /* accordion: the window grows downward as a section opens, content fades in */
+    .tw-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .16s ease-in; }
+    .tw-sec.open .tw-body { grid-template-rows: 1fr; transition: grid-template-rows .28s cubic-bezier(.25,.8,.25,1); }
+    .tw-clip { overflow: hidden; min-height: 0; opacity: 0; transition: opacity .12s ease; }
+    .tw-sec.open .tw-clip { opacity: 1; transition: opacity .25s ease .06s; }
     .tw-repo { display: flex; align-items: center; gap: 7px; height: 29px; padding: 0 11px; color: #86868b; }
-    .tw-repo span { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,.88); }
-    /* fixed height: rows move between groups without the window resizing */
-    .tw-list { height: 238px; padding: 4px 0; position: relative; }
-    .tw-row, .tw-gh { position: relative; display: flex; align-items: center; overflow: hidden; }
+    .tw-repo span { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,.85); }
+    .tw-list { padding: 4px 0; position: relative; }
+    .tw-row, .tw-gh, .tw-file { position: relative; display: flex; align-items: center; overflow: hidden; }
     .tw-row { height: 26px; padding: 0 11px 0 24px; transition: height .4s cubic-bezier(.3,.7,.25,1), opacity .3s ease; }
-    .tw-row::before, .tw-gh::before { content: ""; position: absolute; inset: 0 6px; border-radius: 4px; z-index: -1; }
-    .tw-row.sel { color: #fff; }
-    .tw-row.sel::before { background: #0a84ff; }
+    .tw-row::before, .tw-gh::before, .tw-file::before { content: ""; position: absolute; inset: 0 6px; border-radius: 4px; z-index: -1; }
+    .tw-row.sel, .tw-file.sel { color: #fff; }
+    .tw-row.sel::before, .tw-file.sel::before { background: #0a84ff; }
     .tw-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 2px; min-width: 0; }
     .tw-gh { height: 25px; padding: 0 11px 0 12px; transition: height .4s cubic-bezier(.3,.7,.25,1), opacity .3s ease; }
     .tw-gchev { width: 8px; display: flex; color: #86868b; }
     .tw-gh .mk { margin: 0 3px; }
-    .tw-gt { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.88); }
+    .tw-gt { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.85); }
     .tw-gn { font-size: 11px; color: #86868b; margin-left: 7px; font-variant-numeric: tabular-nums; }
-    .tw-bin { margin-left: auto; width: 22px; height: 20px; border-radius: 5px; display: grid; place-items: center; color: #98989d; transition: background .15s ease, color .15s ease, transform .12s ease; }
-    .tw-bin.hot { background: rgba(255,255,255,.12); color: #ff453a; }
+    .tw-bin { margin-left: auto; width: 22px; height: 20px; border-radius: 5px; display: grid; place-items: center; color: #86868b; transition: background .15s ease, color .15s ease, transform .12s ease; }
+    .tw-bin.hot { background: rgba(255,255,255,.1); color: #ff453a; }
     .tw-bin.press { transform: scale(.88); }
     .tw-row.gone, .tw-gh.gone { height: 0; opacity: 0; }
+    /* CHANGES and FILES rows */
+    .tw-files { padding: 8px 0 6px; }
+    .tw-file { height: 24px; gap: 7px; padding: 0 11px 0 30px; }
+    .tw-file .ic { display: flex; color: #86868b; flex: 0 0 auto; }
+    .tw-file .fn { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .tw-file .st { margin-left: auto; width: 16px; text-align: center; font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .tw-file .st.m { color: #c9961a; }
+    .tw-file .st.a { color: #3f9655; }
+    .tw-file .cd { margin-left: auto; width: 16px; display: grid; place-items: center; }
+    .tw-file .cd::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #c9961a; }
+    .tw-file.sel .ic { color: #fff; }
+    .tw-tree .tw-file { gap: 6px; padding-left: calc(var(--d, 0) * 16px + 11px); }
+    .tw-tree .tw-file .tc { width: 13px; display: grid; place-items: center; color: #86868b; flex: 0 0 auto; }
+    .tw-tree .tw-file .tc.open { transform: rotate(90deg); }
+    .tw-tree .tw-file .ic { width: 15px; justify-content: center; }
+    .tw-tree .tw-file .ic.dir { color: #5aa7ff; }
+    .tw-search { margin: 5px 11px; height: 22px; display: flex; align-items: center; padding: 0 7px; border-radius: 5px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.3); font-size: 12px; }
 
     /* status marks: one 22x20 slot, the active mark fades in */
     .mk { position: relative; flex: 0 0 22px; width: 22px; height: 20px; }
@@ -408,23 +382,26 @@
     .mk[data-m="orb"] .m-orb, .mk[data-m="dot"] .m-dot, .mk[data-m="ring"] .m-ring, .mk[data-m="check"] .m-check { opacity: 1; transform: translate(-50%,-50%); }
     .m-orb { width: 20px; height: 20px; }
     .m-dot { width: 8px; height: 8px; border-radius: 50%; background: #f08c1a; }
-    .m-ring { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.28); box-sizing: border-box; }
+    .m-ring { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.25); box-sizing: border-box; }
     .m-check { color: #30d158; }
+    .sel .m-dot { background: #fff; }
+    .sel .m-ring { border-color: rgba(255,255,255,.8); }
+    .sel .m-check { color: #fff; }
 
     /* removal sheet */
-    .tw-sheetclip { position: absolute; left: 0; right: 0; top: 34px; bottom: 0; overflow: hidden; pointer-events: none; }
+    .tw-sheetclip { position: absolute; left: 0; right: 0; top: 29px; bottom: 0; overflow: hidden; pointer-events: none; }
     .tw-sheet {
       margin: 0 auto; width: calc(100% - 28px); max-width: 300px; padding: 14px 14px 12px;
-      background: rgba(44,44,48,.97); border: 1px solid rgba(255,255,255,.12); border-top: 0;
-      border-radius: 0 0 11px 11px; box-shadow: 0 18px 40px rgba(0,0,0,0); visibility: hidden;
+      background: #2c2a29; border: 1px solid rgba(255,255,255,.12); border-top: 0;
+      border-radius: 0 0 10px 10px; box-shadow: 0 18px 40px rgba(0,0,0,0); visibility: hidden;
       transform: translateY(-105%); transition: transform .38s cubic-bezier(.2,.8,.25,1), box-shadow .38s ease, visibility 0s .38s;
     }
     .tw-sheet.on { transform: none; box-shadow: 0 18px 40px rgba(0,0,0,.5); visibility: visible; transition-delay: 0s; }
-    .tw-sheet b { display: block; font-size: 12.5px; margin-bottom: 5px; color: #fff; }
-    .tw-sheet p { font-size: 11px; line-height: 1.4; color: rgba(255,255,255,.6); }
-    .tw-items { margin-top: 9px; border: 1px solid rgba(255,255,255,.09); border-radius: 7px; background: rgba(255,255,255,.04); }
+    .tw-sheet b { display: block; font-size: 13px; margin-bottom: 5px; color: rgba(255,255,255,.85); }
+    .tw-sheet p { font-size: 11px; line-height: 1.4; color: rgba(255,255,255,.55); }
+    .tw-items { margin-top: 9px; border: 1px solid rgba(255,255,255,.1); border-radius: 7px; background: rgba(255,255,255,.04); }
     .tw-items div { display: flex; align-items: center; gap: 7px; padding: 5px 8px; font-size: 11.5px; font-weight: 600; }
-    .tw-items div + div { border-top: 1px solid rgba(255,255,255,.08); }
+    .tw-items div + div { border-top: 1px solid rgba(255,255,255,.1); }
     .tw-items small { display: block; font-weight: 400; font-size: 10px; color: rgba(255,255,255,.5); }
     .tw-items span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .tw-items .m-check { flex: 0 0 auto; }
@@ -439,8 +416,8 @@
     .tw-note {
       position: absolute; top: -18px; right: -44px; width: 292px; z-index: 3;
       display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-      border-radius: 16px; background: rgba(52,52,56,.78);
-      -webkit-backdrop-filter: blur(24px) saturate(170%); backdrop-filter: blur(24px) saturate(170%);
+      border-radius: 16px; background: rgba(46,44,44,.92);
+      -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
       border: 1px solid rgba(255,255,255,.12); box-shadow: 0 16px 40px rgba(0,0,0,.45);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; color: #fff;
       opacity: 0; transform: translateX(26px); transition: opacity .35s ease, transform .45s cubic-bezier(.2,.8,.25,1);
@@ -456,8 +433,6 @@
     .tw-cursor.on { opacity: 1; }
     /* deep links (#story=N) and resets snap without transitions */
     .tw-stage.instant *, .tw-stage.instant { transition: none !important; }
-    .tw-list.fade { opacity: 0; }
-    .tw-list { transition: opacity .3s ease; }
     @media (max-width: 560px) {
       .tw-note { right: 8px; left: 8px; width: auto; top: 40px; }
     }
@@ -474,7 +449,7 @@
       max-width: var(--max); margin: 0 auto;
       display: grid; grid-template-columns: 330px 1fr; gap: 30px; align-items: start;
     }
-    .demo-left .tb { width: 100%; }
+    .demo-left .tw { width: 100%; }
     .space-hint {
       margin-top: 16px; text-align: center; color: var(--muted); font-size: 0.92rem;
       display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
@@ -491,14 +466,22 @@
     }
     .demo-right { display: grid; }
     .demo-right > * { grid-area: 1 / 1; }
+    /* closed state: a dimmed, empty Quick Look window where the diff will open */
     .demo-ghost {
-      border: 1.5px dashed rgba(255,255,255,.14); border-radius: 16px; min-height: 420px;
-      display: grid; place-items: center; color: var(--muted-dim); font-size: 0.95rem;
+      align-self: start; border-radius: 16px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,.07); background: rgba(255,255,255,.018);
       transition: opacity .25s ease;
     }
-    .demo-ghost .g { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    .demo-ghost svg { opacity: .6; }
-    .demo-right.open .demo-ghost { opacity: 0; }
+    .dg-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.05); color: rgba(255,255,255,.22); font-size: 13px; font-weight: 600; }
+    .dg-bar i { width: 11px; height: 11px; border-radius: 50%; background: rgba(255,255,255,.08); display: block; }
+    .dg-bar span { margin-left: 4px; }
+    .dg-body { padding: 18px 16px 16px; }
+    .dg-lines i { display: block; height: 8px; margin: 0 0 12px; border-radius: 4px; background: rgba(255,255,255,.04); }
+    .dg-hint { margin-top: 18px; text-align: center; color: var(--muted-dim); font-size: .9rem; }
+    /* nothing is reserved for the closed diff: it opens in place when asked */
+    .demo-right:not(.open) .ql { display: none; }
+    .demo-right.open .demo-ghost { display: none; }
+    .demo-right.open .ql { animation: qlin .3s cubic-bezier(.2,.8,.25,1); }
 
     /* ---------------- Diff window (faithful Quick Look recreation) ---------------- */
     .ql {
@@ -512,6 +495,7 @@
       transition: opacity .26s ease, transform .34s cubic-bezier(.2,.8,.25,1.08);
     }
     .demo-right.open .ql { opacity: 1; transform: none; pointer-events: auto; }
+    @keyframes qlin { from { opacity: 0; transform: scale(.96) translateY(8px); } }
     @media (prefers-reduced-motion: reduce) {
       .ql { transition: none; }
       .space-hint kbd { animation: none; }
@@ -551,8 +535,8 @@
     .ql-doc[hidden] { display: none; }
     @media (max-width: 1020px) {
       .demo-grid { grid-template-columns: 1fr; }
-      .demo-left .tb { max-width: 360px; margin: 0 auto; }
-      .demo-ghost { min-height: 200px; }
+      .demo-left .tw { max-width: 360px; margin: 0 auto; }
+      .dg-lines i:nth-child(n+3) { display: none; }
     }
     @media (max-width: 760px) {
       .ql-cols { grid-template-columns: 1fr; }
@@ -719,78 +703,81 @@
         </div>
 
         <div class="hero-visual">
-          <!-- animated recreation of the teebe 0.8 window: an agent finishes, its worktree
-               gets merged, and the Safe to delete group removes it -->
+          <!-- animated recreation of the teebe 0.8 window: an agent finishes, its worktree is
+               merged and removed, then CHANGES and FILES open and close again -->
           <div class="tw-stage" id="tw-stage" aria-hidden="true">
             <div class="tw" id="tw">
               <div class="tw-titlebar">
-                <div class="tb-lights"><i></i><i></i><i></i></div>
+                <div class="tw-lights"><i></i><i></i><i></i></div>
                 <span class="tw-title">teebe</span>
-                <span class="tw-pin"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14.6 2.6a1.5 1.5 0 0 1 2.1 0l4.7 4.7a1.5 1.5 0 0 1 0 2.1l-.4.4c-.5.5-1.2.7-1.9.6l-3.2 3.2c.3 1.2 0 2.5-.9 3.4l-.6.6a1 1 0 0 1-1.4 0l-3-3-4.9 4.9a1 1 0 0 1-1.4-1.4l4.9-4.9-3-3a1 1 0 0 1 0-1.4l.6-.6c.9-.9 2.2-1.2 3.4-.9l3.2-3.2c-.1-.7.1-1.4.6-1.9l.4-.4z"/></svg></span>
+                <span class="tw-pin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M8.5 3.5h7l-1 6 3 3.5h-11l3-3.5z"/><path d="M12 13v7.5"/></svg></span>
               </div>
 
-              <div class="tw-sechead">
-                <span class="tw-chev open"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>
-                <span class="tw-label">WORKTREES</span>
-                <span class="tw-tools">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M20.5 3.5v5h-5"/></svg>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>
-                </span>
-              </div>
-              <div class="tw-repo">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.5 21 7v10l-9 4.5L3 17V7l9-4.5z"/><path d="M3 7l9 4.5L21 7"/><path d="M12 11.5V21.5"/></svg>
-                <span>UltraTurboFable</span>
-              </div>
-
-              <div class="tw-list" id="tw-list">
-                <div class="tw-row sel" data-wt="dev"><span class="mk" data-m="none"></span><span class="tw-name">dev</span></div>
-
-                <div class="tw-grp" data-g="uc">
-                  <div class="tw-gh">
-                    <span class="tw-gchev"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></span>
-                    <span class="mk" data-m="dot"><i class="m-dot"></i></span>
-                    <span class="tw-gt">Uncommitted changes</span><span class="tw-gn">2</span>
-                  </div>
-                  <div class="tw-rows">
-                    <div class="tw-row" data-wt="fable"><span class="mk" data-m="orb"><canvas class="orb m-orb" width="20" height="20"></canvas><i class="m-dot"></i><i class="m-ring"></i><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tw-name">feat/fable5.1</span></div>
-                    <div class="tw-row" data-wt="agi"><span class="mk" data-m="dot"><i class="m-dot"></i></span><span class="tw-name">feat/agi</span></div>
-                  </div>
+              <section class="tw-sec open" data-s="wt">
+                <div class="tw-sechead"><span class="tw-chev"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span><span class="tw-label">WORKTREES</span>
+                  <span class="tw-tools">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M20.5 3.5v5h-5"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>
+                  </span>
+                  <span class="tw-cur"><span class="mk" data-m="dot"><i class="m-dot"></i></span><span class="tw-branch">dev</span></span>
                 </div>
+                <div class="tw-body"><div class="tw-clip">
+                  <div class="tw-repo">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.5 21 7v10l-9 4.5L3 17V7l9-4.5z"/><path d="M3 7l9 4.5L21 7"/><path d="M12 11.5V21.5"/></svg>
+                    <span>UltraTurboFable</span>
+                  </div>
+                  <div class="tw-list" id="tw-list">
+                    <div class="tw-row sel" data-wt="dev"><span class="mk" data-m="dot"><i class="m-dot"></i></span><span class="tw-name">dev</span></div>
+                    <div class="tw-grp" data-g="uc">
+                      <div class="tw-gh"><span class="tw-gchev"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></span><span class="mk" data-m="dot"><i class="m-dot"></i></span><span class="tw-gt">Uncommitted changes</span><span class="tw-gn">2</span></div>
+                      <div class="tw-rows">
+                        <div class="tw-row" data-wt="fable"><span class="mk" data-m="orb"><canvas class="orb m-orb" width="20" height="20"></canvas><i class="m-dot"></i><i class="m-ring"></i><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tw-name">feat/fable5.1</span></div>
+                        <div class="tw-row" data-wt="agi"><span class="mk" data-m="dot"><i class="m-dot"></i></span><span class="tw-name">feat/agi</span></div>
+                      </div>
+                    </div>
+                    <div class="tw-grp" data-g="nm">
+                      <div class="tw-gh"><span class="tw-gchev"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></span><span class="mk" data-m="ring"><i class="m-ring"></i></span><span class="tw-gt">Not merged</span><span class="tw-gn">1</span></div>
+                      <div class="tw-rows">
+                        <div class="tw-row" data-wt="mythos"><span class="mk" data-m="ring"><i class="m-ring"></i></span><span class="tw-name">exp/mythos-leak</span></div>
+                      </div>
+                    </div>
+                    <div class="tw-grp" data-g="sd">
+                      <div class="tw-gh"><span class="tw-gchev"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></span><span class="mk" data-m="check"><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tw-gt">Safe to delete</span><span class="tw-gn">1</span>
+                        <span class="tw-bin" id="tw-bin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h16"/><path d="M9 6.5V4h6v2.5"/><path d="M6 6.5l1 13.5h10l1-13.5"/><path d="M10 10.5v6M14 10.5v6"/></svg></span>
+                      </div>
+                      <div class="tw-rows">
+                        <div class="tw-row" data-wt="final"><span class="mk" data-m="check"><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tw-name">fix/final-final-v2-REAL</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div></div>
+              </section>
 
-                <div class="tw-grp" data-g="nm">
-                  <div class="tw-gh">
-                    <span class="tw-gchev"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></span>
-                    <span class="mk" data-m="ring"><i class="m-ring"></i></span>
-                    <span class="tw-gt">Not merged</span><span class="tw-gn">1</span>
-                  </div>
-                  <div class="tw-rows">
-                    <div class="tw-row" data-wt="mythos"><span class="mk" data-m="ring"><i class="m-ring"></i></span><span class="tw-name">exp/mythos-leak</span></div>
-                  </div>
-                </div>
+              <section class="tw-sec" data-s="ch">
+                <div class="tw-sechead"><span class="tw-chev"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span><span class="tw-label">CHANGES</span><span class="tw-count">3</span></div>
+                <div class="tw-body"><div class="tw-clip"><div class="tw-files">
+                  <div class="tw-file"><span class="ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span><span class="fn">README.md</span><span class="st m">M</span></div>
+                  <div class="tw-file"><span class="ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span><span class="fn">benchmarks.py</span><span class="st a">A</span></div>
+                  <div class="tw-file"><span class="ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span><span class="fn">trust_us.py</span><span class="st m">M</span></div>
+                </div></div></div>
+              </section>
 
-                <div class="tw-grp" data-g="sd">
-                  <div class="tw-gh">
-                    <span class="tw-gchev"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg></span>
-                    <span class="mk" data-m="check"><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="tw-gt">Safe to delete</span><span class="tw-gn">1</span>
-                    <span class="tw-bin" id="tw-bin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h16"/><path d="M9 6.5V4h6v2.5"/><path d="M6 6.5l1 13.5h10l1-13.5"/><path d="M10 10.5v6M14 10.5v6"/></svg></span>
+              <section class="tw-sec" data-s="fi">
+                <div class="tw-sechead"><span class="tw-chev"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span><span class="tw-label">FILES</span><span class="tw-tools"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></span></div>
+                <div class="tw-body"><div class="tw-clip">
+                  <div class="tw-search">Search files</div>
+                  <div class="tw-tree tw-files">
+                    <div class="tw-file" style="--d:0"><span class="tc"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span><span class="ic dir"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 6.5A2 2 0 0 1 4.5 4.5h4.6l2 2.2h8.4a2 2 0 0 1 2 2v9.8a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2z"/></svg></span><span class="fn">assets</span></div>
+                    <div class="tw-file" style="--d:0"><span class="tc open"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span><span class="ic dir"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 6.5A2 2 0 0 1 4.5 4.5h4.6l2 2.2h8.4a2 2 0 0 1 2 2v9.8a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2z"/></svg></span><span class="fn">evals</span><span class="cd"></span></div>
+                    <div class="tw-file" style="--d:1"><span class="tc"></span><span class="ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span><span class="fn">benchmarks.py</span><span class="st a">A</span></div>
+                    <div class="tw-file" style="--d:1"><span class="tc"></span><span class="ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span><span class="fn">trust_us.py</span><span class="st m">M</span></div>
+                    <div class="tw-file" style="--d:0"><span class="tc"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span><span class="ic dir"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 6.5A2 2 0 0 1 4.5 4.5h4.6l2 2.2h8.4a2 2 0 0 1 2 2v9.8a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2z"/></svg></span><span class="fn">src</span></div>
+                    <div class="tw-file" style="--d:0"><span class="tc"></span><span class="ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span><span class="fn">README.md</span><span class="st m">M</span></div>
+                    <div class="tw-file" style="--d:0"><span class="tc"></span><span class="ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span><span class="fn">pyproject.toml</span></div>
                   </div>
-                  <div class="tw-rows">
-                    <div class="tw-row" data-wt="final"><span class="mk" data-m="check"><svg class="m-check" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 8.3l1.9 1.9 3.6-3.9" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tw-name">fix/final-final-v2-REAL</span></div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="tw-sechead tw-line">
-                <span class="tw-chev"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>
-                <span class="tw-label">CHANGES</span>
-              </div>
-              <div class="tw-sechead tw-line">
-                <span class="tw-chev"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>
-                <span class="tw-label">FILES</span>
-                <span class="tw-tools"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></span>
-              </div>
+                </div></div>
+              </section>
 
               <!-- the removal confirmation, a sheet that slides out under the title bar -->
               <div class="tw-sheetclip">
@@ -841,54 +828,35 @@
     <section class="showcase" id="demo">
       <div class="demo-grid">
         <div class="demo-left">
-          <div class="tb changed" aria-hidden="true">
-            <div class="tb-titlebar">
-              <div class="tb-lights"><i></i><i></i><i></i></div>
-              <span class="tb-title">teebe</span>
-              <span class="tb-pin"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14.6 2.6a1.5 1.5 0 0 1 2.1 0l4.7 4.7a1.5 1.5 0 0 1 0 2.1l-.4.4c-.5.5-1.2.7-1.9.6l-3.2 3.2c.3 1.2 0 2.5-.9 3.4l-.6.6a1 1 0 0 1-1.4 0l-3-3-4.9 4.9a1 1 0 0 1-1.4-1.4l4.9-4.9-3-3a1 1 0 0 1 0-1.4l.6-.6c.9-.9 2.2-1.2 3.4-.9l3.2-3.2c-.1-.7.1-1.4.6-1.9l.4-.4z"/></svg></span>
+          <div class="tw tw-demo" aria-hidden="true">
+            <div class="tw-titlebar">
+              <div class="tw-lights"><i></i><i></i><i></i></div>
+              <span class="tw-title">teebe</span>
+              <span class="tw-pin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M8.5 3.5h7l-1 6 3 3.5h-11l3-3.5z"/><path d="M12 13v7.5"/></svg></span>
             </div>
-            <div class="tb-sec">
-              <div class="tb-sechead">
-                <span class="tb-chev" style="transform: rotate(-90deg)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-                WORKTREES
-                <span class="tb-tools"><span class="tb-updown">feat/fable5.1</span></span>
-              </div>
-            </div>
-            <div class="tb-sec open">
-              <div class="tb-sechead">
-                <span class="tb-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-                CHANGES
-                <span class="tb-tools"><span class="tb-pill">2</span><span class="tb-updown">↓0 ↑0</span></span>
-              </div>
-              <div class="tb-body"><div class="tb-clip"><div class="tb-list" id="demo-files">
-                <div class="tb-row sel" data-file="fable" role="button" tabindex="0" style="cursor: pointer">
-                  <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span>
-                  <span class="tb-name">FABLE5.md</span>
-                  <span class="tb-right"><span class="tb-m">M</span></span>
-                </div>
-                <div class="tb-row" data-file="readme" role="button" tabindex="0" style="cursor: pointer">
-                  <span class="tb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span>
-                  <span class="tb-name">README.md</span>
-                  <span class="tb-right"><span class="tb-m">M</span></span>
-                </div>
+            <section class="tw-sec" data-s="wt">
+              <div class="tw-sechead"><span class="tw-chev"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span><span class="tw-label">WORKTREES</span><span class="tw-cur"><span class="mk" data-m="dot"><i class="m-dot"></i></span><span class="tw-branch">feat/fable5.1</span></span></div>
+            </section>
+            <section class="tw-sec open" data-s="ch">
+              <div class="tw-sechead"><span class="tw-chev"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span><span class="tw-label">CHANGES</span><span class="tw-count">2</span></div>
+              <div class="tw-body"><div class="tw-clip"><div class="tw-files" id="demo-files">
+                <div class="tw-file sel" data-file="fable" role="button" tabindex="0" style="cursor: pointer"><span class="ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span><span class="fn">FABLE5.md</span><span class="st m">M</span></div>
+                <div class="tw-file" data-file="readme" role="button" tabindex="0" style="cursor: pointer"><span class="ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5L14 2.5z"/><path d="M14 2.5V8h5"/></svg></span><span class="fn">README.md</span><span class="st m">M</span></div>
               </div></div></div>
-            </div>
-            <div class="tb-sec">
-              <div class="tb-sechead">
-                <span class="tb-chev" style="transform: rotate(-90deg)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-                FILES
-                <span class="tb-tools"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg></span>
-              </div>
-            </div>
+            </section>
+            <section class="tw-sec" data-s="fi">
+              <div class="tw-sechead"><span class="tw-chev"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span><span class="tw-label">FILES</span><span class="tw-tools"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></span></div>
+            </section>
           </div>
           <p class="space-hint" id="demo-hint"><kbd>Space</kbd> peek the diff · click a file to switch</p>
         </div>
 
         <div class="demo-right" id="demo-right">
           <div class="demo-ghost" aria-hidden="true">
-            <div class="g">
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7.5"/><path d="M21 21l-4.5-4.5"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>
-              <span>the diff peeks open here</span>
+            <div class="dg-bar"><i></i><i></i><i></i><span>Quick Look</span></div>
+            <div class="dg-body">
+              <div class="dg-lines"><i style="width:58%"></i><i style="width:82%"></i><i style="width:47%"></i><i style="width:74%"></i><i style="width:63%"></i></div>
+              <div class="dg-hint">The diff opens here</div>
             </div>
           </div>
 
@@ -1219,10 +1187,12 @@
     })();
   </script>
 
-  <!-- Hero window story, about 12 s per loop: an agent works (orb), finishes (notification),
-       its worktree is committed (ring), then merged (green check, moves to Safe to delete),
-       and the group's bin removes it. Runs only while on screen and the tab is visible.
-       Reduced motion: one static frame with every mark. #story=0..5 freezes on a step. -->
+  <!-- Hero window story, about 21 s per loop: an agent works (orb), finishes (notification),
+       its worktree is committed (ring), then merged (green check, Safe to delete), and the
+       group's bin removes it. Then WORKTREES folds, CHANGES and FILES open to show the
+       selected worktree's files, fold again, and WORKTREES reopens. Runs only while on
+       screen and the tab is visible. Reduced motion: one static frame with every mark.
+       #story=0..9 freezes on a step. -->
   <script>
     (function () {
       var stage = document.getElementById('tw-stage');
@@ -1234,6 +1204,8 @@
           bin = document.getElementById('tw-bin'),
           rm = document.getElementById('tw-rm'),
           cursor = document.getElementById('tw-cursor');
+      var sec = function (k) { return win.querySelector('.tw-sec[data-s="' + k + '"]'); };
+      var open = function (k, v) { sec(k).classList.toggle('open', v); };
       var group = function (k) { return list.querySelector('.tw-grp[data-g="' + k + '"]'); };
       var rowsOf = function (k) { return group(k).querySelector('.tw-rows'); };
       var row = function (k) { return list.querySelector('.tw-row[data-wt="' + k + '"]'); };
@@ -1243,8 +1215,7 @@
 
       var counts = function () {
         ['uc', 'nm', 'sd'].forEach(function (k) {
-          var n = rowsOf(k).querySelectorAll('.tw-row:not(.gone)').length;
-          group(k).querySelector('.tw-gn').textContent = n;
+          group(k).querySelector('.tw-gn').textContent = rowsOf(k).querySelectorAll('.tw-row:not(.gone)').length;
         });
       };
       // Move rows between groups and let them glide to their new place (FLIP).
@@ -1269,15 +1240,19 @@
         var s = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
         cursor.style.transform = 'translate(' + (r.left - s.left + r.width * dx) + 'px,' + (r.top - s.top + r.height * dy) + 'px)';
       };
+      var restoreRows = function () {
+        note.classList.remove('on'); sheet.classList.remove('on'); cursor.classList.remove('on');
+        bin.classList.remove('hot', 'press'); rm.classList.remove('press');
+        rowsOf('uc').insertBefore(fable, agi);
+        rowsOf('sd').appendChild(final);
+        list.querySelectorAll('.gone').forEach(function (e) { e.classList.remove('gone'); });
+        mark(fable, 'orb'); counts();
+      };
 
       var steps = [
         function reset() {
-          note.classList.remove('on'); sheet.classList.remove('on'); cursor.classList.remove('on');
-          bin.classList.remove('hot', 'press'); rm.classList.remove('press');
-          rowsOf('uc').insertBefore(fable, agi);
-          rowsOf('sd').appendChild(final);
-          list.querySelectorAll('.gone').forEach(function (e) { e.classList.remove('gone'); });
-          mark(fable, 'orb'); counts();
+          restoreRows();
+          open('wt', true); open('ch', false); open('fi', false);
           var w = win.getBoundingClientRect(), s = stage.getBoundingClientRect();
           cursor.style.transform = 'translate(' + (w.width * .62) + 'px,' + (w.bottom - s.top + 24) + 'px)';
         },
@@ -1294,25 +1269,35 @@
         function confirm() {
           cursor.classList.add('on'); pointAt(bin, .45, .4);
           bin.classList.add('hot');
-          later(instant ? 0 : 750, function () {
+          later(750, function () {
             bin.classList.add('press');
-            later(instant ? 0 : 140, function () { bin.classList.remove('press', 'hot'); sheet.classList.add('on'); });
-            later(instant ? 0 : 700, function () { pointAt(rm, .4, .45); });
+            later(140, function () { bin.classList.remove('press', 'hot'); sheet.classList.add('on'); });
+            later(700, function () { pointAt(rm, .4, .45); });
           });
         },
         function removed() {
           rm.classList.add('press');
-          later(instant ? 0 : 160, function () {
+          later(160, function () {
             rm.classList.remove('press'); sheet.classList.remove('on'); cursor.classList.remove('on');
-            later(instant ? 0 : 320, function () {
+            later(320, function () {
               [fable, final, group('sd').querySelector('.tw-gh')].forEach(function (e) { e.classList.add('gone'); });
               counts();
             });
           });
+        },
+        function foldWorktrees() { open('wt', false); },
+        function showChanges() { open('ch', true); later(650, function () { open('fi', true); }); },
+        function foldFiles() { open('fi', false); later(450, function () { open('ch', false); }); },
+        function reopenWorktrees() {
+          // back to the first frame while WORKTREES is folded, then unfold it
+          var keep = instant; instant = true; stage.classList.add('instant');
+          restoreRows(); void stage.offsetHeight;
+          stage.classList.remove('instant'); instant = keep;
+          open('wt', true);
         }
       ];
       // when each step runs, in ms from the start of the loop
-      var AT = [0, 2900, 4700, 6000, 7300, 9150], LOOP = 12000;
+      var AT = [0, 2900, 4700, 6000, 7300, 9150, 10900, 11500, 16300, 17200], LOOP = 20500;
 
       var timers = [];
       var later = function (ms, fn) { if (instant) fn(); else timers.push(setTimeout(fn, ms)); };
@@ -1327,8 +1312,7 @@
         stop();
         snap(steps[0]);
         AT.forEach(function (t, i) { if (i) later(t, steps[i]); });
-        later(LOOP - 400, function () { list.classList.add('fade'); });
-        later(LOOP, function () { loop(); list.classList.remove('fade'); });
+        later(LOOP, loop);
       };
 
       var m = /#story=(\d)/.exec(location.hash);
@@ -1363,7 +1347,7 @@
           hint = document.getElementById('demo-hint');
       if (!section || !right || !ql) return;
 
-      var rows = Array.prototype.slice.call(document.querySelectorAll('#demo-files .tb-row'));
+      var rows = Array.prototype.slice.call(document.querySelectorAll('#demo-files .tw-file'));
       var docs = Array.prototype.slice.call(ql.querySelectorAll('.ql-doc'));
       var nameEl = document.getElementById('ql-file'),
           plusEl = document.getElementById('ql-plus'),
