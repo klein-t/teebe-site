@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>git worktree remove: delete a worktree, fix every error · teebe</title>
+  <meta name="description" content="The exact git worktree remove command, then every error you can hit: --force, locked, cannot delete branch used by worktree, prune and repair. Tested on git 2.50." />
+  <link rel="canonical" href="https://teebe.io/guides/git-worktree-remove/" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/guides/git-worktree-remove/" />
+  <meta property="og:title" content="git worktree remove: delete a worktree, fix every error · teebe" />
+  <meta property="og:description" content="The exact git worktree remove command, then every error you can hit: --force, locked, cannot delete branch used by worktree, prune and repair. Tested on git 2.50." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v3.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="git worktree remove: delete a worktree, fix every error · teebe" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v3.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "teebe",
+        "item": "https://teebe.io/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Guides",
+        "item": "https://teebe.io/#guides"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "git worktree remove",
+        "item": "https://teebe.io/guides/git-worktree-remove/"
+      }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "git worktree remove: delete a worktree and fix every error",
+    "description": "The exact git worktree remove command, then every error you can hit: --force, locked, cannot delete branch used by worktree, prune and repair. Tested on git 2.50.",
+    "image": "https://teebe.io/assets/teebe-diff.png",
+    "author": {
+      "@type": "Person",
+      "name": "Klein Tahiraj",
+      "url": "https://github.com/klein-t"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "teebe",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://teebe.io/assets/logo.png"
+      }
+    },
+    "mainEntityOfPage": "https://teebe.io/guides/git-worktree-remove/",
+    "datePublished": "2026-10-01",
+    "dateModified": "2026-10-01"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is there a git worktree delete command?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. The command is git worktree remove <path>. It deletes the worktree folder and git's record of it, and leaves the branch alone. Typing git worktree delete prints error: unknown subcommand: `delete' and the list of real subcommands."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does git worktree remove delete the branch?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. The branch and its commits stay. Delete the branch afterwards with git branch -d <branch>, or git branch -D <branch> if it is not merged. Git refuses to delete a branch while a worktree still has it checked out, so remove the worktree first."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I remove a worktree that has uncommitted changes?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Either commit or stash the changes first, or run git worktree remove --force <path>, which deletes the folder and the uncommitted changes for good. Stashes are shared by all worktrees of a repository, so a stash made inside the worktree survives its removal."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does git worktree prune do?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "It deletes git's records of worktrees whose folder no longer exists, for example one you removed with rm -rf or Finder. It never touches a locked worktree or a branch. Run git worktree prune -n -v first to see what it would remove."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I remove a locked worktree?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Run git worktree unlock <path>, then git worktree remove <path>. To do it in one step, pass force twice: git worktree remove -f -f <path>. A single --force is not enough for a locked worktree."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I delete a worktree I already deleted by hand?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Run git worktree prune. Git still lists the worktree, marked prunable, until you do. git worktree remove <path> also works for a missing folder. Neither deletes the branch."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="64" height="64" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Guides › git worktree remove</p>
+    <h1>git worktree remove: delete a worktree and fix every error</h1>
+    <p class="updated">The exact command, then every error you can hit, with the message as git prints it. All of it was run on git 2.50.1.</p>
+
+    <p>
+      To remove a git worktree, run <code>git worktree remove</code> with its path, from any checkout
+      of the repository:
+    </p>
+    <pre><code>git worktree remove ../repo-feature-a</code></pre>
+    <p>
+      That deletes the worktree folder and git's record of it. It does not delete the branch. It
+      refuses if the worktree has uncommitted changes (add <code>--force</code>) or is locked
+      (<code>unlock</code> it first). There is no <code>git worktree delete</code>: <code>remove</code>
+      is the command. Every error below is pasted from a real run.
+    </p>
+
+    <div class="tldr">
+      <strong>Quick fixes</strong>
+      <ul>
+        <li><a href="#contains-modified"><code>contains modified or untracked files</code></a>: commit or stash, or add <code>--force</code> to throw the changes away.</li>
+        <li><a href="#cannot-delete-branch"><code>cannot delete branch ... used by worktree</code></a>: remove the worktree first, then <code>git branch -d</code>.</li>
+        <li><a href="#locked"><code>cannot remove a locked working tree</code></a>: <code>git worktree unlock &lt;path&gt;</code>, or <code>remove -f -f</code>.</li>
+        <li><a href="#deleted-by-hand">Folder deleted by hand</a>: <code>git worktree prune</code>.</li>
+        <li><a href="#repair">Folder moved by hand</a>: <code>git worktree repair &lt;new-path&gt;</code>.</li>
+      </ul>
+    </div>
+
+    <h2 id="remove">Remove a worktree</h2>
+    <p>
+      Pass the path exactly as <code>git worktree list</code> shows it. Absolute and relative paths
+      both work.
+    </p>
+    <pre><code>git worktree list
+git worktree remove ../repo-feature-a</code></pre>
+    <p>A clean remove prints nothing. Run <code>git worktree list</code> again to confirm. Four things worth knowing:</p>
+    <ul>
+      <li><strong>The branch stays.</strong> Delete it separately, see <a href="#cannot-delete-branch">below</a>.</li>
+      <li><strong>Ignored files go with the folder.</strong> Anything in <code>.gitignore</code> (<code>node_modules</code>, <code>.env</code>, build output) is deleted without <code>--force</code>, and git cannot bring it back.</li>
+      <li><strong>You can remove the worktree you are standing in</strong> (<code>git worktree remove .</code>), but your shell is then in a deleted directory. <code>cd</code> out first.</li>
+      <li><strong>Git does not check for a rebase in progress.</strong> A worktree stopped mid-rebase with a clean tree is removed without a warning. Run <code>git rebase --abort</code> or finish it first.</li>
+    </ul>
+
+    <h2 id="contains-modified"><code>fatal: '../repo-feature-a' contains modified or untracked files, use --force to delete it</code></h2>
+    <p>
+      The worktree has a changed tracked file or an untracked file that is not ignored, so
+      <code>git worktree remove</code> will not delete it. See what it would lose:
+    </p>
+    <pre><code>git -C ../repo-feature-a status --short</code></pre>
+    <p>To keep the work, commit it, or stash it. Stashes belong to the repository, not the worktree, so a stash survives the removal:</p>
+    <pre><code>git -C ../repo-feature-a stash -u
+git worktree remove ../repo-feature-a</code></pre>
+    <p>
+      To throw the work away, force it. This deletes the uncommitted changes for good, with no undo:
+    </p>
+    <pre><code>git worktree remove --force ../repo-feature-a</code></pre>
+    <p>
+      <code>--force</code> does not override a lock (see <a href="#locked">locked worktrees</a>) and
+      it is not needed for ignored files.
+    </p>
+
+    <h2 id="cannot-delete-branch"><code>error: cannot delete branch 'feature-a' used by worktree at '/Users/you/code/repo-feature-a'</code></h2>
+    <p>
+      Git will not delete a branch that a worktree has checked out. Both <code>git branch -d</code>
+      and <code>git branch -D</code> fail with this message. Remove the worktree first, then the
+      branch:
+    </p>
+    <pre><code>git worktree remove ../repo-feature-a
+git branch -d feature-a</code></pre>
+    <p>
+      If the branch has commits that are not merged, <code>-d</code> stops again:
+    </p>
+    <pre><code>error: the branch 'feature-a' is not fully merged
+hint: If you are sure you want to delete it, run 'git branch -D feature-a'</code></pre>
+    <p>
+      Use <code>git branch -D feature-a</code> only when you are sure you do not need those commits.
+      Two variations of the same error:
+    </p>
+    <ul>
+      <li><strong>You already deleted the folder by hand.</strong> The error stays until git forgets the worktree: run <code>git worktree prune</code>, then delete the branch.</li>
+      <li><strong>The branch is checked out in your main checkout</strong> (the message names the main repo's path). Switch the main checkout to another branch with <code>git switch</code>, then delete it.</li>
+    </ul>
+    <p>
+      The mirror image, checking a branch out in a second worktree, is covered in the
+      <a href="/guides/git-worktree-cheat-sheet/">git worktree cheat sheet</a>.
+    </p>
+
+    <h2 id="locked"><code>fatal: cannot remove a locked working tree</code></h2>
+    <p>The full message has two lines. With no lock reason:</p>
+    <pre><code>fatal: cannot remove a locked working tree;
+use 'remove -f -f' to override or unlock first</code></pre>
+    <p>With a reason, the first line carries it:</p>
+    <pre><code>fatal: cannot remove a locked working tree, lock reason: on usb drive
+use 'remove -f -f' to override or unlock first</code></pre>
+    <p>
+      Someone, or some tool, ran <code>git worktree lock</code> on it. <code>git worktree list</code>
+      shows <code>locked</code> next to it, and <code>git worktree list -v</code> shows the reason.
+      Unlock it, then remove it:
+    </p>
+    <pre><code>git worktree unlock ../repo-feature-a
+git worktree remove ../repo-feature-a</code></pre>
+    <p>
+      Or do both in one step by passing force twice. A single <code>--force</code> is still refused:
+    </p>
+    <pre><code>git worktree remove -f -f ../repo-feature-a</code></pre>
+
+    <h2 id="deleted-by-hand">Worktree folder deleted by hand: <code>prunable</code></h2>
+    <p>
+      If you deleted the folder with <code>rm -rf</code> or Finder instead of
+      <code>git worktree remove</code>, git still has a record of it. <code>git worktree list</code>
+      marks it:
+    </p>
+    <pre><code>/Users/you/code/repo               097e9f9 [main]
+/Users/you/code/repo-feature-a     097e9f9 [feature-a] prunable</code></pre>
+    <p>Clear every stale record with prune. Add <code>-n -v</code> first to preview:</p>
+    <pre><code>git worktree prune -n -v
+git worktree prune</code></pre>
+    <p>
+      The preview prints one line per record, such as
+      <code>Removing worktrees/repo-feature-a: gitdir file points to non-existent location</code>.
+      <code>git worktree remove ../repo-feature-a</code> also works on a missing folder. Neither deletes
+      the branch.
+    </p>
+    <p>If you try to create the worktree again before pruning, git stops you:</p>
+    <pre><code>fatal: '../repo-feature-a' is a missing but already registered worktree;
+use 'add -f' to override, or 'prune' or 'remove' to clear</code></pre>
+    <p>Run <code>git worktree prune</code> and repeat the <code>add</code>.</p>
+
+    <h2 id="missing-locked"><code>fatal: '../repo-feature-a' is a missing but locked worktree</code></h2>
+    <p>The folder is gone and the worktree was locked, for example one on a drive that is not mounted. The full message:</p>
+    <pre><code>fatal: '../repo-feature-a' is a missing but locked worktree;
+use 'add -f -f' to override, or 'unlock' and 'prune' or 'remove' to clear</code></pre>
+    <p>
+      <code>git worktree prune</code> skips a locked worktree without saying anything, which is why it
+      seems to do nothing. Unlock first, then prune:
+    </p>
+    <pre><code>git worktree unlock ../repo-feature-a
+git worktree prune</code></pre>
+    <p>
+      Or remove it in one step with <code>git worktree remove -f -f ../repo-feature-a</code>. If the
+      drive is only unplugged, plug it back in instead: a lock exists to protect exactly that case.
+    </p>
+
+    <h2 id="main-working-tree"><code>fatal: '../repo' is a main working tree</code></h2>
+    <p>
+      You pointed <code>git worktree remove</code> at the original checkout, the one that holds the
+      <code>.git</code> directory. Only linked worktrees can be removed. Check which one is which with
+      <code>git worktree list</code>: the main worktree is always the first line. To get rid of the
+      whole repository, remove the linked worktrees first, then delete the folder yourself.
+    </p>
+
+    <h2 id="not-a-working-tree"><code>fatal: '../repo-feature-b' is not a working tree</code></h2>
+    <p>
+      The path does not match any worktree, usually a typo or a path relative to the wrong
+      directory. A plain folder that is not a worktree gives the same message. Copy the path from
+      <code>git worktree list</code>.
+    </p>
+
+    <h2 id="submodules"><code>fatal: working trees containing submodules cannot be moved or removed</code></h2>
+    <p>
+      Git refuses to remove a worktree that has an initialized submodule, even when nothing is
+      uncommitted. Check the submodule for unpushed work, then force it:
+    </p>
+    <pre><code>git worktree remove --force ../repo-feature-a</code></pre>
+
+    <h2 id="repair">Worktree folder moved by hand: <code>git worktree repair</code></h2>
+    <p>
+      Moving a worktree folder with <code>mv</code> breaks the link between it and the main repository.
+      Git then lists it as <code>prunable</code> at the old path, and pruning would forget it. Do not
+      prune. Run repair from the main repository and pass the new path:
+    </p>
+    <pre><code>git worktree repair ../repo-feature-a-renamed
+repair: gitdir incorrect: /Users/you/code/repo/.git/worktrees/repo-feature-a/gitdir</code></pre>
+    <p>
+      The <code>repair:</code> line confirms what was fixed. Without a path, <code>git worktree
+      repair</code> found nothing to fix in this case, so pass the path. Next time use
+      <code>git worktree move ../repo-feature-a ../repo-feature-a-renamed</code>, which updates both
+      sides.
+    </p>
+    <p>If you moved the main repository instead, every worktree breaks, and commands inside them print:</p>
+    <pre><code>fatal: not a git repository: /old/path/repo/.git/worktrees/repo-feature-a</code></pre>
+    <p>Run repair from the moved main repository and pass each worktree's path:</p>
+    <pre><code>cd /new/path/repo
+git worktree repair ../repo-feature-a
+repair: .git file broken: /new/path/repo-feature-a</code></pre>
+
+    <h2 id="many">Remove many worktrees at once</h2>
+    <p>
+      This script, run from your main checkout, removes every worktree whose branch is already merged
+      into <code>main</code> and then deletes that branch. It never forces: worktrees with
+      uncommitted changes or a lock print their error and are skipped, and unmerged ones are not
+      touched. Paths with spaces are fine.
+    </p>
+    <pre><code>#!/usr/bin/env bash
+# Remove every linked worktree whose branch is already merged into main.
+base=main
+git worktree prune
+main_path=$(git worktree list --porcelain | awk '/^worktree /{print substr($0,10); exit}')
+git worktree list --porcelain |
+  awk -v RS= -F'\n' '{
+    path = ""; branch = ""
+    for (i = 1; i &lt;= NF; i++) {
+      if ($i ~ /^worktree /) path = substr($i, 10)
+      if ($i ~ /^branch refs\/heads\//) branch = substr($i, 19)
+    }
+    if (path != "" &amp;&amp; branch != "") print path "\t" branch
+  }' |
+while IFS=$'\t' read -r path branch; do
+  [ "$path" = "$main_path" ] &amp;&amp; continue
+  if git merge-base --is-ancestor "$branch" "$base"; then
+    git worktree remove "$path" &amp;&amp; git branch -d "$branch"
+  fi
+done</code></pre>
+    <p>
+      One catch: a branch with no commits of its own counts as merged, so a worktree you created a
+      minute ago and have not touched is removed too. Read the list from
+      <code>git worktree list</code> before you run it. To clear only stale records, a plain
+      <code>git worktree prune</code> is enough.
+    </p>
+
+    <h2 id="agents">Cleaning up after AI coding agents</h2>
+    <p>
+      Agent worktrees are ordinary git worktrees, so everything above applies, and they show up in
+      <code>git worktree list</code> even when the tool created them somewhere else.
+    </p>
+    <ul>
+      <li><strong>Claude Code</strong> removes a clean, unnamed interactive session's worktree on exit. Non-interactive <code>-p</code> runs skip cleanup, so those pile up until you remove them (unlock first if one is locked). See <a href="/guides/claude-code-worktrees/">Claude Code worktrees</a>.</li>
+      <li><strong>Codex</strong> keeps up to 15 managed worktrees and deletes older ones itself, after saving a snapshot. See <a href="/guides/codex-worktrees/">Codex worktrees</a>.</li>
+      <li><strong>Cursor</strong> cleans up on a schedule, and <code>/delete-worktree</code> removes one on demand. See <a href="/guides/cursor-worktrees/">Cursor worktrees</a>.</li>
+    </ul>
+
+    <h2 id="without-the-terminal">Clean up worktrees without the terminal</h2>
+    <p>
+      <a href="/">teebe</a> is a free native macOS app that lists the worktrees of every repo you
+      add. From teebe 0.8 it can also tell you which ones are safe to delete and remove them, using
+      the same <code>git worktree remove</code> described above, never with <code>--force</code>.
+    </p>
+    <ul>
+      <li><strong>It sorts worktrees into three groups:</strong> <em>Uncommitted changes</em>, <em>Not merged</em> and <em>Safe to delete</em>. A worktree is safe to delete when its branch is merged into the repo's default branch, <code>main</code>, <code>master</code>, <code>dev</code>, <code>develop</code> or a comparison branch you choose (a squash merge counts), with nothing uncommitted.</li>
+      <li><strong>A bin on the Safe to delete group removes them all.</strong> A confirmation lists every worktree, and an <em>Also delete the branches</em> checkbox, off by default, deletes the local branches too. Remote branches are never touched. A branch is deleted only if it is still at the commit teebe checked and still merged.</li>
+      <li><strong>It refuses what git would lose or what is in use:</strong> uncommitted changes, locked or detached worktrees, submodules, a rebase, merge or cherry-pick in progress, and any worktree where an agent is working or that is open in a terminal or editor.</li>
+      <li><strong>It warns before deleting ignored files.</strong> The confirmation says <em>Also deletes 214 gitignored files. Git can’t restore these files</em> and names the ones that look hard to replace, like <code>.env.local</code>.</li>
+      <li><strong>A worktree whose folder you deleted by hand is forgotten automatically</strong>, like <code>git worktree prune</code> for that one record, unless it is locked, on a drive that is not mounted, or still holds commits no branch has.</li>
+    </ul>
+    <p>
+      A clean worktree that is not merged yet can still be removed from its right-click menu, with
+      <em>Remove Worktree…</em>. Only the folder goes, and its branch is kept. teebe does not run <code>git worktree repair</code> or unlock anything for you. See
+      <a href="/guides/git-worktree-manager-macos/">git worktree managers for macOS</a> for how it
+      compares to the alternatives.
+    </p>
+
+    <h2>Frequently asked questions</h2>
+
+    <h3>Is there a git worktree delete command?</h3>
+    <p>No. The command is <code>git worktree remove &lt;path&gt;</code>. It deletes the worktree folder and git's record of it, and leaves the branch alone. Typing <code>git worktree delete</code> prints <code>error: unknown subcommand: `delete'</code> and the list of real subcommands.</p>
+
+    <h3>Does git worktree remove delete the branch?</h3>
+    <p>No. The branch and its commits stay. Delete the branch afterwards with <code>git branch -d &lt;branch&gt;</code>, or <code>git branch -D &lt;branch&gt;</code> if it is not merged. Git refuses to delete a branch while a worktree still has it checked out, so remove the worktree first.</p>
+
+    <h3>How do I remove a worktree that has uncommitted changes?</h3>
+    <p>Either commit or stash the changes first, or run <code>git worktree remove --force &lt;path&gt;</code>, which deletes the folder and the uncommitted changes for good. Stashes are shared by all worktrees of a repository, so a stash made inside the worktree survives its removal.</p>
+
+    <h3>What does git worktree prune do?</h3>
+    <p>It deletes git's records of worktrees whose folder no longer exists, for example one you removed with <code>rm -rf</code> or Finder. It never touches a locked worktree or a branch. Run <code>git worktree prune -n -v</code> first to see what it would remove.</p>
+
+    <h3>How do I remove a locked worktree?</h3>
+    <p>Run <code>git worktree unlock &lt;path&gt;</code>, then <code>git worktree remove &lt;path&gt;</code>. To do it in one step, pass force twice: <code>git worktree remove -f -f &lt;path&gt;</code>. A single <code>--force</code> is not enough for a locked worktree.</p>
+
+    <h3>How do I delete a worktree I already deleted by hand?</h3>
+    <p>Run <code>git worktree prune</code>. Git still lists the worktree, marked <code>prunable</code>, until you do. <code>git worktree remove &lt;path&gt;</code> also works for a missing folder. Neither deletes the branch.</p>
+
+
+    <div class="install" style="margin-top:28px">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub" style="text-align:center">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog/">Changelog</a> · <a href="/privacy/">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy/. -->
+  <script>
+    (function () {
+      try {
+        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
+        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

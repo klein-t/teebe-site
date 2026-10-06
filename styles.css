@@ -294,6 +294,7 @@ footer a:hover { color: var(--text); }
   border-radius: 6px;
   padding: 1px 6px;
 }
+.article pre { overflow-x: auto; }
 .article .tldr {
   background: var(--bg-soft);
   border: 1px solid var(--border);
