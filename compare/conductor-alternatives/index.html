@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Conductor alternatives for parallel coding agents (2026)</title>
+  <meta name="description" content="Honest Conductor alternatives: Nimbalyst, Emdash, Orca, Pane, Parallel Code, Claude Squad, AgentsRoom, Claude Code Desktop and more, compared with sources." />
+  <link rel="canonical" href="https://teebe.io/compare/conductor-alternatives/" />
+  <meta name="theme-color" content="#060709" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/compare/conductor-alternatives/" />
+  <meta property="og:title" content="Conductor alternatives for parallel coding agents (2026)" />
+  <meta property="og:description" content="Tools that run Claude Code and Codex in parallel worktrees like Conductor, the ones that work on Windows and Linux, and the ones that don't run agents at all. Sourced and dated." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v4.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Conductor alternatives for parallel coding agents (2026)" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v4.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
+      { "@type": "ListItem", "position": 2, "name": "Compare", "item": "https://teebe.io/compare/git-worktree-gui-mac/" },
+      { "@type": "ListItem", "position": 3, "name": "Conductor alternatives", "item": "https://teebe.io/compare/conductor-alternatives/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Conductor alternatives for parallel coding agents (2026)",
+    "description": "Alternatives to Conductor for running Claude Code, Codex and other coding agents in parallel git worktrees, plus tools that only watch the worktrees, compared with dated sources.",
+    "datePublished": "2026-10-09",
+    "dateModified": "2026-10-09",
+    "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
+    "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
+    "mainEntityOfPage": "https://teebe.io/compare/conductor-alternatives/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Conductor alternatives",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Nimbalyst", "url": "https://nimbalyst.com" },
+      { "@type": "ListItem", "position": 2, "name": "Emdash", "url": "https://github.com/generalaction/emdash" },
+      { "@type": "ListItem", "position": 3, "name": "Orca", "url": "https://onorca.dev" },
+      { "@type": "ListItem", "position": 4, "name": "Pane", "url": "https://runpane.com" },
+      { "@type": "ListItem", "position": 5, "name": "Parallel Code", "url": "https://parallelcode.app" },
+      { "@type": "ListItem", "position": 6, "name": "Claude Squad", "url": "https://github.com/smtg-ai/claude-squad" },
+      { "@type": "ListItem", "position": 7, "name": "AgentsRoom", "url": "https://agentsroom.dev" },
+      { "@type": "ListItem", "position": 8, "name": "Claude Code Desktop", "url": "https://code.claude.com/docs/en/desktop" },
+      { "@type": "ListItem", "position": 9, "name": "Cursor Agents Window", "url": "https://cursor.com/docs/configuration/worktrees" },
+      { "@type": "ListItem", "position": 10, "name": "Claude Code CLI with --worktree", "url": "https://code.claude.com/docs/en/cli-reference" },
+      { "@type": "ListItem", "position": 11, "name": "teebe", "url": "https://teebe.io" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the best free alternative to Conductor?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Conductor itself has a free plan. If you want a free open-source tool that runs agents in parallel worktrees, Nimbalyst (MIT), Orca (MIT), Emdash (Apache-2.0), Parallel Code (MIT), Pane (AGPL-3.0) and Claude Squad (AGPL-3.0) are all free according to their own sites and repositories." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there a Conductor alternative for Windows or Linux?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Conductor's site describes it as a Mac app. Nimbalyst, Emdash, Orca, Pane and AgentsRoom list macOS, Windows and Linux. Parallel Code lists macOS and Linux. Claude Squad is a terminal app built on tmux." }
+      },
+      {
+        "@type": "Question",
+        "name": "Claude Squad vs Conductor: what is the difference?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Both run several coding agents in separate git worktrees. Conductor is a Mac desktop app with a free plan and paid tiers. Claude Squad is a free, AGPL-3.0 terminal app that uses tmux for one session per agent and shows each session's diff in a tab." }
+      },
+      {
+        "@type": "Question",
+        "name": "What happened to Crystal?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The Crystal repository says it was deprecated in February 2026 and replaced by Nimbalyst." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does teebe run Claude Code or Codex like Conductor?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. teebe does not start, chat with or orchestrate agents. You run Claude Code or Codex in your own terminal, and teebe shows every worktree of the repos you add, marks the ones where an agent is working, and shows the files they change live with inline diffs. It is free, open source (GPL-3.0) and macOS only." }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      font-style: normal;
+      font-weight: 300 700;
+      font-display: swap;
+      src: url("/assets/fonts/space-grotesk-latin.woff2") format("woff2");
+    }
+    :root {
+      --bg: #060709;
+      --bg-soft: #0d0f12;
+      --card: rgba(255,255,255,.03);
+      --border: rgba(255,255,255,.09);
+      --border-strong: rgba(255,255,255,.14);
+      --text: #eef1ef;
+      --body: #c3cac6;
+      --muted: #9aa3a0;
+      --muted-dim: #6c7572;
+      --accent: #10b981;
+      --accent-2: #34d399;
+      --accent-ink: #04231a;
+      --radius: 16px;
+      --max: 1120px;
+      --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; height: auto; display: block; }
+
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: var(--max); margin: 0 auto; padding: 20px 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 650; font-size: 1.6rem; }
+    .brand img { border-radius: 12px; width: 44px; height: 44px; }
+    .nav-links { display: flex; align-items: center; gap: 24px; font-size: 0.95rem; color: var(--muted); }
+    .nav-links a:hover { color: var(--text); }
+
+    .article { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem;
+      font-weight: 650; color: var(--accent-2); margin-bottom: 14px;
+    }
+    .article h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.6vw, 2.9rem);
+      line-height: 1.1; letter-spacing: -0.02em;
+      text-wrap: balance;
+      margin-bottom: 16px;
+    }
+    .byline { color: var(--muted); font-size: 0.92rem; margin-bottom: 8px; }
+    .byline a { color: var(--accent-2); }
+    .disclosure {
+      border-left: 2px solid var(--accent); background: var(--card);
+      border-radius: 0 10px 10px 0; padding: 12px 16px;
+      color: var(--muted); font-size: 0.95rem; margin: 20px 0 32px;
+    }
+    .disclosure a { color: var(--accent-2); }
+    .article h2 {
+      font-family: var(--font-display);
+      font-size: 1.5rem; letter-spacing: -0.01em;
+      margin: 44px 0 12px;
+    }
+    .article h3 { font-size: 1.08rem; margin: 28px 0 8px; }
+    .article p, .article li { color: var(--body); }
+    .article p { margin: 12px 0; }
+    .article ul, .article ol { margin: 10px 0 10px 22px; }
+    .article li { margin: 6px 0; }
+    .article a { color: var(--accent-2); }
+    .article a:hover { color: var(--accent); }
+    .article strong { color: var(--text); }
+    .article code {
+      font-family: var(--font-mono); font-size: 0.85em;
+      background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      border-radius: 6px; padding: 1px 6px;
+    }
+    .breadcrumb { font-size: 0.85rem; color: var(--muted-dim); margin-bottom: 22px; }
+    .breadcrumb a { color: var(--muted-dim); }
+    .breadcrumb a:hover { color: var(--text); }
+
+    /* Comparison table */
+    .table-wrap {
+      overflow-x: auto; margin: 24px 0 8px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--card);
+      -webkit-overflow-scrolling: touch;
+    }
+    table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.92rem; }
+    thead th {
+      font-family: var(--font-display); font-weight: 600; font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+      text-align: left; padding: 12px 14px;
+      border-bottom: 1px solid var(--border-strong);
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 11px 14px; border-bottom: 1px solid var(--border);
+      color: var(--body); vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,.02); }
+    td.tool { font-weight: 600; color: var(--text); white-space: nowrap; }
+    td.tool a { color: var(--text); border-bottom: 1px dotted var(--muted-dim); }
+    td.tool a:hover { color: var(--accent-2); }
+    tr.self td { background: rgba(16,185,129,.05); }
+    tr.self:hover td { background: rgba(16,185,129,.07); }
+    .price { font-family: var(--font-mono); font-size: 0.84em; white-space: nowrap; }
+
+    .chip {
+      display: inline-block; font-size: 0.74rem; font-weight: 650;
+      letter-spacing: 0.03em; padding: 2px 9px; border-radius: 999px;
+      border: 1px solid var(--border-strong); color: var(--muted);
+      white-space: nowrap;
+    }
+    .chip.native { border-color: rgba(52,211,153,.35); color: var(--accent-2); }
+    .chip.warn { border-color: rgba(255,255,255,.14); color: var(--muted-dim); }
+
+    /* Category intro cards */
+    .cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 22px 0 6px; }
+    .cats article {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px;
+    }
+    .cats h3 { font-family: var(--font-display); font-size: 0.98rem; margin: 0 0 6px; }
+    .cats p { color: var(--muted); font-size: 0.88rem; margin: 0; }
+
+    .pick {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px 24px; margin: 26px 0;
+    }
+    .pick p { margin: 8px 0; }
+    .pick .lead { color: var(--text); font-weight: 600; }
+
+    .install {
+      display: flex; align-items: center; gap: 12px;
+      max-width: 640px; margin: 34px auto 0;
+      background: var(--bg-soft); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 12px 12px 18px;
+      font-family: var(--font-mono);
+    }
+    .install code { flex: 1; text-align: left; font-size: 0.85rem; color: var(--text); background: none; border: none; padding: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .install .copy {
+      flex-shrink: 0; background: var(--accent); color: var(--accent-ink);
+      border: none; border-radius: 8px; padding: 8px 16px;
+      font: inherit; font-size: 0.85rem; font-weight: 650; cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .install .copy:hover { background: var(--accent-2); }
+    .install .copy.copied { background: var(--accent-2); }
+    .install .copy:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+    .sub { font-size: 0.9rem; color: var(--muted); margin-top: 14px; text-align: center; }
+    .sub a { color: var(--accent-2); }
+
+    footer {
+      text-align: center; padding: 32px 24px; color: var(--muted);
+      font-size: 0.9rem; border-top: 1px solid var(--border);
+    }
+    footer a:hover { color: var(--text); }
+
+
+    .notnot {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 24px; margin: 22px 0;
+    }
+    .sources { font-size: 0.86rem; }
+    .sources li { color: var(--muted); margin: 4px 0; overflow-wrap: anywhere; }
+    .checked { color: var(--muted); font-size: 0.86rem; margin-top: 4px; }
+    @media (max-width: 560px) {
+      .nav-links a:not(:last-child) { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="44" height="44" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Compare › Conductor alternatives</p>
+    <p class="eyebrow">Comparison · checked October 9, 2026</p>
+    <h1>Conductor alternatives for running coding agents in parallel</h1>
+    <p class="byline">By <a href="https://github.com/klein-t" rel="noopener">Klein Tahiraj</a></p>
+
+    <p class="disclosure">
+      Disclosure up front: I build <a href="/">teebe</a>, which is on this list. teebe is not a
+      Conductor replacement: it does not run agents. I put it here because some people looking for
+      an alternative actually want something smaller, and I say plainly below who should pick
+      something else. Every fact about another tool comes from that tool's own site, docs or
+      repository, linked in the <a href="#sources">sources</a>.
+    </p>
+
+    <h2 id="what">What Conductor is and why people look for alternatives</h2>
+    <p>
+      <a href="https://www.conductor.build" rel="noopener">Conductor</a> is a Mac app for running
+      coding agents in parallel. Its docs say it runs Claude Code, Codex, Cursor and OpenCode, that
+      each workspace is a separate checkout made with git worktrees on its own branch, and that a
+      diff viewer shows each workspace's changes. There is a free plan, and paid plans start at
+      $50/mo.
+    </p>
+    <p>
+      It's a good product. The reasons people look elsewhere are usually practical: they're on
+      Windows or Linux, they want open source, they'd rather stay in a terminal, or they don't want
+      an app to run their agents at all and only need to see what those agents are doing.
+    </p>
+
+    <h2 id="table">Comparison table</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Tool</th>
+            <th scope="col">What it does</th>
+            <th scope="col">Runs agents?</th>
+            <th scope="col">Worktrees</th>
+            <th scope="col">Platform</th>
+            <th scope="col">Price / license</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tool"><a href="https://www.conductor.build" rel="noopener">Conductor</a></td>
+            <td>Desktop app for parallel agents (the baseline)</td>
+            <td>yes</td>
+            <td>auto, one per workspace</td>
+            <td>macOS</td>
+            <td class="price">free · Pro $50/mo</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://nimbalyst.com" rel="noopener">Nimbalyst</a></td>
+            <td>Visual workspace for Claude Code and Codex</td>
+            <td>yes</td>
+            <td>opt-in, per session</td>
+            <td>macOS, Windows, Linux</td>
+            <td class="price">free · MIT</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/generalaction/emdash" rel="noopener">Emdash</a></td>
+            <td>Desktop app for parallel agents</td>
+            <td>yes</td>
+            <td>auto, one per task</td>
+            <td>macOS, Windows, Linux</td>
+            <td class="price">free · Apache-2.0</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://onorca.dev" rel="noopener">Orca</a></td>
+            <td>Desktop app for a fleet of agents</td>
+            <td>yes</td>
+            <td>auto, one per task</td>
+            <td>macOS, Windows, Linux</td>
+            <td class="price">free · MIT</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://runpane.com" rel="noopener">Pane</a></td>
+            <td>Keyboard-first desktop app for parallel agents</td>
+            <td>yes</td>
+            <td>auto, one per task</td>
+            <td>macOS, Windows, WSL, Linux</td>
+            <td class="price">free · AGPL-3.0</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://parallelcode.app" rel="noopener">Parallel Code</a></td>
+            <td>Desktop app for parallel agents</td>
+            <td>yes</td>
+            <td>auto, one per task</td>
+            <td>macOS, Linux</td>
+            <td class="price">free · MIT</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/smtg-ai/claude-squad" rel="noopener">Claude Squad</a></td>
+            <td>Terminal app (TUI) on tmux</td>
+            <td>yes</td>
+            <td>auto, one per session</td>
+            <td>terminal</td>
+            <td class="price">free · AGPL-3.0</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://agentsroom.dev" rel="noopener">AgentsRoom</a></td>
+            <td>Desktop command center for agent CLIs</td>
+            <td>yes</td>
+            <td>optional, per agent</td>
+            <td>macOS, Windows, Linux</td>
+            <td class="price">free tier · Pro €7.99/mo</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://code.claude.com/docs/en/desktop" rel="noopener">Claude Code Desktop</a></td>
+            <td>Anthropic's own app for Claude Code</td>
+            <td>Claude Code only</td>
+            <td>optional, per session</td>
+            <td>macOS, Windows, Linux (beta)</td>
+            <td class="price">paid Claude plan</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://cursor.com/docs/configuration/worktrees" rel="noopener">Cursor Agents Window</a></td>
+            <td>Cursor's view for parallel agents</td>
+            <td>Cursor's agent</td>
+            <td>built in</td>
+            <td>macOS, Windows, Linux</td>
+            <td class="price">free tier · from $20/mo</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://code.claude.com/docs/en/cli-reference" rel="noopener">claude --worktree</a></td>
+            <td>Claude Code CLI flag, no extra app</td>
+            <td>Claude Code only</td>
+            <td>one per session</td>
+            <td>terminal</td>
+            <td class="price">Claude plan or API</td>
+          </tr>
+          <tr class="self">
+            <td class="tool"><a href="/">teebe</a></td>
+            <td>Watches worktrees and diffs next to your terminal</td>
+            <td><strong>no</strong>, never starts or orchestrates agents</td>
+            <td>lists every worktree, create and clean up</td>
+            <td>macOS only (14+)</td>
+            <td class="price">free · GPL-3.0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="checked">All facts checked on October 9, 2026 against each tool's own site, docs or repository. See <a href="#sources">sources</a>.</p>
+
+    <h2 id="runners">Alternatives that run your agents</h2>
+    <p>These do the same job as Conductor: you give them a task, they start the agent, and they keep each task in its own worktree.</p>
+
+    <h3>Nimbalyst</h3>
+    <p>
+      <a href="https://nimbalyst.com" rel="noopener">Nimbalyst</a> calls itself "the visual
+      workspace for Codex and Claude Code". It's free for individuals, its desktop and iOS apps are
+      MIT licensed, and it has desktop apps for macOS, Windows and Linux plus an iOS app. Any session
+      can opt into its own git worktree with one click, and AI edits show up as diffs you inspect
+      and approve. If you used Crystal: the
+      <a href="https://github.com/stravu/crystal" rel="noopener">Crystal repository</a> says it was
+      deprecated in February 2026 and replaced by Nimbalyst.
+    </p>
+
+    <h3>Emdash</h3>
+    <p>
+      <a href="https://github.com/generalaction/emdash" rel="noopener">Emdash</a> is an open-source
+      (Apache-2.0) desktop app for running coding agents in parallel, on macOS, Windows and Linux.
+      Its README lists Claude Code, Codex, Cursor, OpenCode, Amp, Devin, Qwen Code, Droid and GitHub
+      Copilot. Each task runs in its own git worktree, and you review diffs, open pull requests,
+      check CI and merge from the same window.
+    </p>
+
+    <h3>Orca</h3>
+    <p>
+      <a href="https://onorca.dev" rel="noopener">Orca</a> describes itself as an environment for
+      working with a fleet of parallel agents: terminals, diffs, a browser and a CLI in one app. It's
+      free and MIT licensed, runs on macOS, Windows and Linux, and works with Claude Code, Codex,
+      OpenCode and other agent CLIs. Every task gets its own git worktree, and you can leave
+      comments on diff lines and send them back to the agent.
+    </p>
+
+    <h3>Pane</h3>
+    <p>
+      <a href="https://runpane.com" rel="noopener">Pane</a> is a keyboard-first desktop app for
+      running agents in parallel. You bring Claude Code, Codex, Aider, Goose or any terminal agent;
+      Pane gives each task its own git worktree. It runs on Windows, WSL, macOS and Linux, and its
+      pricing page says it is free with no paid plan. The site says AGPL-3.0.
+    </p>
+
+    <h3>Parallel Code</h3>
+    <p>
+      <a href="https://parallelcode.app" rel="noopener">Parallel Code</a> is a free, MIT-licensed
+      Electron app for macOS and Linux. Each task gets its own branch and worktree, it works with any
+      CLI agent (Claude Code, Codex CLI, Gemini CLI and others), and it has a built-in diff viewer
+      with inline review comments.
+    </p>
+
+    <h3>Claude Squad</h3>
+    <p>
+      <a href="https://github.com/smtg-ai/claude-squad" rel="noopener">Claude Squad</a> is the pick
+      if you never want to leave the terminal. It's a TUI that manages Claude Code, Codex, Gemini,
+      Aider and other agents, using tmux for one session per agent and git worktrees so each works
+      on its own branch. A diff tab shows what each session changed. Free and AGPL-3.0.
+    </p>
+
+    <h3>AgentsRoom</h3>
+    <p>
+      <a href="https://agentsroom.dev" rel="noopener">AgentsRoom</a> is a desktop command center for
+      running and monitoring agent CLIs across projects, on macOS, Windows and Linux. Worktree
+      isolation is an option per agent, and it shows a side-by-side diff of what each agent touched.
+      The free plan covers 2 projects and 6 agents in parallel; Pro is €7.99/mo.
+    </p>
+
+    <h3>Claude Code Desktop, Cursor, and the plain CLI</h3>
+    <p>
+      If you only use Claude Code and already pay for a Claude plan,
+      <a href="https://code.claude.com/docs/en/desktop" rel="noopener">Claude Code Desktop</a> (the
+      Code tab of the Claude app) may be enough: each session can get its own worktree with one
+      option, and it has a diff viewer. If you live in Cursor, its
+      <a href="https://cursor.com/docs/configuration/worktrees" rel="noopener">Agents Window</a> runs
+      several agents on one repo in separate worktrees. And the Claude Code CLI itself has a
+      <code>--worktree</code> flag that starts a session in
+      <code>.claude/worktrees/&lt;name&gt;</code>, no extra app needed. More on that in
+      <a href="/guides/claude-code-worktrees/">Claude Code worktrees, explained</a>.
+    </p>
+    <p>
+      One I left out: <a href="https://github.com/BloopAI/vibe-kanban" rel="noopener">Vibe Kanban</a>'s
+      README says the project is sunsetting, so I would not start on it today.
+    </p>
+
+    <h2 id="watchers">Alternatives that do not run agents: where teebe fits</h2>
+    <p>
+      Some people reach for Conductor only because they want to see what parallel agents are doing.
+      If your agents already run fine in a terminal, with <code>claude --worktree</code> or Codex,
+      you might not need a new place to run them. You need a view.
+    </p>
+    <p>
+      That's what <a href="/">teebe</a> is: the watcher next to the terminal. It's a native Mac app
+      that shows every worktree of every repo you add in one window, with one mark each: an animated
+      orb while Claude Code or Codex is working in it, a dot for uncommitted changes, a ring for
+      unmerged commits, a check when it's merged and safe to delete. Files badge live as agents edit
+      them, and Space peeks the diff inline. It can create worktrees and remove merged ones (squash
+      merges count) after a confirmation. There's a walkthrough in
+      <a href="/guides/view-claude-code-changes/">see what Claude Code changed, live</a>.
+    </p>
+
+    <h2 id="not">What teebe is not</h2>
+    <div class="notnot">
+      <ul>
+        <li><strong>Not an agent runner.</strong> It never starts Claude Code, Codex or any other agent.</li>
+        <li><strong>No orchestration, no chat.</strong> No task queue, no prompts, no merging agent output for you.</li>
+        <li><strong>macOS only.</strong> macOS 14 or newer. No Windows or Linux build.</li>
+        <li><strong>Not a git client or editor.</strong> No rebase or conflict UI; files open in the apps you already use.</li>
+      </ul>
+    </div>
+    <p>If you want an app that owns the agent lifecycle, teebe is the wrong tool and one of the apps above is the right one.</p>
+
+    <h2 id="pick">Which one to pick</h2>
+    <div class="pick">
+      <p><span class="lead">You like Conductor's model but you're on Windows or Linux:</span>
+      Emdash, Orca, Nimbalyst, Pane or AgentsRoom. Parallel Code covers Linux too.</p>
+      <p><span class="lead">You want open source:</span>
+      Nimbalyst, Orca and Parallel Code (MIT), Emdash (Apache-2.0), Pane and Claude Squad (AGPL-3.0).</p>
+      <p><span class="lead">You live in the terminal and tmux:</span> Claude Squad.</p>
+      <p><span class="lead">You only use Claude Code and already pay for it:</span>
+      Claude Code Desktop, or <code>claude --worktree</code> in the terminal.</p>
+      <p><span class="lead">Your team is already in Cursor:</span> the Agents Window.</p>
+      <p><span class="lead">Your agents run in your own terminal and you just want to see them, on a Mac:</span>
+      teebe. It also works next to any of the above.</p>
+    </div>
+    <p>
+      If you're choosing a worktree tool more broadly, git clients included, see
+      <a href="/compare/git-worktree-gui-mac/">every git worktree GUI for Mac, compared</a>, and for
+      Claude Code front ends specifically, <a href="/compare/claude-code-gui-mac/">Claude Code GUIs for Mac</a>.
+    </p>
+
+    <h2 id="faq">Frequently asked questions</h2>
+    <h3>What is the best free alternative to Conductor?</h3>
+    <p>
+      Conductor itself has a free plan. If you want a free open-source tool that runs agents in
+      parallel worktrees, Nimbalyst (MIT), Orca (MIT), Emdash (Apache-2.0), Parallel Code (MIT), Pane
+      (AGPL-3.0) and Claude Squad (AGPL-3.0) are all free according to their own sites and
+      repositories.
+    </p>
+    <h3>Is there a Conductor alternative for Windows or Linux?</h3>
+    <p>
+      Yes. Conductor's site describes it as a Mac app. Nimbalyst, Emdash, Orca, Pane and AgentsRoom
+      list macOS, Windows and Linux. Parallel Code lists macOS and Linux. Claude Squad is a terminal
+      app built on tmux.
+    </p>
+    <h3>Claude Squad vs Conductor: what is the difference?</h3>
+    <p>
+      Both run several coding agents in separate git worktrees. Conductor is a Mac desktop app with a
+      free plan and paid tiers. Claude Squad is a free, AGPL-3.0 terminal app that uses tmux for one
+      session per agent and shows each session's diff in a tab.
+    </p>
+    <h3>What happened to Crystal?</h3>
+    <p>The Crystal repository says it was deprecated in February 2026 and replaced by Nimbalyst.</p>
+    <h3>Does teebe run Claude Code or Codex like Conductor?</h3>
+    <p>
+      No. teebe does not start, chat with or orchestrate agents. You run Claude Code or Codex in your
+      own terminal, and teebe shows every worktree of the repos you add, marks the ones where an
+      agent is working, and shows the files they change live with inline diffs. It is free, open
+      source (GPL-3.0) and macOS only.
+    </p>
+
+    <h2 id="sources">Sources</h2>
+    <p class="checked">Each source was opened and checked on October 9, 2026. Prices and features change; if something here is stale, the link is the place to re-check.</p>
+    <ul class="sources">
+      <li>Conductor: <a href="https://www.conductor.build" rel="noopener">conductor.build</a>, <a href="https://www.conductor.build/pricing" rel="noopener">pricing</a>, <a href="https://www.conductor.build/docs/" rel="noopener">docs</a>, <a href="https://www.conductor.build/docs/concepts/workspaces-and-branches" rel="noopener">workspaces and branches</a>, <a href="https://www.conductor.build/docs/reference/diff-viewer" rel="noopener">diff viewer</a></li>
+      <li>Nimbalyst: <a href="https://nimbalyst.com" rel="noopener">nimbalyst.com</a>, <a href="https://github.com/Nimbalyst/nimbalyst" rel="noopener">GitHub repository</a></li>
+      <li>Crystal: <a href="https://github.com/stravu/crystal" rel="noopener">stravu/crystal README</a></li>
+      <li>Emdash: <a href="https://github.com/generalaction/emdash" rel="noopener">generalaction/emdash README</a></li>
+      <li>Orca: <a href="https://onorca.dev" rel="noopener">onorca.dev</a>, <a href="https://github.com/stablyai/orca" rel="noopener">stablyai/orca</a></li>
+      <li>Pane: <a href="https://runpane.com" rel="noopener">runpane.com</a>, <a href="https://runpane.com/pricing.md" rel="noopener">pricing</a></li>
+      <li>Parallel Code: <a href="https://parallelcode.app" rel="noopener">parallelcode.app</a>, <a href="https://github.com/johannesjo/parallel-code" rel="noopener">johannesjo/parallel-code README</a></li>
+      <li>Claude Squad: <a href="https://github.com/smtg-ai/claude-squad" rel="noopener">smtg-ai/claude-squad README</a></li>
+      <li>AgentsRoom: <a href="https://agentsroom.dev" rel="noopener">agentsroom.dev</a>, <a href="https://agentsroom.dev/pricing" rel="noopener">pricing</a>, <a href="https://agentsroom.dev/blog/git-worktrees-multiple-ai-agents" rel="noopener">worktree isolation post</a></li>
+      <li>Claude Code Desktop: <a href="https://code.claude.com/docs/en/desktop" rel="noopener">Claude Code docs, desktop</a></li>
+      <li>Claude Code CLI: <a href="https://code.claude.com/docs/en/cli-reference" rel="noopener">CLI reference</a></li>
+      <li>Cursor: <a href="https://cursor.com/docs/configuration/worktrees" rel="noopener">worktrees docs</a>, <a href="https://cursor.com/pricing" rel="noopener">pricing</a>, <a href="https://cursor.com/download" rel="noopener">download</a></li>
+      <li>Vibe Kanban: <a href="https://github.com/BloopAI/vibe-kanban" rel="noopener">BloopAI/vibe-kanban README</a></li>
+      <li>teebe: <a href="https://github.com/klein-t/teebe" rel="noopener">README</a>, <a href="/changelog/">changelog</a> (v0.8.1)</li>
+    </ul>
+
+    <div class="install">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog/">Changelog</a> · <a href="/privacy/">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy/. -->
+  <script>
+    (function () {
+      try {
+        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
+        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
