@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Claude Code GUIs for Mac, compared (2026)</title>
+  <meta name="description" content="Claude Code GUIs for Mac compared: Claude Code Desktop, Conductor, Nimbalyst, crystl, Vibe Console, Aiola, Deska, teebe, GitKraken and more. What each does, with sources." />
+  <link rel="canonical" href="https://teebe.io/compare/claude-code-gui-mac/" />
+  <meta name="theme-color" content="#060709" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://teebe.io/compare/claude-code-gui-mac/" />
+  <meta property="og:title" content="Claude Code GUIs for Mac, compared (2026)" />
+  <meta property="og:description" content="Apps that run Claude Code for you, tools that watch what it changes, and git clients: a sourced, dated comparison for Mac." />
+  <meta property="og:image" content="https://teebe.io/assets/og-card-v4.png" />
+  <meta property="og:site_name" content="teebe" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Claude Code GUIs for Mac, compared (2026)" />
+  <meta name="twitter:image" content="https://teebe.io/assets/og-card-v4.png" />
+
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "teebe", "item": "https://teebe.io/" },
+      { "@type": "ListItem", "position": 2, "name": "Compare", "item": "https://teebe.io/compare/git-worktree-gui-mac/" },
+      { "@type": "ListItem", "position": 3, "name": "Claude Code GUIs for Mac", "item": "https://teebe.io/compare/claude-code-gui-mac/" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Claude Code GUIs for Mac, compared (2026)",
+    "description": "A sourced comparison of Claude Code GUIs on macOS: apps that run Claude Code, tools that watch what it changes, and git clients with worktree support.",
+    "datePublished": "2026-10-09",
+    "dateModified": "2026-10-09",
+    "author": { "@type": "Person", "name": "Klein Tahiraj", "url": "https://github.com/klein-t" },
+    "publisher": { "@type": "Organization", "name": "teebe", "logo": { "@type": "ImageObject", "url": "https://teebe.io/assets/logo.png" } },
+    "mainEntityOfPage": "https://teebe.io/compare/claude-code-gui-mac/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Claude Code GUIs and companion tools for Mac",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Claude Code Desktop", "url": "https://code.claude.com/docs/en/desktop" },
+      { "@type": "ListItem", "position": 2, "name": "Conductor", "url": "https://www.conductor.build" },
+      { "@type": "ListItem", "position": 3, "name": "Nimbalyst", "url": "https://nimbalyst.com" },
+      { "@type": "ListItem", "position": 4, "name": "crystl", "url": "https://crystl.dev" },
+      { "@type": "ListItem", "position": 5, "name": "Vibe Console", "url": "https://vibeconsole.dev" },
+      { "@type": "ListItem", "position": 6, "name": "Aiola", "url": "https://aiola.app" },
+      { "@type": "ListItem", "position": 7, "name": "Deska", "url": "https://deska.dev" },
+      { "@type": "ListItem", "position": 8, "name": "jaade", "url": "https://jaade.app" },
+      { "@type": "ListItem", "position": 9, "name": "teebe", "url": "https://teebe.io" },
+      { "@type": "ListItem", "position": 10, "name": "diffier", "url": "https://github.com/spencerjireh/diffier" },
+      { "@type": "ListItem", "position": 11, "name": "Claude Code /diff", "url": "https://code.claude.com/docs/en/commands" },
+      { "@type": "ListItem", "position": 12, "name": "GitKraken Desktop", "url": "https://www.gitkraken.com" },
+      { "@type": "ListItem", "position": 13, "name": "Tower", "url": "https://www.git-tower.com" },
+      { "@type": "ListItem", "position": 14, "name": "Fork", "url": "https://git-fork.com" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is there an official Claude Code GUI for Mac?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Anthropic's Claude Desktop app has a Code tab that runs Claude Code with a visual diff viewer and optional git worktrees per session. It needs a paid Claude plan (Pro, Max, Team or Enterprise)." }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the best free Claude Code GUI for Mac?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Among apps that run Claude Code for you, Nimbalyst is free for individuals and MIT licensed, Conductor and Deska have free plans, and crystl has a free plan. If you keep Claude Code in the terminal and only want to watch its changes, teebe is free and GPL-3.0." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I see Claude Code's changes without leaving the terminal?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. The /diff command in Claude Code shows the changes in your working tree, including Claude's edits. diffier is a terminal tool that streams each edit as a diff. teebe is a Mac window beside the terminal that badges changed files live across all your worktrees and shows inline diffs." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does teebe run Claude Code?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. teebe is the watcher next to the terminal. It does not launch Claude Code, has no chat, and does not orchestrate agents. It shows which worktree Claude Code or Codex is working in and the files it changes, live, with inline diffs." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do git clients like Tower or Fork work with Claude Code worktrees?",
+        "acceptedAnswer": { "@type": "Answer", "text": "They can create and manage git worktrees, so a worktree made by claude --worktree is a normal worktree to them. They are not built around agents: Fork and Tower use AI for commit messages (Fork also for code review), and GitKraken Desktop has Agent Sessions that launch a coding agent CLI in its own worktree." }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      font-style: normal;
+      font-weight: 300 700;
+      font-display: swap;
+      src: url("/assets/fonts/space-grotesk-latin.woff2") format("woff2");
+    }
+    :root {
+      --bg: #060709;
+      --bg-soft: #0d0f12;
+      --card: rgba(255,255,255,.03);
+      --border: rgba(255,255,255,.09);
+      --border-strong: rgba(255,255,255,.14);
+      --text: #eef1ef;
+      --body: #c3cac6;
+      --muted: #9aa3a0;
+      --muted-dim: #6c7572;
+      --accent: #10b981;
+      --accent-2: #34d399;
+      --accent-ink: #04231a;
+      --radius: 16px;
+      --max: 1120px;
+      --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; height: auto; display: block; }
+
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: var(--max); margin: 0 auto; padding: 20px 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 650; font-size: 1.6rem; }
+    .brand img { border-radius: 12px; width: 44px; height: 44px; }
+    .nav-links { display: flex; align-items: center; gap: 24px; font-size: 0.95rem; color: var(--muted); }
+    .nav-links a:hover { color: var(--text); }
+
+    .article { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem;
+      font-weight: 650; color: var(--accent-2); margin-bottom: 14px;
+    }
+    .article h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.6vw, 2.9rem);
+      line-height: 1.1; letter-spacing: -0.02em;
+      text-wrap: balance;
+      margin-bottom: 16px;
+    }
+    .byline { color: var(--muted); font-size: 0.92rem; margin-bottom: 8px; }
+    .byline a { color: var(--accent-2); }
+    .disclosure {
+      border-left: 2px solid var(--accent); background: var(--card);
+      border-radius: 0 10px 10px 0; padding: 12px 16px;
+      color: var(--muted); font-size: 0.95rem; margin: 20px 0 32px;
+    }
+    .disclosure a { color: var(--accent-2); }
+    .article h2 {
+      font-family: var(--font-display);
+      font-size: 1.5rem; letter-spacing: -0.01em;
+      margin: 44px 0 12px;
+    }
+    .article h3 { font-size: 1.08rem; margin: 28px 0 8px; }
+    .article p, .article li { color: var(--body); }
+    .article p { margin: 12px 0; }
+    .article ul, .article ol { margin: 10px 0 10px 22px; }
+    .article li { margin: 6px 0; }
+    .article a { color: var(--accent-2); }
+    .article a:hover { color: var(--accent); }
+    .article strong { color: var(--text); }
+    .article code {
+      font-family: var(--font-mono); font-size: 0.85em;
+      background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      border-radius: 6px; padding: 1px 6px;
+    }
+    .breadcrumb { font-size: 0.85rem; color: var(--muted-dim); margin-bottom: 22px; }
+    .breadcrumb a { color: var(--muted-dim); }
+    .breadcrumb a:hover { color: var(--text); }
+
+    /* Comparison table */
+    .table-wrap {
+      overflow-x: auto; margin: 24px 0 8px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--card);
+      -webkit-overflow-scrolling: touch;
+    }
+    table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.92rem; }
+    thead th {
+      font-family: var(--font-display); font-weight: 600; font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+      text-align: left; padding: 12px 14px;
+      border-bottom: 1px solid var(--border-strong);
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 11px 14px; border-bottom: 1px solid var(--border);
+      color: var(--body); vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,.02); }
+    td.tool { font-weight: 600; color: var(--text); white-space: nowrap; }
+    td.tool a { color: var(--text); border-bottom: 1px dotted var(--muted-dim); }
+    td.tool a:hover { color: var(--accent-2); }
+    tr.self td { background: rgba(16,185,129,.05); }
+    tr.self:hover td { background: rgba(16,185,129,.07); }
+    .price { font-family: var(--font-mono); font-size: 0.84em; white-space: nowrap; }
+
+    .chip {
+      display: inline-block; font-size: 0.74rem; font-weight: 650;
+      letter-spacing: 0.03em; padding: 2px 9px; border-radius: 999px;
+      border: 1px solid var(--border-strong); color: var(--muted);
+      white-space: nowrap;
+    }
+    .chip.native { border-color: rgba(52,211,153,.35); color: var(--accent-2); }
+    .chip.warn { border-color: rgba(255,255,255,.14); color: var(--muted-dim); }
+
+    /* Category intro cards */
+    .cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 22px 0 6px; }
+    .cats article {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px;
+    }
+    .cats h3 { font-family: var(--font-display); font-size: 0.98rem; margin: 0 0 6px; }
+    .cats p { color: var(--muted); font-size: 0.88rem; margin: 0; }
+
+    .pick {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px 24px; margin: 26px 0;
+    }
+    .pick p { margin: 8px 0; }
+    .pick .lead { color: var(--text); font-weight: 600; }
+
+    .install {
+      display: flex; align-items: center; gap: 12px;
+      max-width: 640px; margin: 34px auto 0;
+      background: var(--bg-soft); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 12px 12px 18px;
+      font-family: var(--font-mono);
+    }
+    .install code { flex: 1; text-align: left; font-size: 0.85rem; color: var(--text); background: none; border: none; padding: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .install .copy {
+      flex-shrink: 0; background: var(--accent); color: var(--accent-ink);
+      border: none; border-radius: 8px; padding: 8px 16px;
+      font: inherit; font-size: 0.85rem; font-weight: 650; cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .install .copy:hover { background: var(--accent-2); }
+    .install .copy.copied { background: var(--accent-2); }
+    .install .copy:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+    .sub { font-size: 0.9rem; color: var(--muted); margin-top: 14px; text-align: center; }
+    .sub a { color: var(--accent-2); }
+
+    footer {
+      text-align: center; padding: 32px 24px; color: var(--muted);
+      font-size: 0.9rem; border-top: 1px solid var(--border);
+    }
+    footer a:hover { color: var(--text); }
+
+
+    .notnot {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 24px; margin: 22px 0;
+    }
+    .sources { font-size: 0.86rem; }
+    .sources li { color: var(--muted); margin: 4px 0; overflow-wrap: anywhere; }
+    .checked { color: var(--muted); font-size: 0.86rem; margin-top: 4px; }
+    @media (max-width: 560px) {
+      .nav-links a:not(:last-child) { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="teebe logo" width="44" height="44" />
+      <span>teebe</span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="article">
+    <p class="breadcrumb"><a href="/">teebe</a> › Compare › Claude Code GUIs for Mac</p>
+    <p class="eyebrow">Comparison · checked October 9, 2026</p>
+    <h1>Claude Code GUIs for Mac, compared</h1>
+    <p class="byline">By <a href="https://github.com/klein-t" rel="noopener">Klein Tahiraj</a></p>
+
+    <p class="disclosure">
+      Disclosure up front: I build <a href="/">teebe</a>, one of the tools here. It is not a Claude
+      Code front end; it's the watcher next to the terminal. Most readers of this page will be
+      better served by one of the other tools, and I say which. Every fact about another tool comes
+      from its own site, docs or repository, linked in the <a href="#sources">sources</a>.
+    </p>
+
+    <h2 id="jobs">What "Claude Code GUI" means: three different jobs</h2>
+    <p>
+      People say "Claude Code GUI" and mean one of three things, and the tools barely overlap:
+    </p>
+    <div class="cats">
+      <article>
+        <h3>Run it for you</h3>
+        <p>An app starts Claude Code, gives you a chat or task view, and shows what it changed. Claude Code Desktop, Conductor, Nimbalyst and friends.</p>
+      </article>
+      <article>
+        <h3>Watch what it changes</h3>
+        <p>You keep Claude Code in the terminal. A second tool shows the files and diffs as they land. teebe, diffier, Claude Code's own <code>/diff</code>.</p>
+      </article>
+      <article>
+        <h3>Git clients</h3>
+        <p>GitKraken, Tower, Fork. Built for commits and branches; some now know about worktrees or agents.</p>
+      </article>
+    </div>
+
+    <h2 id="table">Comparison table</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Tool</th>
+            <th scope="col">Job</th>
+            <th scope="col">Runs Claude Code?</th>
+            <th scope="col">Diffs</th>
+            <th scope="col">Worktrees</th>
+            <th scope="col">Price / license</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tool"><a href="https://code.claude.com/docs/en/desktop" rel="noopener">Claude Code Desktop</a></td>
+            <td>run it</td>
+            <td>yes, Claude Code only</td>
+            <td>diff viewer</td>
+            <td>optional, per session</td>
+            <td class="price">paid Claude plan</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://www.conductor.build" rel="noopener">Conductor</a></td>
+            <td>run it</td>
+            <td>yes, plus Codex, Cursor, OpenCode</td>
+            <td>per workspace</td>
+            <td>auto, per workspace</td>
+            <td class="price">free · Pro $50/mo</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://nimbalyst.com" rel="noopener">Nimbalyst</a></td>
+            <td>run it</td>
+            <td>yes, plus Codex</td>
+            <td>inspect and approve</td>
+            <td>opt-in, per session</td>
+            <td class="price">free · MIT</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://crystl.dev" rel="noopener">crystl</a></td>
+            <td>run it (terminal app)</td>
+            <td>yes, any CLI agent</td>
+            <td>not stated</td>
+            <td>one per isolated shard</td>
+            <td class="price">free plan · $170/yr</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://vibeconsole.dev" rel="noopener">Vibe Console</a></td>
+            <td>run it</td>
+            <td>yes, plus 7 other CLIs</td>
+            <td>review, stage, commit</td>
+            <td>per Agent Team member</td>
+            <td class="price">$4.99/mo or $39.99/yr</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://aiola.app" rel="noopener">Aiola</a></td>
+            <td>run it</td>
+            <td>yes, plus Codex, Cursor and more</td>
+            <td>diff viewer</td>
+            <td>local or worktree</td>
+            <td class="price">7-day trial, then paid</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://deska.dev" rel="noopener">Deska</a></td>
+            <td>run it (canvas workspace)</td>
+            <td>yes, plus Codex and more</td>
+            <td>review with comments</td>
+            <td>optional, per task</td>
+            <td class="price">free plan · Pro $9/mo</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://jaade.app" rel="noopener">jaade</a></td>
+            <td>run it</td>
+            <td>yes, plus Codex and more</td>
+            <td>hunk-by-hunk review</td>
+            <td>not stated</td>
+            <td class="price">not stated</td>
+          </tr>
+          <tr class="self">
+            <td class="tool"><a href="/">teebe</a></td>
+            <td>watch it</td>
+            <td><strong>no</strong>, you run it in the terminal</td>
+            <td>live badges, inline diff</td>
+            <td>every worktree of every repo</td>
+            <td class="price">free · GPL-3.0</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://github.com/spencerjireh/diffier" rel="noopener">diffier</a></td>
+            <td>watch it (terminal)</td>
+            <td>no</td>
+            <td>live, every edit</td>
+            <td>follows other worktrees</td>
+            <td class="price">free · MIT</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://code.claude.com/docs/en/commands" rel="noopener">Claude Code /diff</a></td>
+            <td>watch it (built in)</td>
+            <td>it is Claude Code</td>
+            <td>current working tree</td>
+            <td>the session's own</td>
+            <td class="price">included</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://www.gitkraken.com" rel="noopener">GitKraken Desktop</a></td>
+            <td>git client</td>
+            <td>yes, in Agent Sessions</td>
+            <td>after the agent finishes</td>
+            <td>one per agent session</td>
+            <td class="price">free tier · paid per seat</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://www.git-tower.com" rel="noopener">Tower</a></td>
+            <td>git client</td>
+            <td>no (uses it for AI commits)</td>
+            <td>standard diff view</td>
+            <td>create, switch, remove</td>
+            <td class="price">from €59/user/yr</td>
+          </tr>
+          <tr>
+            <td class="tool"><a href="https://git-fork.com" rel="noopener">Fork</a></td>
+            <td>git client</td>
+            <td>no (AI commit messages, code review)</td>
+            <td>standard diff view</td>
+            <td>create, check out as worktree</td>
+            <td class="price">$59.99 once</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="checked">All facts checked on October 9, 2026 against each tool's own site, docs or repository. "Not stated" means the tool's own pages don't say. See <a href="#sources">sources</a>.</p>
+
+    <h2 id="runners">GUIs that run Claude Code for you</h2>
+    <p>
+      <strong><a href="https://code.claude.com/docs/en/desktop" rel="noopener">Claude Code Desktop</a></strong>
+      is Anthropic's own: the Code tab of the Claude app. It runs its own copy of Claude Code, can
+      give each session its own git worktree, and has a diff viewer with a file list on the left and
+      the changes on the right. It needs a paid Claude plan. If you only use Claude Code, start here.
+      The <a href="/guides/claude-code-desktop-vs-terminal/">desktop vs terminal guide</a> covers the
+      trade-offs.
+    </p>
+    <p>
+      <strong><a href="https://www.conductor.build" rel="noopener">Conductor</a></strong> is a Mac
+      app for running Claude Code, Codex, Cursor and OpenCode in parallel. Each workspace is a git
+      worktree on its own branch, with a diff viewer for its changes. Free plan, Pro at $50/mo.
+      <strong><a href="https://nimbalyst.com" rel="noopener">Nimbalyst</a></strong> is the
+      open-source take (MIT desktop and iOS apps): a visual workspace for Claude Code and Codex, free for individuals,
+      with one-click worktrees per session and diffs you approve. If you're comparing those two, the
+      <a href="/compare/conductor-alternatives/">Conductor alternatives page</a> goes further.
+    </p>
+    <p>
+      <strong><a href="https://crystl.dev" rel="noopener">crystl</a></strong> is a native Swift
+      terminal for running many agents in parallel "shards"; each isolated shard gets its own
+      worktree and branch. Not to be confused with Crystal, which its
+      <a href="https://github.com/stravu/crystal" rel="noopener">repository</a> says is now Nimbalyst.
+      <strong><a href="https://vibeconsole.dev" rel="noopener">Vibe Console</a></strong> is another
+      native Mac app (SwiftUI and AppKit, macOS 15+) that runs Claude Code and seven other CLIs,
+      with diff review, staging and commits built in.
+    </p>
+    <p>
+      <strong><a href="https://aiola.app" rel="noopener">Aiola</a></strong> (macOS and Windows),
+      <strong><a href="https://deska.dev" rel="noopener">Deska</a></strong> (Mac, Windows, Linux and
+      a browser companion, laid out as a canvas of editor, terminal and agent panels) and
+      <strong><a href="https://jaade.app" rel="noopener">jaade</a></strong> (macOS) all run Claude
+      Code alongside other agents and add a review step for the diff. Deska and Aiola support a
+      worktree per task; jaade's site doesn't describe its worktree handling.
+    </p>
+    <p>
+      Two you may see recommended elsewhere: <a href="https://github.com/winfunc/opcode" rel="noopener">Opcode</a>
+      (formerly Claudia) has not had a release since August 2025, and Crystal has been replaced by
+      Nimbalyst. I left both out of the table.
+    </p>
+
+    <h2 id="watchers">Tools that watch what Claude Code changes</h2>
+    <p>
+      If you like Claude Code in the terminal, you don't need to move it into an app. You need to
+      see what it did.
+    </p>
+    <p>
+      <strong>Claude Code's own <code>/diff</code></strong> is the first stop. Per the
+      <a href="https://code.claude.com/docs/en/commands" rel="noopener">docs</a> it shows the changes
+      in your working tree, including Claude's edits so far, alongside anything else you haven't
+      committed. It covers the session you're in.
+    </p>
+    <p>
+      <strong><a href="https://github.com/spencerjireh/diffier" rel="noopener">diffier</a></strong>
+      is a small MIT terminal tool: run it in a second terminal and each Claude Code edit shows up as
+      a full diff the moment it lands, including edits in other worktrees of the same repo. It's
+      brand new, so expect rough edges.
+    </p>
+    <p>
+      <strong><a href="/">teebe</a></strong> is where I live, so weigh this accordingly. It's a
+      native Mac window that sits beside your terminal and shows every worktree of every repo you
+      add. While Claude Code or Codex is working in a worktree, its row shows an animated orb, and
+      teebe can notify you when the turn finishes. Changed files badge live as they're written, and
+      Space peeks the diff, unified or side by side. It also tells you which worktrees are merged
+      (squash merges included) and removes them after a confirmation. The walkthrough is in
+      <a href="/guides/view-claude-code-changes/">see what Claude Code changed, live</a>, and
+      <a href="/guides/claude-code-worktrees/">Claude Code worktrees, explained</a> covers the
+      <code>--worktree</code> side.
+    </p>
+
+    <h2 id="git-clients">Git clients, and where they fall short for worktrees</h2>
+    <p>
+      <strong><a href="https://www.gitkraken.com" rel="noopener">GitKraken Desktop</a></strong> has
+      gone furthest: its Agent Sessions create a worktree, check out a branch and launch Claude Code,
+      Codex and other agent CLIs in an embedded terminal. You review the diff when the agent
+      finishes. The free Community tier is limited to local repos and public remotes, and Agent
+      Sessions are public repos only on it.
+    </p>
+    <p>
+      <strong><a href="https://www.git-tower.com" rel="noopener">Tower</a></strong> (Mac and
+      Windows) creates, switches to and removes worktrees, and can use Claude Code or Codex as the
+      provider for AI commit messages. <strong><a href="https://git-fork.com" rel="noopener">Fork</a></strong>
+      added a Create Worktree dialog in February 2026 and checking out a remote branch as a worktree
+      in June 2026, and its release notes add AI commit messages and code review with Claude,
+      Codex or Cursor. Both are great git clients. What they don't do is
+      show you, across many worktrees at once, which one an agent is in and what it's changing
+      right now. For the worktree side of git clients, see
+      <a href="/compare/git-worktree-gui-mac/">every git worktree GUI for Mac, compared</a>.
+    </p>
+
+    <h2 id="not">What teebe is not</h2>
+    <div class="notnot">
+      <ul>
+        <li><strong>It does not launch Claude Code.</strong> You start it in your terminal, as you do now.</li>
+        <li><strong>No chat.</strong> You talk to Claude Code where it runs, not in teebe.</li>
+        <li><strong>No agent orchestration.</strong> No task queue, no parallel prompts, no merging output for you.</li>
+        <li><strong>Not a git client or editor.</strong> No rebase or conflict UI; files open in your own apps.</li>
+        <li><strong>macOS only</strong>, macOS 14 or newer.</li>
+      </ul>
+    </div>
+    <p>If you want a GUI that replaces the terminal, pick one of the apps that run Claude Code for you.</p>
+
+    <h2 id="pick">How to pick</h2>
+    <div class="pick">
+      <p><span class="lead">One Claude Code session, and you want a window instead of a terminal:</span>
+      Claude Code Desktop.</p>
+      <p><span class="lead">One session in the terminal, and you just want to check its work:</span>
+      <code>/diff</code>. You may not need anything else.</p>
+      <p><span class="lead">Many agents, and you want an app to run them in worktrees:</span>
+      Conductor or Nimbalyst; crystl or Vibe Console if you want a native Mac app.</p>
+      <p><span class="lead">Many agents in your own terminals, and you want to see all of them:</span>
+      teebe, with <code>claude --worktree</code> for the isolation.</p>
+      <p><span class="lead">You want a full workspace that replaces your IDE:</span>
+      Deska or Nimbalyst.</p>
+      <p><span class="lead">You mostly want a git client that knows about agents:</span> GitKraken Desktop.</p>
+    </div>
+
+    <h2 id="faq">Frequently asked questions</h2>
+    <h3>Is there an official Claude Code GUI for Mac?</h3>
+    <p>
+      Yes. Anthropic's Claude Desktop app has a Code tab that runs Claude Code with a visual diff
+      viewer and optional git worktrees per session. It needs a paid Claude plan (Pro, Max, Team or
+      Enterprise).
+    </p>
+    <h3>What is the best free Claude Code GUI for Mac?</h3>
+    <p>
+      Among apps that run Claude Code for you, Nimbalyst is free for individuals and MIT licensed,
+      Conductor and Deska have free plans, and crystl has a free plan. If you keep Claude Code in
+      the terminal and only want to watch its changes, teebe is free and GPL-3.0.
+    </p>
+    <h3>Can I see Claude Code's changes without leaving the terminal?</h3>
+    <p>
+      Yes. The <code>/diff</code> command in Claude Code shows the changes in your working tree,
+      including Claude's edits. diffier is a terminal tool that streams each edit as a diff. teebe is
+      a Mac window beside the terminal that badges changed files live across all your worktrees and
+      shows inline diffs.
+    </p>
+    <h3>Does teebe run Claude Code?</h3>
+    <p>
+      No. teebe is the watcher next to the terminal. It does not launch Claude Code, has no chat, and
+      does not orchestrate agents. It shows which worktree Claude Code or Codex is working in and the
+      files it changes, live, with inline diffs.
+    </p>
+    <h3>Do git clients like Tower or Fork work with Claude Code worktrees?</h3>
+    <p>
+      They can create and manage git worktrees, so a worktree made by <code>claude --worktree</code>
+      is a normal worktree to them. They are not built around agents: Fork and Tower use AI for commit
+      messages (Fork also for code review), and GitKraken Desktop has Agent
+      Sessions that launch a coding agent CLI in its own worktree.
+    </p>
+
+    <h2 id="sources">Sources</h2>
+    <p class="checked">Each source was opened and checked on October 9, 2026. Prices and features change; if something here is stale, the link is the place to re-check.</p>
+    <ul class="sources">
+      <li>Claude Code Desktop: <a href="https://code.claude.com/docs/en/desktop" rel="noopener">Claude Code docs, desktop</a></li>
+      <li>Claude Code /diff and --worktree: <a href="https://code.claude.com/docs/en/commands" rel="noopener">commands</a>, <a href="https://code.claude.com/docs/en/interactive-mode" rel="noopener">review changes with /diff</a>, <a href="https://code.claude.com/docs/en/cli-reference" rel="noopener">CLI reference</a></li>
+      <li>Conductor: <a href="https://www.conductor.build" rel="noopener">conductor.build</a>, <a href="https://www.conductor.build/pricing" rel="noopener">pricing</a>, <a href="https://www.conductor.build/docs/" rel="noopener">docs</a>, <a href="https://www.conductor.build/docs/concepts/workspaces-and-branches" rel="noopener">workspaces and branches</a>, <a href="https://www.conductor.build/docs/reference/diff-viewer" rel="noopener">diff viewer</a></li>
+      <li>Nimbalyst: <a href="https://nimbalyst.com" rel="noopener">nimbalyst.com</a>, <a href="https://github.com/Nimbalyst/nimbalyst" rel="noopener">GitHub repository</a></li>
+      <li>crystl: <a href="https://crystl.dev" rel="noopener">crystl.dev</a></li>
+      <li>Vibe Console: <a href="https://vibeconsole.dev" rel="noopener">vibeconsole.dev</a></li>
+      <li>Aiola: <a href="https://aiola.app" rel="noopener">aiola.app</a>, <a href="https://aiola.app/changelog" rel="noopener">changelog</a></li>
+      <li>Deska: <a href="https://deska.dev" rel="noopener">deska.dev</a>, <a href="https://deska.dev/download" rel="noopener">download</a></li>
+      <li>jaade: <a href="https://jaade.app" rel="noopener">jaade.app</a></li>
+      <li>diffier: <a href="https://github.com/spencerjireh/diffier" rel="noopener">spencerjireh/diffier README</a></li>
+      <li>Opcode: <a href="https://github.com/winfunc/opcode" rel="noopener">winfunc/opcode</a> (releases); Crystal: <a href="https://github.com/stravu/crystal" rel="noopener">stravu/crystal README</a></li>
+      <li>GitKraken Desktop: <a href="https://help.gitkraken.com/gitkraken-desktop/agents/" rel="noopener">Agent Sessions help</a>, <a href="https://www.gitkraken.com/pricing" rel="noopener">pricing</a></li>
+      <li>Tower: <a href="https://www.git-tower.com/pricing" rel="noopener">pricing</a>, <a href="https://www.git-tower.com/help/guides/worktrees/overview/mac" rel="noopener">worktrees on Mac</a>, <a href="https://www.git-tower.com/release-notes/" rel="noopener">release notes</a></li>
+      <li>Fork: <a href="https://git-fork.com" rel="noopener">git-fork.com</a>, <a href="https://git-fork.com/releasenotes" rel="noopener">release notes</a></li>
+      <li>teebe: <a href="https://github.com/klein-t/teebe" rel="noopener">README</a>, <a href="/changelog/">changelog</a> (v0.8.1)</li>
+    </ul>
+
+    <div class="install">
+      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+    </div>
+    <p class="sub">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+  </main>
+
+  <footer>
+    <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog/">Changelog</a> · <a href="/privacy/">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install .copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.parentElement.querySelector('code').textContent.trim();
+        navigator.clipboard.writeText(cmd).then(function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        });
+      });
+    });
+  </script>
+
+  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). See /privacy/. -->
+  <script>
+    (function () {
+      try {
+        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
+        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
+        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
+        if (v) sessionStorage.setItem('tb_seen', '1');
+        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
+        var ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
+          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
+          + '&t=' + Date.now();
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
