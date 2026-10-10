@@ -7,6 +7,7 @@
 // "Tell me apart": every request is classified into one `who` bucket:
 //   dev     - your own test fetches (?dev=1)
 //   install - a real install via teebe.io/install.sh (sends UA "teebe-install")
+//   brew    - a real install via the Homebrew cask (UA "Homebrew/<ver> (...) curl/<ver>")
 //   web     - everything else: browsers, bots, scanners, link-preview fetchers.
 //             A brand-new public subdomain attracts a LOT of this, and a bot's
 //             curl is indistinguishable from a real one, so it's bucketed
@@ -15,6 +16,10 @@
 //   https://dl.teebe.io/            -> latest .zip
 //   https://dl.teebe.io/?kind=dmg   -> latest .dmg
 //   https://dl.teebe.io/?dev=1      -> latest .zip   (logged as "dev" = you)
+//   https://dl.teebe.io/v0.8.1/teebe-v0.8.1.zip -> that exact release asset
+//     (the Homebrew cask's url). Tag and filename are strictly validated; any
+//     other /v.../... path 404s. HEAD requests (Homebrew probes before it
+//     downloads) redirect without being counted.
 //
 // Page views: the HTML on teebe.io fires GET /px on each load, logged to the
 // separate teebe_pageviews dataset. Only real browsers (which run JS) hit it,
@@ -51,13 +56,19 @@ export default {
       return handlePixel(url, request, env);
     }
 
-    const kind = url.searchParams.get("kind") === "dmg" ? "dmg" : "zip";
-
     const ua = request.headers.get("User-Agent") || "";
     const who =
       url.searchParams.get("dev") === "1" ? "dev"
       : /teebe-install/i.test(ua) ? "install"
+      : /^Homebrew\//.test(ua) ? "brew"
       : "web";
+
+    // Versioned asset path, e.g. /v0.8.1/teebe-v0.8.1.zip (Homebrew cask).
+    if (/^\/v[^/]*\//.test(url.pathname)) {
+      return handleVersioned(url, request, env, who);
+    }
+
+    const kind = url.searchParams.get("kind") === "dmg" ? "dmg" : "zip";
 
     // Latest release metadata, cached 5 min so we don't hit GitHub's rate limit.
     // Only successful responses are cached; a rate-limited 403 must not poison
@@ -98,25 +109,48 @@ export default {
       };
     }
 
-    // One datapoint per download. blob1=version, blob2=kind, blob3=country,
-    // blob4=user-agent, blob5=who. doubles[0]=1 so SUM() = download count.
-    if (env.DL) {
-      env.DL.writeDataPoint({
-        blobs: [
-          version,
-          kind,
-          request.cf?.country || "??",
-          request.headers.get("User-Agent") || "",
-          who,
-        ],
-        indexes: [version],
-        doubles: [1],
-      });
-    }
+    logDownload(env, request, version, kind, who);
 
     return Response.redirect(asset.browser_download_url, 302);
   },
 };
+
+// One datapoint per download. blob1=version, blob2=kind, blob3=country,
+// blob4=user-agent, blob5=who. doubles[0]=1 so SUM() = download count.
+function logDownload(env, request, version, kind, who) {
+  if (env.DL) {
+    env.DL.writeDataPoint({
+      blobs: [
+        version,
+        kind,
+        request.cf?.country || "??",
+        request.headers.get("User-Agent") || "",
+        who,
+      ],
+      indexes: [version],
+      doubles: [1],
+    });
+  }
+}
+
+// --- Versioned downloads (Homebrew cask) ------------------------------------
+// /vX.Y.Z/teebe-vX.Y.Z.zip or /vX.Y.Z/teebe-macos.dmg -> that release's asset
+// on GitHub. Only these two exact shapes are accepted (the zip name must carry
+// the same tag), so the redirect target can never be steered elsewhere.
+const VERSIONED = /^\/(v\d{1,4}\.\d{1,4}\.\d{1,4})\/(teebe-(v\d{1,4}\.\d{1,4}\.\d{1,4})\.zip|teebe-macos\.dmg)$/;
+
+function handleVersioned(url, request, env, who) {
+  const m = VERSIONED.exec(url.pathname);
+  if (!m || (m[3] && m[3] !== m[1])) {
+    return new Response("Not found", { status: 404 });
+  }
+  const [, tag, name] = m;
+  // Homebrew sends a HEAD first to read headers; only the real GET counts.
+  if (request.method !== "HEAD") {
+    logDownload(env, request, tag, name.endsWith(".dmg") ? "dmg" : "zip", who);
+  }
+  return Response.redirect(`https://github.com/${REPO}/releases/download/${tag}/${name}`, 302);
+}
 
 // --- Page-view beacon ------------------------------------------------------
 
@@ -212,8 +246,8 @@ async function handleStats(url, env) {
 
   const num = (v) => Math.floor(Number(v) || 0);
 
-  // Real installs exclude OWN_COUNTRY (your own tests).
-  const notMine = `blob5='install' AND blob3 != '${OWN_COUNTRY}'`;
+  // Real installs (install.sh + Homebrew) exclude OWN_COUNTRY (your own tests).
+  const notMine = `blob5 IN ('install','brew') AND blob3 != '${OWN_COUNTRY}'`;
   // Real page views exclude your own browsing (dev flag or OWN_COUNTRY).
   // Older datapoints predate the "local" tag: also drop local-file paths and
   // localhost referrers that were logged as "human".
@@ -221,13 +255,14 @@ async function handleStats(url, env) {
   // Active installs = Sparkle checks from real apps, your own country excluded.
   const appCheck = `blob3='app' AND blob2 != '${OWN_COUNTRY}'`;
   const [
-    overview, byCountry, recent, daily,
+    overview, realByWho, byCountry, recent, daily,
     webTotals, webDaily, webByPath, webRefs, webByCountry,
     updDaily, updByVersion, updByCountry,
   ] = await Promise.all([
     sql("SELECT blob5 AS who, SUM(_sample_interval) AS n FROM teebe_downloads GROUP BY who ORDER BY n DESC"),
+    sql(`SELECT blob5 AS who, SUM(_sample_interval) AS n FROM teebe_downloads WHERE ${notMine} GROUP BY who`),
     sql(`SELECT blob3 AS country, SUM(_sample_interval) AS n FROM teebe_downloads WHERE ${notMine} GROUP BY country ORDER BY n DESC`),
-    sql(`SELECT timestamp, blob3 AS country, blob1 AS version FROM teebe_downloads WHERE ${notMine} ORDER BY timestamp DESC LIMIT 25`),
+    sql(`SELECT timestamp, blob3 AS country, blob1 AS version, blob5 AS who FROM teebe_downloads WHERE ${notMine} ORDER BY timestamp DESC LIMIT 25`),
     sql(`SELECT toDate(timestamp) AS day, SUM(_sample_interval) AS n FROM teebe_downloads WHERE ${notMine} GROUP BY day ORDER BY day DESC LIMIT 14`),
     sql(`SELECT blob4 AS kind, SUM(_sample_interval) AS n FROM teebe_pageviews WHERE ${webHuman} GROUP BY kind`),
     sql(`SELECT toDate(timestamp) AS day, SUM(_sample_interval) AS n FROM teebe_pageviews WHERE ${webHuman} GROUP BY day ORDER BY day DESC LIMIT 14`),
@@ -251,6 +286,7 @@ async function handleStats(url, env) {
   const counts = Object.fromEntries(overview.map((r) => [r.who, num(r.n)]));
   // Install headline = real installs only (your OWN_COUNTRY tests excluded).
   const installs = byCountry.reduce((s, r) => s + num(r.n), 0);
+  const real = Object.fromEntries(realByWho.map((r) => [r.who, num(r.n)]));
 
   // Page views: total = every load; visits = first load per session (kind=visit).
   const webKind = Object.fromEntries(webTotals.map((r) => [r.kind, num(r.n)]));
@@ -264,8 +300,8 @@ async function handleStats(url, env) {
     : `<tr><td colspan="2" class="muted">nessuna</td></tr>`;
 
   const recentRows = recent.length
-    ? recent.map((r) => `<tr><td>${esc(r.timestamp)} UTC</td><td>${esc(r.country)}</td><td>${esc(r.version)}</td></tr>`).join("")
-    : `<tr><td colspan="3" class="muted">nessuna</td></tr>`;
+    ? recent.map((r) => `<tr><td>${esc(r.timestamp)} UTC</td><td>${esc(r.country)}</td><td>${esc(r.version)}</td><td>${esc(r.who)}</td></tr>`).join("")
+    : `<tr><td colspan="4" class="muted">nessuna</td></tr>`;
 
   const dailyRows = daily.length
     ? daily.map((r) => `<tr><td>${esc(r.day)}</td><td class="r">${num(r.n)}</td></tr>`).join("")
@@ -321,10 +357,12 @@ async function handleStats(url, env) {
   footer { color:var(--muted); font-size:.78rem; margin-top:32px; }
 </style></head><body>
   <h1>teebe · download stats</h1>
-  <p class="sub">Installazioni reali = riga <b>install</b> (UA <code>teebe-install</code>). <b>web</b> = browser/bot (rumore).</p>
+  <p class="sub">Installazioni reali = <b>install</b> (UA <code>teebe-install</code>) + <b>brew</b> (Homebrew cask, UA <code>Homebrew/…</code>). <b>web</b> = browser/bot (rumore).</p>
 
   <div class="big">
     <div class="stat hl"><div class="label">Install</div><div class="value">${installs}</div></div>
+    <div class="stat"><div class="label">install.sh</div><div class="value">${real.install || 0}</div></div>
+    <div class="stat"><div class="label">Homebrew</div><div class="value">${real.brew || 0}</div></div>
     <div class="stat"><div class="label">Web / bot</div><div class="value">${counts.web || 0}</div></div>
     <div class="stat"><div class="label">Dev (test)</div><div class="value">${counts.dev || 0}</div></div>
   </div>
@@ -337,7 +375,7 @@ async function handleStats(url, env) {
   <table><thead><tr><th>Giorno</th><th class="r">Install</th></tr></thead><tbody>${dailyRows}</tbody></table>
 
   <h2>Ultime installazioni</h2>
-  <table><thead><tr><th>Quando (UTC)</th><th>Paese</th><th>Versione</th></tr></thead><tbody>${recentRows}</tbody></table>
+  <table><thead><tr><th>Quando (UTC)</th><th>Paese</th><th>Versione</th><th>Fonte</th></tr></thead><tbody>${recentRows}</tbody></table>
 
   <h1 style="margin-top:40px">teebe · installazioni attive</h1>
   <p class="sub">Controlli aggiornamenti Sparkle su <code>teebe.io/appcast.xml</code>: ogni app aperta ne fa ~1 al giorno, quindi <b>check/giorno ≈ installazioni attive</b>. Install cumulativi − attive ≈ disinstallate o non usate.</p>
