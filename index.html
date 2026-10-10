@@ -111,7 +111,7 @@
       {"@type": "Question", "name": "How is teebe different from an orchestrator (Conductor, Vibe Kanban) or a git client (Tower, Fork)?", "acceptedAnswer": {"@type": "Answer", "text": "Orchestrators run your agents for you. Git clients handle commits, rebases and conflicts. teebe does neither. It's the layer beside your terminal that shows what every agent changed, tells you which worktrees are merged, and cleans up the ones that are done. Use it alongside an orchestrator or on its own. The git worktree GUI comparison covers the alternatives."}},
       {"@type": "Question", "name": "Does teebe send my code anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. teebe reads your files and git locally on your Mac, and there is no teebe backend and no in-app analytics. The network traffic it causes is git fetch to your own remotes (which you can turn off) and the Sparkle update check against teebe.io (which you can also turn off). See the privacy page for details."}},
       {"@type": "Question", "name": "Is teebe free and open source?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. teebe is free and open source today, under GPL-3.0, and needs no account. The code is on GitHub, and installs come from GitHub Releases with automatic updates."}},
-      {"@type": "Question", "name": "What do I need to run teebe, and how do I install it?", "acceptedAnswer": {"@type": "Answer", "text": "macOS 14 or newer on Apple Silicon. Run curl -fsSL https://teebe.io/install.sh | bash in your terminal: it installs teebe into Applications and opens it without a Gatekeeper prompt. If you download the .dmg from GitHub Releases instead, macOS blocks the first launch until you allow it in System Settings, under Privacy & Security, because teebe is not notarized yet. Updates arrive automatically after that."}}
+      {"@type": "Question", "name": "What do I need to run teebe, and how do I install it?", "acceptedAnswer": {"@type": "Answer", "text": "macOS 14 or newer on Apple Silicon. Run brew install --cask klein-t/tap/teebe in your terminal to install teebe into Applications with Homebrew. Without Homebrew, use curl -fsSL https://teebe.io/install.sh | bash. If you download the .dmg from GitHub Releases instead, macOS blocks the first launch until you allow it in System Settings, under Privacy & Security, because teebe is not notarized yet. Updates arrive automatically after that."}}
     ]
   }
   </script>
@@ -262,7 +262,7 @@
     .lede { font-size: 1.2rem; color: var(--muted); max-width: 40ch; margin: 0 0 30px; }
     .lede strong { color: var(--text); }
     .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; }
-    /* the curl one-liner IS the install CTA (no downloads) */
+    /* primary Homebrew installation command */
     .hero-terminal {
       display: flex; align-items: center; gap: 10px; max-width: 520px; min-width: 0;
       background: rgba(5,16,12,.72); border: 1px solid rgba(52,211,153,.42); border-radius: 13px;
@@ -282,6 +282,14 @@
     .hero-terminal .copy:hover { box-shadow: 0 8px 28px rgba(16,185,129,.5); }
     .hero-terminal .copy:active { transform: translateY(1px); }
     .hero-terminal .copy.copied { background: #0a84ff; color: #fff; }
+    .install-alternatives { max-width: 520px; margin-top: 12px; text-align: left; }
+    .install-alternatives summary { width: fit-content; color: var(--muted); cursor: pointer; font-size: 0.9rem; }
+    .install-alternatives summary:hover { color: var(--text); }
+    .install-alternatives summary:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 4px; border-radius: 3px; }
+    .install-alternatives p { color: var(--muted); font-size: 0.9rem; margin: 14px 0 10px; }
+    .cta-final .install-alternatives { margin: 12px auto 0; }
+    .cta-final .install-alternatives summary { margin: 0 auto; }
+    .cta-final .install-alternatives .hero-terminal { margin-top: 0; }
     .hero-terminal.flash { animation: termflash 1.3s ease; }
     @keyframes termflash {
       0%, 100% { box-shadow: 0 14px 44px rgba(16,185,129,.18); }
@@ -658,6 +666,9 @@
     @media (max-width: 560px) {
       .nav-links a:not(.nav-cta) { display: none; }
       .hero-cta { flex-direction: column; align-items: stretch; }
+      .hero-terminal { flex-wrap: wrap; }
+      .hero-terminal code { flex-basis: calc(100% - 26px); white-space: normal; overflow-wrap: anywhere; }
+      .hero-terminal .copy { margin-left: auto; }
     }
   </style>
 </head>
@@ -693,9 +704,18 @@
           </p>
           <div class="hero-terminal" id="install">
             <span class="ps">$</span>
-            <code>curl -fsSL https://teebe.io/install.sh | bash</code>
-            <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+            <code>brew install --cask klein-t/tap/teebe</code>
+            <button class="copy" type="button" aria-label="Copy Homebrew install command">Copy</button>
           </div>
+          <details class="install-alternatives">
+            <summary>Other installation methods</summary>
+            <p>Without Homebrew, run this in your terminal:</p>
+            <div class="hero-terminal">
+              <span class="ps" aria-hidden="true">$</span>
+              <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+              <button class="copy" type="button" aria-label="Copy shell install command">Copy</button>
+            </div>
+          </details>
           <div class="hero-cta">
             <a class="btn ghost" href="https://github.com/klein-t/teebe" rel="noopener">View on GitHub</a>
           </div>
@@ -1073,7 +1093,7 @@
       </details>
       <details>
         <summary>What do I need to run teebe, and how do I install it?</summary>
-        <div class="answer"><p>macOS 14 or newer on Apple Silicon. Run <code>curl -fsSL https://teebe.io/install.sh | bash</code> in your terminal: it installs teebe into Applications and opens it without a Gatekeeper prompt. If you download the .dmg from GitHub Releases instead, macOS blocks the first launch until you allow it in System Settings, under Privacy &amp; Security, because teebe is not notarized yet. Updates arrive automatically after that.</p></div>
+        <div class="answer"><p>macOS 14 or newer on Apple Silicon. Run <code>brew install --cask klein-t/tap/teebe</code> in your terminal to install teebe into Applications with Homebrew. Without Homebrew, use <code>curl -fsSL https://teebe.io/install.sh | bash</code>. If you download the .dmg from GitHub Releases instead, macOS blocks the first launch until you allow it in System Settings, under Privacy &amp; Security, because teebe is not notarized yet. Updates arrive automatically after that.</p></div>
       </details>
     </section>
 
@@ -1104,9 +1124,18 @@
       <p class="kick">Native macOS git worktree GUI · free and open source today · macOS 14+ on Apple Silicon.</p>
       <div class="hero-terminal">
         <span class="ps">$</span>
-        <code>curl -fsSL https://teebe.io/install.sh | bash</code>
-        <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+        <code>brew install --cask klein-t/tap/teebe</code>
+        <button class="copy" type="button" aria-label="Copy Homebrew install command">Copy</button>
       </div>
+      <details class="install-alternatives">
+        <summary>Other installation methods</summary>
+        <p>Without Homebrew, run this in your terminal:</p>
+        <div class="hero-terminal">
+          <span class="ps" aria-hidden="true">$</span>
+          <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+          <button class="copy" type="button" aria-label="Copy shell install command">Copy</button>
+        </div>
+      </details>
       <div class="hero-cta">
         <a class="btn ghost" href="https://github.com/klein-t/teebe" rel="noopener">View on GitHub</a>
       </div>
@@ -1424,7 +1453,7 @@
   </script>
 
   <script>
-    // nav "Install": scroll to the curl line, flash it, and copy the command
+    // nav "Install": scroll to the Homebrew command, flash it, and copy the command
     document.querySelectorAll('a[href="#install"]').forEach(function (a) {
       a.addEventListener('click', function () {
         var term = document.getElementById('install');
