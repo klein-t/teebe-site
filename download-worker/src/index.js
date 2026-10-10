@@ -18,8 +18,9 @@
 //   https://dl.teebe.io/?dev=1      -> latest .zip   (logged as "dev" = you)
 //   https://dl.teebe.io/v0.8.1/teebe-v0.8.1.zip -> that exact release asset
 //     (the Homebrew cask's url). Tag and filename are strictly validated; any
-//     other /v.../... path 404s. HEAD requests (Homebrew probes before it
-//     downloads) redirect without being counted.
+//     other /v.../... path 404s. Homebrew only ever sends us a HEAD (see
+//     handleVersioned), so for it the HEAD is the download; for everyone else
+//     only GET counts.
 //
 // Page views: the HTML on teebe.io fires GET /px on each load, logged to the
 // separate teebe_pageviews dataset. Only real browsers (which run JS) hit it,
@@ -145,8 +146,12 @@ function handleVersioned(url, request, env, who) {
     return new Response("Not found", { status: 404 });
   }
   const [, tag, name] = m;
-  // Homebrew sends a HEAD first to read headers; only the real GET counts.
-  if (request.method !== "HEAD") {
+  // Homebrew resolves the url with a HEAD (following our redirect), then
+  // downloads straight from the resolved GitHub URL: its GET never reaches us.
+  // So a Homebrew HEAD is the download (one per install/upgrade; a cached
+  // reinstall also sends it). Anyone else: count GET, not HEAD probes.
+  const brewUA = /^Homebrew\//.test(request.headers.get("User-Agent") || "");
+  if (brewUA ? request.method === "HEAD" : request.method !== "HEAD") {
     logDownload(env, request, tag, name.endsWith(".dmg") ? "dmg" : "zip", who);
   }
   return Response.redirect(`https://github.com/${REPO}/releases/download/${tag}/${name}`, 302);
