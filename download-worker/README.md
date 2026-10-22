@@ -21,6 +21,8 @@ is tagged `user`.
 
 ## Deploy
 
+Requires Node 22 or later (wrangler's minimum).
+
 ```sh
 cd download-worker
 npx wrangler login          # opens browser
