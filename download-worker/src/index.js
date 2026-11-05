@@ -349,6 +349,12 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
     return { top: Math.ceil(max / step) * step, step };
   };
   const ddmm = (day) => (/^\d{4}-\d{2}-\d{2}/.test(day) ? `${day.slice(8, 10)}/${day.slice(5, 7)}` : day);
+  const WD = ["dom", "lun", "mar", "mer", "gio", "ven", "sab"];
+  const MO = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+  const longDay = (day) => {
+    const d = new Date(day + "T00:00:00Z");
+    return Number.isNaN(d.getTime()) ? day : `${WD[d.getUTCDay()]} ${d.getUTCDate()} ${MO[d.getUTCMonth()]}`;
+  };
 
   // Daily column chart. Width is in % so it fits any screen; heights in px so
   // text and corners stay crisp. Today's (partial) column is lighter.
@@ -378,8 +384,8 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
         ? `<text class="cap" x="${pct(i * slot + slot / 2)}" y="${y(r.n) - 6}">${r.n}</text>` : "";
       const xl = (n - 1 - i) % labelEvery === 0
         ? `<text class="xl" x="${pct(i * slot + slot / 2)}" y="${PT + H + 17}">${esc(ddmm(r.day))}</text>` : "";
-      const tip = `${r.day}${r.day === today ? " (oggi, parziale)" : ""}: ${r.n} ${unit}`;
-      return `<g class="col"><title>${esc(tip)}</title><rect class="hit" x="${pct(i * slot)}" y="0" width="${pct(slot)}" height="${PT + H}"/>${mark}${cap}${xl}</g>`;
+      const tip = `${unit} · ${longDay(r.day)}${r.day === today ? " (oggi, parziale)" : ""}`;
+      return `<g class="col" tabindex="0" data-v="${r.n}" data-d="${esc(tip)}"><rect class="hit" x="${pct(i * slot)}" y="0" width="${pct(slot)}" height="${PT + H}"/>${mark}${cap}${xl}</g>`;
     }).join("");
     const grid = ticks.map((v) => `<line class="${v === 0 ? "axis" : "grid"}" x1="0" x2="100%" y1="${y(v)}" y2="${y(v)}"/>`).join("");
     const yl = ticks.map((v) => `<span style="top:${y(v)}px">${v}</span>`).join("");
@@ -475,8 +481,13 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
   .cols .bar { fill:var(--series); }
   .cols .bar.partial { fill:var(--series-partial); }
   .cols .hit { fill:transparent; }
-  .cols .col:hover .hit { fill:var(--wash); }
-  .cols .col:hover .bar { fill:var(--series-hover); }
+  .cols .col { outline:none; }
+  .cols .col:hover .hit, .cols .col.on .hit { fill:var(--wash); }
+  .cols .col:hover .bar, .cols .col.on .bar { fill:var(--series-hover); }
+  .tip { position:fixed; z-index:10; pointer-events:none; white-space:nowrap; background:var(--card); border:1px solid var(--axis); border-radius:8px; padding:6px 10px; box-shadow:0 4px 14px rgba(0,0,0,.16); }
+  .tip[hidden] { display:none; }
+  .tip .tv { font-size:1.05rem; font-weight:650; line-height:1.25; font-variant-numeric:tabular-nums; }
+  .tip .td { font-size:.75rem; color:var(--text2); }
   .cols text { font-size:11px; text-anchor:middle; font-variant-numeric:tabular-nums; }
   .cols .cap { fill:var(--text); font-weight:600; }
   .cols .xl { fill:var(--muted); }
@@ -565,6 +576,7 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
 
   <footer>Aggiornato in tempo reale da Cloudflare Analytics Engine · +2h per ora locale (AL).</footer>
 </div>
+<div id="tip" class="tip" aria-hidden="true" hidden><div class="tv"></div><div class="td"></div></div>
 <script>
 (() => {
   // Tabs: no reload; the active tab lives in the URL hash so ?key= stays put.
@@ -585,6 +597,51 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
   }));
   addEventListener("hashchange", show);
   show();
+
+  // Chart tooltip: instant on hover and keyboard focus, tap to show on touch.
+  const tip = document.getElementById("tip");
+  let active = null;
+  const place = () => {
+    const hit = active.querySelector(".hit").getBoundingClientRect();
+    const bar = active.querySelector(".bar");
+    const anchor = bar ? bar.getBoundingClientRect().top : hit.bottom;
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    const maxX = document.documentElement.clientWidth - w - 8;
+    tip.style.left = Math.max(8, Math.min(maxX, hit.left + hit.width / 2 - w / 2)) + "px";
+    tip.style.top = (anchor - h - 8 < 8 ? anchor + 8 : anchor - h - 8) + "px";
+  };
+  const tipHide = () => {
+    if (active) active.classList.remove("on");
+    active = null;
+    tip.hidden = true;
+  };
+  const tipShow = (col) => {
+    if (active !== col) tipHide();
+    active = col;
+    col.classList.add("on");
+    tip.firstElementChild.textContent = col.dataset.v;
+    tip.lastElementChild.textContent = col.dataset.d;
+    tip.hidden = false;
+    place();
+  };
+  const colOf = (e) => (e.target.closest ? e.target.closest(".col") : null);
+  document.addEventListener("pointerover", (e) => {
+    if (e.pointerType === "touch") return;
+    const col = colOf(e);
+    if (col) tipShow(col); else tipHide();
+  });
+  document.addEventListener("click", (e) => {
+    const col = colOf(e);
+    if (col) tipShow(col); else tipHide();
+  });
+  document.addEventListener("focusin", (e) => {
+    const col = colOf(e);
+    if (col) tipShow(col);
+  });
+  document.addEventListener("focusout", tipHide);
+  document.documentElement.addEventListener("pointerleave", tipHide);
+  addEventListener("scroll", () => { if (active) place(); }, { passive: true });
+  addEventListener("resize", tipHide);
 })();
 </script>
 </body></html>`;
