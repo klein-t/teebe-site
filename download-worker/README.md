@@ -26,7 +26,7 @@ Requires Node 22 or later (wrangler's minimum).
 ```sh
 cd download-worker
 npx wrangler login          # opens browser
-npm run deploy              # creates the Worker + Analytics Engine dataset
+npm run deploy              # creates the Worker, its D1 install-history database (first deploy) + Analytics Engine datasets
 ```
 
 Then in the dashboard (https://dash.cloudflare.com → teebe.io zone → Workers):

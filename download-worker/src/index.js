@@ -30,6 +30,12 @@
 //   Renders install/web/dev download counts AND site page views/visits, each
 //   by country/day, plus top pages and referrers and recent installs.
 //   Reads both datasets from Analytics Engine via the SQL API (CF_API_TOKEN).
+//
+// Install history (D1 binding INSTALLS): Analytics Engine keeps raw rows for
+// 3 months only, so real installs (install/brew) are also counted per
+// day/who/country in D1, which never expires. See recordInstall() and
+// installHistory(). D1 is best-effort: a missing binding, table or a D1 error
+// never slows or breaks a download.
 
 const REPO = "klein-t/teebe";
 const ACCOUNT_ID = "c98c457a0ae116da83eb79e64cb21e52";
@@ -38,7 +44,7 @@ const ACCOUNT_ID = "c98c457a0ae116da83eb79e64cb21e52";
 const OWN_COUNTRY = "AL";
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     // Private stats page.
@@ -66,7 +72,7 @@ export default {
 
     // Versioned asset path, e.g. /v0.8.1/teebe-v0.8.1.zip (Homebrew cask).
     if (/^\/v[^/]*\//.test(url.pathname)) {
-      return handleVersioned(url, request, env, who);
+      return handleVersioned(url, request, env, ctx, who);
     }
 
     const kind = url.searchParams.get("kind") === "dmg" ? "dmg" : "zip";
@@ -110,7 +116,7 @@ export default {
       };
     }
 
-    logDownload(env, request, version, kind, who);
+    logDownload(env, ctx, request, version, kind, who);
 
     return Response.redirect(asset.browser_download_url, 302);
   },
@@ -118,7 +124,8 @@ export default {
 
 // One datapoint per download. blob1=version, blob2=kind, blob3=country,
 // blob4=user-agent, blob5=who. doubles[0]=1 so SUM() = download count.
-function logDownload(env, request, version, kind, who) {
+// Real installs (install/brew) are also counted in D1 after the response.
+function logDownload(env, ctx, request, version, kind, who) {
   if (env.DL) {
     env.DL.writeDataPoint({
       blobs: [
@@ -132,6 +139,119 @@ function logDownload(env, request, version, kind, who) {
       doubles: [1],
     });
   }
+  if ((who === "install" || who === "brew") && ctx) {
+    ctx.waitUntil(recordInstall(env, request.cf?.country || "??", who, Date.now()));
+  }
+}
+
+// --- Install history (D1) ---------------------------------------------------
+// installs: one row per (day, who, country, src) with a count n.
+//   src='live' rows are counted here as installs happen.
+//   src='ae'   rows are a one-time copy of the Analytics Engine rows older than
+//              live_since (see backfillInstalls), so a day's total is its AE
+//              part plus its live part, with no overlap and no gap.
+// meta: live_since = first time this code touched D1 (unix ms, whole second);
+//       backfill_done = when the AE copy was frozen.
+// Country is kept so OWN_COUNTRY is excluded at read time, like on /stats.
+const INSTALLS_SCHEMA = [
+  "CREATE TABLE IF NOT EXISTS installs (day TEXT NOT NULL, who TEXT NOT NULL, country TEXT NOT NULL, src TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (day, who, country, src))",
+  "CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v INTEGER NOT NULL)",
+];
+const dbReady = new WeakMap();
+
+// Resolves to the D1 binding once its tables exist (created lazily, once per
+// isolate), or null when there is no binding. Rejects on a D1 error.
+function installsDb(env) {
+  const db = env.INSTALLS;
+  if (!db) return Promise.resolve(null);
+  let ready = dbReady.get(db);
+  if (!ready) {
+    const since = Math.floor(Date.now() / 1000) * 1000;
+    ready = db.batch([
+      ...INSTALLS_SCHEMA.map((q) => db.prepare(q)),
+      db.prepare("INSERT OR IGNORE INTO meta (k, v) VALUES ('live_since', ?)").bind(since),
+    ]).then(() => db);
+    ready.catch(() => dbReady.delete(db)); // retry on the next request
+    dbReady.set(db, ready);
+  }
+  return ready;
+}
+
+// +1 for this install, atomically. Runs in waitUntil after the redirect has
+// been returned; never throws. An install from before live_since is skipped:
+// it is already in Analytics Engine and gets copied by the backfill.
+async function recordInstall(env, country, who, now) {
+  try {
+    const db = await installsDb(env);
+    if (!db) return;
+    await db.prepare(
+      "INSERT INTO installs (day, who, country, src, n) SELECT ?, ?, ?, 'live', 1 " +
+      "WHERE ? >= (SELECT v FROM meta WHERE k = 'live_since') " +
+      "ON CONFLICT (day, who, country, src) DO UPDATE SET n = n + 1",
+    ).bind(new Date(now).toISOString().slice(0, 10), who, country, now).run();
+  } catch (e) {}
+}
+
+// Copy Analytics Engine install/brew rows older than live_since into src='ae'
+// rows. Each run replaces the whole copy in one transaction, so re-running is
+// safe. It re-runs on every /stats load until AE ingestion lag is surely past
+// (live_since + 15 min), then freezes: after that AE starts expiring days, and
+// re-copying would lose them.
+const BACKFILL_SETTLE_MS = 15 * 60 * 1000;
+async function backfillInstalls(db, token) {
+  const meta = Object.fromEntries(
+    (await db.prepare("SELECT k, v FROM meta").all()).results.map((r) => [r.k, Number(r.v)]),
+  );
+  if (meta.backfill_done || !meta.live_since) return;
+  const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/analytics_engine/sql`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: "SELECT toDate(timestamp) AS day, blob5 AS who, blob3 AS country, SUM(_sample_interval) AS n " +
+      "FROM teebe_downloads WHERE blob5 IN ('install','brew') " +
+      `AND timestamp < toDateTime(${Math.floor(meta.live_since / 1000)}) GROUP BY day, who, country`,
+  });
+  // A failed query must not be mistaken for "no rows" (that would freeze an
+  // empty copy), so anything but a data array aborts this run.
+  if (!res.ok) throw new Error(`AE SQL ${res.status}`);
+  const j = await res.json();
+  if (!Array.isArray(j.data)) throw new Error("AE SQL: no data");
+  const rows = j.data
+    .map((r) => ({ d: String(r.day).slice(0, 10), w: String(r.who), c: String(r.country), n: Math.floor(Number(r.n) || 0) }))
+    .filter((r) => /^\d{4}-\d{2}-\d{2}$/.test(r.d) && r.n > 0);
+  const open = "NOT EXISTS (SELECT 1 FROM meta WHERE k = 'backfill_done')";
+  const stmts = [
+    db.prepare(`DELETE FROM installs WHERE src = 'ae' AND ${open}`),
+    db.prepare(
+      "INSERT INTO installs (day, who, country, src, n) " +
+      "SELECT json_extract(value, '$.d'), json_extract(value, '$.w'), json_extract(value, '$.c'), 'ae', json_extract(value, '$.n') " +
+      `FROM json_each(?) WHERE ${open} ` +
+      "ON CONFLICT (day, who, country, src) DO UPDATE SET n = n + excluded.n",
+    ).bind(JSON.stringify(rows)),
+  ];
+  const now = Date.now();
+  if (now >= meta.live_since + BACKFILL_SETTLE_MS) {
+    stmts.push(db.prepare("INSERT OR IGNORE INTO meta (k, v) VALUES ('backfill_done', ?)").bind(now));
+  }
+  await db.batch(stmts);
+}
+
+// Install counts for /stats from D1 (OWN_COUNTRY excluded): every stored day
+// (oldest first), by who, by country. null when D1 is missing, failing or has
+// no rows yet; /stats then uses Analytics Engine alone, as before.
+async function installHistory(env) {
+  try {
+    const db = await installsDb(env);
+    if (!db) return null;
+    try { await backfillInstalls(db, env.CF_API_TOKEN); } catch (e) {}
+    const [daily, byWho, byCountry] = (await db.batch([
+      db.prepare("SELECT day, SUM(n) AS n FROM installs WHERE country != ? GROUP BY day ORDER BY day").bind(OWN_COUNTRY),
+      db.prepare("SELECT who, SUM(n) AS n FROM installs WHERE country != ? GROUP BY who").bind(OWN_COUNTRY),
+      db.prepare("SELECT country, SUM(n) AS n FROM installs WHERE country != ? GROUP BY country ORDER BY n DESC, country").bind(OWN_COUNTRY),
+    ])).map((r) => r.results);
+    return daily.length ? { daily, byWho, byCountry } : null;
+  } catch (e) {
+    return null;
+  }
 }
 
 // --- Versioned downloads (Homebrew cask) ------------------------------------
@@ -140,7 +260,7 @@ function logDownload(env, request, version, kind, who) {
 // the same tag), so the redirect target can never be steered elsewhere.
 const VERSIONED = /^\/(v\d{1,4}\.\d{1,4}\.\d{1,4})\/(teebe-(v\d{1,4}\.\d{1,4}\.\d{1,4})\.zip|teebe-macos\.dmg)$/;
 
-function handleVersioned(url, request, env, who) {
+function handleVersioned(url, request, env, ctx, who) {
   const m = VERSIONED.exec(url.pathname);
   if (!m || (m[3] && m[3] !== m[1])) {
     return new Response("Not found", { status: 404 });
@@ -152,7 +272,7 @@ function handleVersioned(url, request, env, who) {
   // reinstall also sends it). Anyone else: count GET, not HEAD probes.
   const brewUA = /^Homebrew\//.test(request.headers.get("User-Agent") || "");
   if (brewUA ? request.method === "HEAD" : request.method !== "HEAD") {
-    logDownload(env, request, tag, name.endsWith(".dmg") ? "dmg" : "zip", who);
+    logDownload(env, ctx, request, tag, name.endsWith(".dmg") ? "dmg" : "zip", who);
   }
   return Response.redirect(`https://github.com/${REPO}/releases/download/${tag}/${name}`, 302);
 }
@@ -260,7 +380,7 @@ async function handleStats(url, env) {
   const [
     overview, realByWho, byCountry, recent, daily,
     webTotals, webDaily, webByPath, webRefs, webByCountry,
-    updDaily, updByVersion, updByCountry,
+    updDaily, updByVersion, updByCountry, hist,
   ] = await Promise.all([
     sql("SELECT blob5 AS who, SUM(_sample_interval) AS n FROM teebe_downloads GROUP BY who ORDER BY n DESC"),
     sql(`SELECT blob5 AS who, SUM(_sample_interval) AS n FROM teebe_downloads WHERE ${notMine} GROUP BY who`),
@@ -275,9 +395,16 @@ async function handleStats(url, env) {
     sql(`SELECT toDate(timestamp) AS day, SUM(_sample_interval) AS n FROM teebe_updates WHERE ${appCheck} GROUP BY day ORDER BY day DESC LIMIT 15`),
     sql(`SELECT blob1 AS version, SUM(_sample_interval) AS n FROM teebe_updates WHERE ${appCheck} AND timestamp > NOW() - INTERVAL '7' DAY GROUP BY version ORDER BY n DESC LIMIT 10`),
     sql(`SELECT blob2 AS country, SUM(_sample_interval) AS n FROM teebe_updates WHERE ${appCheck} AND timestamp > NOW() - INTERVAL '7' DAY GROUP BY country ORDER BY n DESC LIMIT 15`),
+    installHistory(env),
   ]);
 
-  const html = renderStats({
+  // With D1 history, every install count on the page comes from it, so they
+  // all agree; the daily chart keeps its shape (last 14 days with data).
+  const html = renderStats(hist ? {
+    overview, realByWho: hist.byWho, byCountry: hist.byCountry, recent, daily: hist.daily.slice(-14).reverse(),
+    webTotals, webDaily, webByPath, webRefs, webByCountry,
+    updDaily, updByVersion, updByCountry, hist,
+  } : {
     overview, realByWho, byCountry, recent, daily,
     webTotals, webDaily, webByPath, webRefs, webByCountry,
     updDaily, updByVersion, updByCountry,
@@ -294,7 +421,7 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
   const {
     overview, realByWho, byCountry, recent, daily,
     webTotals, webDaily, webByPath, webRefs, webByCountry,
-    updDaily, updByVersion, updByCountry,
+    updDaily, updByVersion, updByCountry, hist,
   } = d;
 
   const num = (v) => Math.floor(Number(v) || 0);
@@ -322,7 +449,7 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
 
   // Daily rows (newest first, days without data absent) -> oldest-first series
   // with every calendar day up to today, missing days as 0. Presentation only.
-  const fillDays = (rows) => {
+  const fillDays = (rows, cap = 400) => {
     const m = new Map(rows.map((r) => [String(r.day).slice(0, 10), num(r.n)]));
     const keys = [...m.keys()].sort();
     if (!keys.length) return [];
@@ -330,7 +457,7 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
     const end = keys[keys.length - 1] > today ? keys[keys.length - 1] : today;
     if (Number.isNaN(start)) return keys.map((day) => ({ day, n: m.get(day) }));
     const out = [];
-    for (let t = start, i = 0; i < 400; t += 86400000, i++) {
+    for (let t = start, i = 0; i < cap; t += 86400000, i++) {
       const day = new Date(t).toISOString().slice(0, 10);
       out.push({ day, n: m.get(day) || 0 });
       if (day >= end) break;
@@ -426,9 +553,83 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
     }</tbody></table></div>`
     : empty();
 
-  const tile = (tab, label, value, sub, series) =>
+  const tile = (tab, label, value, sub, series, extra = "") =>
     `<a class="tile" href="#${tab}" data-go="${tab}"><div class="label">${label}</div><div class="hero">${value}</div>` +
-    `<div class="tsub">${sub}</div>${spark(series)}<div class="more">Dettagli →</div></a>`;
+    `<div class="tsub">${sub}</div>${extra}${spark(series)}<div class="more">Dettagli →</div></a>`;
+
+  // --- Durable install history (D1): cumulative chart and growth ----------
+  // Only when hist is present; without it the page is exactly the AE one.
+  const histSeries = hist ? fillDays(hist.daily, 5000) : [];
+  let running = 0;
+  for (const r of histSeries) r.c = running += r.n;
+  const firstDay = histSeries.length ? histSeries[0].day : "";
+  const shortDay = (day) => {
+    const d = new Date(day + "T00:00:00Z");
+    if (Number.isNaN(d.getTime())) return day;
+    return `${d.getUTCDate()} ${MO[d.getUTCMonth()]}${day.slice(0, 4) === today.slice(0, 4) ? "" : " " + day.slice(0, 4)}`;
+  };
+  const since = firstDay ? ` · dal ${esc(shortDay(firstDay))}` : "";
+
+  // Installs in the last `days` complete days (today excluded) vs the `days`
+  // before. The comparison needs the previous window to lie after the first
+  // stored day (which may be cut short by the 3-month AE retention).
+  const growth = (days) => {
+    const full = histSeries.filter((r) => r.day < today);
+    const sum = (rows) => rows.reduce((s, r) => s + r.n, 0);
+    const cur = sum(full.slice(-days));
+    if (full.length < 2 * days + 1) return { cur, prev: null, text: "storico insufficiente per il confronto" };
+    const prev = sum(full.slice(-2 * days, -days));
+    const pct = prev ? Math.round(((cur - prev) / prev) * 100) : null;
+    const text = pct === null ? (cur ? "▲ da 0" : "= stabile")
+      : pct > 0 ? `▲ +${pct}%` : pct < 0 ? `▼ −${-pct}%` : "= stabile";
+    return { cur, prev, text };
+  };
+  const g7 = growth(7), g30 = growth(30);
+  const growthStat = (label, g, days) =>
+    `<div class="stat"><div class="label">${label}</div><div class="value">${g.cur}</div>` +
+    `<div class="delta">${g.prev === null ? g.text : `<b>${g.text}</b> vs ${g.prev} nei ${days} giorni precedenti`}</div></div>`;
+  const tileGrowth = hist
+    ? `<div class="delta">30 gg: <b>${g30.cur}</b> ${g30.prev === null ? "" : g30.text} · 7 gg: <b>${g7.cur}</b> ${g7.prev === null ? "" : g7.text}</div>`
+    : "";
+
+  // Cumulative installs: one line over every stored day, a crosshair per day
+  // (same tooltip as the columns: total first, then that day's new installs).
+  // The line is drawn in a stretched inner SVG; dots and labels use % x in
+  // the outer one so they stay round and crisp.
+  const cumulative = (series) => {
+    if (!series.length) return empty();
+    const PT = 20, H = 150, XB = 24, total = PT + H + XB;
+    const n = series.length;
+    const max = series[n - 1].c;
+    const { top, step } = scale(max);
+    const slot = 100 / n;
+    const y = (v) => PT + H - (v / top) * H;
+    const pct = (v) => `${v.toFixed(3)}%`;
+    const cx = (i) => pct(i * slot + slot / 2);
+    const ticks = [];
+    for (let v = 0; v <= top; v += step) ticks.push(v);
+    const pts = series.map((r, i) => `${(i + 0.5).toFixed(2)},${(H - (r.c / top) * H).toFixed(2)}`).join(" ");
+    const line = `<svg x="0" y="${PT}" width="100%" height="${H}" viewBox="0 0 ${n} ${H}" preserveAspectRatio="none" overflow="visible">` +
+      `<polygon class="wash" points="0.5,${H} ${pts} ${n - 0.5},${H}"/><polyline class="ln" points="${pts}" vector-effect="non-scaling-stroke"/></svg>`;
+    const labelEvery = Math.ceil(n / 6);
+    const days = series.map((r, i) => {
+      const xl = (n - 1 - i) % labelEvery === 0
+        ? `<text class="xl" x="${cx(i)}" y="${PT + H + 17}">${esc(ddmm(r.day))}</text>` : "";
+      const tip = `Install totali · +${r.n} quel giorno · ${longDay(r.day)}${r.day === today ? " (oggi, parziale)" : ""}`;
+      return `<g class="col" tabindex="${i === n - 1 ? 0 : -1}" data-v="${r.c}" data-d="${esc(tip)}">` +
+        `<rect class="hit" x="${pct(i * slot)}" y="0" width="${pct(slot)}" height="${PT + H}"/>` +
+        `<line class="xh" x1="${cx(i)}" x2="${cx(i)}" y1="${PT}" y2="${PT + H}"/>` +
+        `<circle class="pt" cx="${cx(i)}" cy="${y(r.c)}" r="4"/>${xl}</g>`;
+    }).join("");
+    const grid = ticks.map((v) => `<line class="${v === 0 ? "axis" : "grid"}" x1="0" x2="100%" y1="${y(v)}" y2="${y(v)}"/>`).join("");
+    const yl = ticks.map((v) => `<span style="top:${y(v)}px">${v}</span>`).join("");
+    const end = `<circle class="end" cx="${cx(n - 1)}" cy="${y(max)}" r="4"/>` +
+      `<text class="cap" x="${cx(n - 1)}" y="${y(max) - 10}">${max}</text>`;
+    const table = series.slice().reverse().map((r) => `<tr><td>${esc(r.day)}</td><td class="r">${r.n}</td><td class="r">${r.c}</td></tr>`).join("");
+    return `<div class="chart"><div class="yax" style="height:${total}px" aria-hidden="true">${yl}</div>` +
+      `<svg class="cols cum" height="${total}" role="img" aria-label="Installazioni cumulative: ${max} in totale. Frecce sinistra/destra per scorrere i giorni.">${grid}${line}${days}${end}</svg></div>` +
+      `<details><summary>Tabella</summary><table><thead><tr><th>Giorno</th><th class="r">Nuovi</th><th class="r">Totale</th></tr></thead><tbody>${table}</tbody></table></details>`;
+  };
 
   const html = `<!DOCTYPE html>
 <html lang="it"><head>
@@ -491,6 +692,17 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
   .cols text { font-size:11px; text-anchor:middle; font-variant-numeric:tabular-nums; }
   .cols .cap { fill:var(--text); font-weight:600; }
   .cols .xl { fill:var(--muted); }
+  .cum .ln { fill:none; stroke:var(--series); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+  .cum .wash { fill:var(--series); opacity:.1; }
+  .cum .col:hover .hit, .cum .col.on .hit { fill:transparent; }
+  .cum .xh { stroke:var(--axis); stroke-width:1; shape-rendering:crispEdges; opacity:0; }
+  .cum .pt { fill:var(--series-hover); stroke:var(--card); stroke-width:2; opacity:0; }
+  .cum .col:hover .xh, .cum .col.on .xh, .cum .col:hover .pt, .cum .col.on .pt { opacity:1; }
+  .cum .end { fill:var(--series); stroke:var(--card); stroke-width:2; }
+  .cum .cap { text-anchor:end; }
+  .delta { color:var(--text2); font-size:.8rem; margin-top:4px; }
+  .delta b { color:var(--text); font-weight:600; }
+  .stats.tight { margin-bottom:0; }
   details { margin-top:10px; }
   summary { cursor:pointer; color:var(--muted); font-size:.8rem; }
   details table { margin-top:8px; }
@@ -522,7 +734,7 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
 
   <section id="tab-panoramica" role="tabpanel">
     <div class="tiles">
-      ${tile("installazioni", "Install reali", installs, `install.sh ${real.install || 0} · Homebrew ${real.brew || 0}`, installSeries)}
+      ${tile("installazioni", `Install reali${since}`, installs, `install.sh ${real.install || 0} · Homebrew ${real.brew || 0}`, installSeries, tileGrowth)}
       ${tile("attive", "Attive (media 7gg)", activeAvg, `Ieri ${activeYesterday}`, updSeries)}
       ${tile("sito", "Visualizzazioni", views, `Visite ${visits}`, webSeries)}
     </div>
@@ -532,13 +744,17 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
   <section id="tab-installazioni" role="tabpanel">
     <p class="sub">Installazioni reali = <b>install</b> (UA <code>teebe-install</code>) + <b>brew</b> (Homebrew cask, UA <code>Homebrew/…</code>). <b>web</b> = browser/bot (rumore).</p>
     <div class="stats">
-      ${stat("Install", installs, true)}
+      ${stat(`Install${since}`, installs, true)}
       ${stat("install.sh", real.install || 0)}
       ${stat("Homebrew", real.brew || 0)}
       ${stat("Web / bot", counts.web || 0)}
       ${stat("Dev (test)", counts.dev || 0)}
     </div>
-    <div class="card"><h2>Installazioni per giorno (UTC)</h2>${columns(installSeries, "Install")}</div>
+${hist ? `    <div class="card"><h2>Crescita</h2><div class="stats tight">${growthStat("Ultimi 7 giorni", g7, 7)}${growthStat("Ultimi 30 giorni", g30, 30)}</div>
+      <p class="note">Giorni completi (UTC): oggi è escluso.</p></div>
+    <div class="card"><h2>Installazioni cumulative</h2>${cumulative(histSeries)}
+      <p class="note">Dati dal ${esc(longDay(firstDay))} ${esc(firstDay.slice(0, 4))}: quelli precedenti non sono disponibili, perché Cloudflare conserva le statistiche grezze solo 3 mesi.</p></div>
+` : ""}    <div class="card"><h2>Installazioni per giorno (UTC)</h2>${columns(installSeries, "Install")}</div>
     <div class="card"><h2>Installazioni per paese</h2>${hbars(byCountry, "country", "install")}
       <p class="note">I tuoi test (paese ${esc(OWN_COUNTRY)}) sono esclusi ovunque qui. Per testare usa <code>?dev=1</code>, così finiscono in “dev”.</p></div>
     <div class="card"><h2>Ultime installazioni</h2>${recentTable}</div>
@@ -574,7 +790,7 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
     <p class="note">Le tue visite (paese ${esc(OWN_COUNTRY)}) e quelle con <code>?dev=1</code> sono escluse.</p>
   </section>
 
-  <footer>Aggiornato in tempo reale da Cloudflare Analytics Engine · +2h per ora locale (AL).</footer>
+  <footer>Aggiornato in tempo reale da Cloudflare Analytics Engine${hist ? " (storico installazioni: D1)" : ""} · +2h per ora locale (AL).</footer>
 </div>
 <div id="tip" class="tip" aria-hidden="true" hidden><div class="tv"></div><div class="td"></div></div>
 <script>
@@ -603,8 +819,9 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
   let active = null;
   const place = () => {
     const hit = active.querySelector(".hit").getBoundingClientRect();
-    const bar = active.querySelector(".bar");
-    const anchor = bar ? bar.getBoundingClientRect().top : hit.bottom;
+    // Anchor above the column's bar or the line's point; else the baseline.
+    const mark = active.querySelector(".bar, .pt");
+    const anchor = mark ? mark.getBoundingClientRect().top : hit.bottom;
     const w = tip.offsetWidth, h = tip.offsetHeight;
     const maxX = document.documentElement.clientWidth - w - 8;
     tip.style.left = Math.max(8, Math.min(maxX, hit.left + hit.width / 2 - w / 2)) + "px";
@@ -639,6 +856,17 @@ function renderStats(d, today = new Date().toISOString().slice(0, 10)) {
     if (col) tipShow(col);
   });
   document.addEventListener("focusout", tipHide);
+  // Line chart: one tab stop, arrow keys move between days.
+  document.addEventListener("keydown", (e) => {
+    const col = colOf(e);
+    if (!col || !col.closest(".cum") || (e.key !== "ArrowLeft" && e.key !== "ArrowRight")) return;
+    const next = e.key === "ArrowLeft" ? col.previousElementSibling : col.nextElementSibling;
+    if (!next || !next.classList.contains("col")) return;
+    e.preventDefault();
+    col.tabIndex = -1;
+    next.tabIndex = 0;
+    next.focus();
+  });
   document.documentElement.addEventListener("pointerleave", tipHide);
   addEventListener("scroll", () => { if (active) place(); }, { passive: true });
   addEventListener("resize", tipHide);

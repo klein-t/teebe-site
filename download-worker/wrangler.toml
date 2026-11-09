@@ -27,3 +27,11 @@ dataset = "teebe_pageviews"
 [[analytics_engine_datasets]]
 binding = "UPD"
 dataset = "teebe_updates"
+
+# Durable install history (per-day install/brew counts, never expires; AE keeps
+# only 3 months). No database_id on purpose: `wrangler deploy` connects to the
+# database with this name, or creates it on the first deploy. Tables are created
+# by the worker itself (see installsDb in src/index.js).
+[[d1_databases]]
+binding = "INSTALLS"
+database_name = "teebe-installs"
