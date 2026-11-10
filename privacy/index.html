@@ -38,7 +38,7 @@
 
   <main class="legal">
     <h1>Privacy</h1>
-    <p class="updated">Last updated 6 October 2026</p>
+    <p class="updated">Last updated 27 October 2026</p>
 
     <p>
       teebe is a local macOS app. The short version: we count downloads and
@@ -60,8 +60,11 @@
     <p>
       When you open a page on <code>teebe.io</code>, a small script records one
       anonymous, aggregate page-view event: the <strong>page</strong> you
-      viewed, the <strong>referring site</strong> (if any), and your
-      <strong>country</strong>. To tell a fresh visit from a page-to-page click
+      viewed, the <strong>referring site</strong> or a recognized directory
+      source from the link's <code>utm_source</code> parameter (if any), and
+      your <strong>country</strong>. Only known directory names are accepted
+      from that parameter; other campaign values and the full URL query are
+      not recorded. To tell a fresh visit from a page-to-page click
       we keep a single per-tab flag in your browser's <code>sessionStorage</code>;
       it holds no identifier and is gone when you close the tab.
     </p>
@@ -121,24 +124,6 @@ a Claude Code turn ends. It leaves your other hook settings untouched.
     <p>© teebe · <a href="https://github.com/klein-t/teebe" rel="noopener">GitHub</a> · <a href="/changelog/">Changelog</a> · <a href="/privacy/">Privacy</a> · <!--email_off--><a href="mailto:hello@teebe.io">Contact</a><!--/email_off--> · macOS only</p>
   </footer>
 
-  <!-- Page-view beacon -> dl.teebe.io/px (Cloudflare Analytics Engine). No cookies,
-       no fingerprint: a per-tab sessionStorage flag only tells a "visit" (first
-       load) from a "view". Bots that don't run JS never fire it. -->
-  <script>
-    (function () {
-      try {
-        if (location.hostname !== 'teebe.io') return; // local files, localhost, mirrors
-        if (/[?&]dev=1/.test(location.search)) localStorage.setItem('tb_dev', '1'); // sticky per browser
-        var v = sessionStorage.getItem('tb_seen') ? 0 : 1;
-        if (v) sessionStorage.setItem('tb_seen', '1');
-        var dev = localStorage.getItem('tb_dev') ? 1 : 0;
-        var ref = '';
-        try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
-        new Image().src = 'https://dl.teebe.io/px?p=' + encodeURIComponent(location.pathname)
-          + '&v=' + v + (ref ? '&r=' + encodeURIComponent(ref) : '') + (dev ? '&dev=1' : '')
-          + '&t=' + Date.now();
-      } catch (e) {}
-    })();
-  </script>
+  <script src="/assets/analytics.js" defer></script>
 </body>
 </html>
