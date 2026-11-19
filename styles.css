@@ -140,6 +140,11 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .install .copy:hover { background: var(--accent-hover); }
 .install .copy.copied { background: var(--green); }
+.install-alternatives { max-width: 740px; margin: 12px auto 0; text-align: left; }
+.install-alternatives summary { width: fit-content; margin: 0 auto; color: var(--muted); cursor: pointer; font-size: 0.9rem; }
+.install-alternatives summary:hover { color: var(--text); }
+.install-alternatives summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 3px; }
+.install-alternatives p { color: var(--muted); font-size: 0.9rem; margin: 14px 0 10px; }
 
 .shot {
   margin: 56px auto 0;

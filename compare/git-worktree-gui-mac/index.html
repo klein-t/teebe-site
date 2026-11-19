@@ -227,6 +227,12 @@
     .install .copy:hover { background: var(--accent-2); }
     .install .copy.copied { background: var(--accent-2); }
     .install .copy:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+    .install-alternatives { max-width: 640px; margin: 12px auto 0; text-align: left; }
+    .install-alternatives summary { width: fit-content; margin: 0 auto; color: var(--muted); cursor: pointer; font-size: 0.9rem; }
+    .install-alternatives summary:hover { color: var(--text); }
+    .install-alternatives summary:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 4px; border-radius: 3px; }
+    .install-alternatives p { color: var(--muted); font-size: 0.9rem; margin: 14px 0 10px; }
+    .install-alternatives .install { margin-top: 0; }
     .sub { font-size: 0.9rem; color: var(--muted); margin-top: 14px; text-align: center; }
     .sub a { color: var(--accent-2); }
 
@@ -530,10 +536,18 @@
     </p>
 
     <div class="install">
-      <code>curl -fsSL https://teebe.io/install.sh | bash</code>
-      <button class="copy" type="button" aria-label="Copy install command">Copy</button>
+      <code>brew install --cask klein-t/tap/teebe</code>
+      <button class="copy" type="button" aria-label="Copy Homebrew install command">Copy</button>
     </div>
-    <p class="sub">Free · open source · macOS 14+. <a href="/">Back to teebe.io →</a></p>
+    <details class="install-alternatives">
+      <summary>Other installation methods</summary>
+      <p>Without Homebrew, run this in your terminal:</p>
+      <div class="install">
+        <code>curl -fsSL https://teebe.io/install.sh | bash</code>
+        <button class="copy" type="button" aria-label="Copy shell install command">Copy</button>
+      </div>
+    </details>
+    <p class="sub">Free · open source · macOS 14+ · Apple Silicon. <a href="/">Back to teebe.io →</a></p>
   </main>
 
   <footer>
